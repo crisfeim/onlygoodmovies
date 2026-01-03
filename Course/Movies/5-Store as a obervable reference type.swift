@@ -2,7 +2,11 @@
 
 import SwiftUI
 
-
+// In the previous example, the state control logic was within the view.
+// making difficult to assert state transition through unit testing.
+// previews can be a good way of manually testing this behaviour, howver I prefer to not rely on them
+// and unit test as much as I can.
+// so, one way of allowing testing is moving our store to a reference type and placing inside the state control logic.
 extension MovieList {
     @Observable class Store {
         private(set) var firstLoading = true
@@ -41,6 +45,9 @@ extension MovieList {
 }
 
 fileprivate struct MovieList: View {
+    // store is injected from outside so whoever constructs the view is also responsible for managing state
+   // this way we preserve the ortogonal state previewing (otherwise applying task & refeshable here would destroy the init loading state making it not previewable
+  // and we  simplify the view respnsabilities (not constructing its dependencies & not managing state)
     @State var store: Store
     var body: some View {
         List(store.movies) { movie in
@@ -109,3 +116,71 @@ fileprivate struct MovieList: View {
         .refreshable(action: store.refresh)
         .task(store.load)
 }
+
+/*
+ Ahora que la responsabilidad de está en manos del composer, podemos
+ tener un composite tal que:
+ */
+fileprivate enum MovieListComposer {
+    typealias Loader = () async throws -> [Movie]
+    static func compose(loader: @escaping Loader) -> some View {
+        let store = MovieList.Store(load: loader)
+        let view = MovieList(store: store)
+        return view
+            .refreshable(action: store.refresh)
+            .task(store.load)
+    }
+}
+
+
+/*
+ Podemos componer la feature:
+ */
+
+fileprivate struct MoviesApp: View {
+    var body: some View {
+        TabView {
+            
+            Tab("Movies", systemImage: "film.stack") {
+                MovieListComposer.compose(loader: loadFromRemote)
+            }
+            
+            Tab("Favorites", systemImage: "star") {
+                MovieListComposer.compose(loader: loadFromSwiftData)
+            }
+        }
+    }
+    
+    func loadFromSwiftData() async throws -> [Movie] {
+        [/* ... implementatiion */ ]
+    }
+    
+    func loadFromRemote() async throws -> [Movie] {
+        [mockMovie(), mockMovie(), mockMovie()]
+    }
+}
+
+
+#Preview("Composition") {
+    MoviesApp()
+}
+
+/*
+ Qué se gana:
+     •    Estado testeable
+     •    Vista completamente pasiva
+     •    Async fuera del árbol de vistas
+     •    Composición flexible
+
+ Aquí aparece algo importante sin nombrarlo:
+     •    El store es un objeto de dominio de UI
+     •    El composer decide el wiring
+     •    La vista no sabe nada del mundo
+ 
+ 
+ 1. La potencia del Composite Pattern
+
+ En tu última iteración (MovieListComposer), has dado con la clave de la Arquitectura Clean: el desacoplamiento de la creación. Al separar la construcción (compose) de la definición de la vista, permites que MovieList sea una "Pure View".
+
+ Punto clave para tu artículo: Resalta que MovieList ya no sabe de dónde vienen las películas ni cómo se cargan. Solo sabe pintar lo que el Store le dice. Esto es lo que permite que en tu demo interactiva el usuario pueda "ensamblar" diferentes loaders.
+ */

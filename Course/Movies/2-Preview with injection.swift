@@ -2,6 +2,9 @@
 import SwiftUI
 /*
  
+ •    Las previews hacen peticiones reales
+ •    No se pueden simular errores ni variaciones temporales
+ 
 Este enfoque funciona.
 Satisface las necesidades del sistema.
 
@@ -82,5 +85,17 @@ fileprivate struct MovieList: View {
  Loaded list + loading
  Loaded list + error
  
+ Ni del estado initalLoading...
+ 
  Etc...
+ 
+ Qué se gana:
+     •    Preview de error
+     •    Preview de éxito
+     •    Control del flujo de datos
+
+ Qué no se puede hacer todavía (y es clave decirlo):
+     •    No puedes fijar isLoading
+     •    No puedes representar estados superpuestos
+     •    El loader siempre pisa el estado
  */

@@ -108,3 +108,19 @@ fileprivate struct MovieList: View {
         return items
     })
 }
+
+/*
+ Motivo concreto:
+     •    La firma de la vista empieza a ser frágil
+     •    Cada nuevo flag obliga a tocar demasiados sitios
+
+ Qué cambia:
+     •    Estado agrupado
+     •    La vista depende de una sola cosa
+     •    Añadir estado no rompe call sites
+
+ Importante:
+     •    Esto no es MVVM
+     •    No hay async en la vista
+     •    Sigue siendo SwiftUI puro
+ */

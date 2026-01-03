@@ -46,7 +46,7 @@ fileprivate struct MovieList: View {
             }
         }
         .refreshable(action: load)
-        .task(id: "init load", initLoad)
+        .task(initLoad)
         .toolbar {
             if let message = errorMessage {
                 ErrorButton(label: message) {
@@ -75,3 +75,15 @@ fileprivate struct MovieList: View {
     MovieList()
 }
 
+/*
+ Conclusión
+ •    La vista es responsable de:
+ •    ciclo de vida
+ •    estado
+ •    networking
+ •    errores
+ •    .task + .refreshable pisan el mismo estado
+ •    El significado de isLoading es frágil
+ •    Las previews son decorativas, no útiles
+ •    Funciona, pero no se puede observar ni controlar el comportamiento.
+ */

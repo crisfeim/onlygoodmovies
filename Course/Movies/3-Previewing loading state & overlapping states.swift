@@ -14,32 +14,6 @@ fileprivate struct MovieList: View {
     @State var errorMessage: String?
     let load: () async throws -> [Movie]
     
-    var body: some View {
-        Self.list(
-            isLoading: isLoading,
-            movies: movies,
-            errorMessage: errorMessage,
-            didTapErrorButton: { errorMessage = nil }
-        )
-        .refreshable {
-            do {
-                errorMessage = nil
-                movies = try await load()
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-        }
-        .task(id: "initial init") {
-            do {
-                movies = try await load()
-                isLoading = false
-            } catch {
-                errorMessage = error.localizedDescription
-                isLoading = false
-            }
-        }
-    }
-    
     //  This could be splited into a separated dumb struct
     // if needed
     static func list(
@@ -70,8 +44,39 @@ fileprivate struct MovieList: View {
             }
         }
     }
+    
+    var body: some View {
+        Self.list(
+            isLoading: isLoading,
+            movies: movies,
+            errorMessage: errorMessage,
+            didTapErrorButton: { errorMessage = nil }
+        )
+        .refreshable {
+            do {
+                errorMessage = nil
+                movies = try await load()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+        .task(id: "initial init") {
+            do {
+                movies = try await load()
+                isLoading = false
+            } catch {
+                errorMessage = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
 }
 
+/*
+ 
+ Ahora podemos simular todos los estados ortogonales posibles
+ y tener una preview del estado init loader:
+ */
 #Preview("Loading") {
     MovieList.list(
         isLoading: true,
@@ -149,3 +154,26 @@ fileprivate struct MovieList: View {
         return items
     })
 }
+
+/*
+ Problema real que lo justifica:
+     •    Quieres representar:
+     •    loading inicial
+     •    loading con datos
+     •    error con datos
+     •    vacío sin loading
+     •    El loader inyectado lo impide
+
+ Decisión clave:
+     •    Separar renderizado de orquestación
+     •    La vista deja de decidir cuándo cargar
+
+ Lo importante aquí no es la static func list, sino esto:
+     •    El render depende solo de datos
+     •    Los estados ya no se pisan
+     •    Previews describen escenarios reales
+
+ Este capítulo cierra cuando queda claro que:
+
+ El problema ya no es la UI, es quién es dueño del estado.
+ */
