@@ -7,7 +7,7 @@ add state to both, the view & the function wrapper) we could
 protect our solution from breaking changes by by grouping
 our state into a unified store.
  */
-extension MovieList_4 {
+extension MovieList {
     struct Store {
         
         // Centralized state
@@ -23,7 +23,7 @@ extension MovieList_4 {
     }
 }
 
-struct MovieList_4: View {
+fileprivate struct MovieList: View {
     @State var store = Store()
     let load: () async throws -> [Movie]
     
@@ -78,7 +78,7 @@ struct MovieList_4: View {
 
 
 #Preview("Success") {
-    MovieList_4(load: {
+    MovieList(load: {
         try await Task.sleep(for: .seconds(3))
         return [mockMovie()]
     })
@@ -86,7 +86,7 @@ struct MovieList_4: View {
 
 #Preview("Failing on refresh") {
     var isFirstLoad = true
-    MovieList_4(load: {
+    MovieList(load: {
         try await Task.sleep(for: .seconds(1))
         if isFirstLoad {
             isFirstLoad = false
@@ -99,7 +99,7 @@ struct MovieList_4: View {
 
 #Preview("Adding items on refresh") {
     var count = 1
-    MovieList_4(load: {
+    MovieList(load: {
         try await Task.sleep(for: .seconds(1))
         let items = Array(1...count).map {
             Movie(id: $0.description, title: "Movie \($0)")

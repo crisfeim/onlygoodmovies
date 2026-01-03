@@ -26,7 +26,7 @@ REQUIREMENTS
 /*
  La implementación más sencilla posible de nuestra app
 */
-struct MovieList: View {
+fileprivate struct MovieList: View {
     @State var isLoading = true
     @State var movies: [Movie] = []
     @State var errorMessage: String?
@@ -72,6 +72,6 @@ struct MovieList: View {
 }
 
 #Preview("Iteración 1") {
-    MovieList_1()
+    MovieList()
 }
 

@@ -11,7 +11,7 @@ lo que hace díficil probar los diferentes estados que puede tener la pantalla
  
 Podemos mejorar esto inyectando el fetch.
 */
-struct MovieList_2: View {
+fileprivate struct MovieList: View {
     @State var isLoading = true
     @State var movies: [Movie] = []
     @State var errorMessage: String?
@@ -63,12 +63,12 @@ struct MovieList_2: View {
  hacer peticiones reales:
  */
 #Preview("Iteración 2 - Error") {
-    MovieList_2(loader: {throw NSError(domain: "any-error", code: 0)})
+    MovieList(loader: {throw NSError(domain: "any-error", code: 0)})
 }
 
 #Preview("Iteración 2 - Loaded") {
     var callCount = 0
-    MovieList_2(loader: {
+    MovieList(loader: {
         callCount += 1
         return Array(0...callCount).map {
             Movie(id: $0.description, title: "Movie \($0+1)")

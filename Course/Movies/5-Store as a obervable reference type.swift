@@ -3,7 +3,7 @@
 import SwiftUI
 
 
-extension MovieList_5 {
+extension MovieList {
     @Observable class Store {
         private(set) var firstLoading = true
         private(set) var movies = [Movie]()
@@ -40,7 +40,7 @@ extension MovieList_5 {
     }
 }
 
-struct MovieList_5: View {
+fileprivate struct MovieList: View {
     @State var store: Store
     var body: some View {
         List(store.movies) { movie in
@@ -68,11 +68,11 @@ struct MovieList_5: View {
 
 
 #Preview("Success") {
-    let store = MovieList_5.Store(load: {
+    let store = MovieList.Store(load: {
         try await Task.sleep(for: .seconds(3))
         return [mockMovie()]
     })
-    MovieList_5(store: store)
+    MovieList(store: store)
         .refreshable(action: store.refresh)
         .task(store.load)
 }
@@ -80,7 +80,7 @@ struct MovieList_5: View {
 
 #Preview("Failing on refresh") {
     var isFirstLoad = true
-    let store = MovieList_5.Store(load: {
+    let store = MovieList.Store(load: {
         try await Task.sleep(for: .seconds(1))
         if isFirstLoad {
             isFirstLoad = false
@@ -90,14 +90,14 @@ struct MovieList_5: View {
         }
     })
     
-    MovieList_5(store: store)
+    MovieList(store: store)
         .refreshable(action: store.refresh)
         .task(store.load)
 }
 
 #Preview("Adding items on refresh") {
     var count = 0
-    let store = MovieList_5.Store(load:{
+    let store = MovieList.Store(load:{
         try await Task.sleep(for: .seconds(1))
         count += 1
         return (1...count).map {
@@ -105,7 +105,7 @@ struct MovieList_5: View {
         }
     })
     
-    MovieList_5(store: store)
+    MovieList(store: store)
         .refreshable(action: store.refresh)
         .task(store.load)
 }
