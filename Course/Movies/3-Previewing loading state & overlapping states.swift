@@ -9,11 +9,45 @@ import SwiftUI
  */
 
 struct MovieList_3: View {
-    let isLoading: Bool
-    let movies: [Movie]
-    let errorMessage: String?
-    let didTapErrorButton: () -> Void
+    @State var isLoading: Bool = true
+    @State var movies = [Movie]()
+    @State var errorMessage: String?
+    let load: () async throws -> [Movie]
+    
     var body: some View {
+        Self.list(
+            isLoading: isLoading,
+            movies: movies,
+            errorMessage: errorMessage,
+            didTapErrorButton: { errorMessage = nil }
+        )
+        .refreshable {
+            do {
+                errorMessage = nil
+                movies = try await load()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+        .task(id: "initial init") {
+            do {
+                movies = try await load()
+                isLoading = false
+            } catch {
+                errorMessage = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+    
+    //  This could be splited into a separated dumb struct
+    // if needed
+    static func list(
+        isLoading: Bool,
+        movies: [Movie],
+        errorMessage: String?,
+        didTapErrorButton: @escaping () -> Void
+    ) -> some View {
         List(movies) { movie in
             Text(movie.title)
            
@@ -39,7 +73,7 @@ struct MovieList_3: View {
 }
 
 #Preview("Loading") {
-    MovieList_3(
+    MovieList_3.list(
         isLoading: true,
         movies: [],
         errorMessage: nil,
@@ -48,7 +82,7 @@ struct MovieList_3: View {
 }
 
 #Preview("Loaded") {
-    MovieList_3(
+    MovieList_3.list(
         isLoading: false,
         movies: [mockMovie()],
         errorMessage: nil,
@@ -57,7 +91,7 @@ struct MovieList_3: View {
 }
 
 #Preview("Error on initial load") {
-    MovieList_3(
+    MovieList_3.list(
         isLoading: false,
         movies: [],
         errorMessage: anyError().localizedDescription,
@@ -71,7 +105,7 @@ struct MovieList_3: View {
  - Loaded & error after refresh, etc...
  */
 #Preview("Error after reload") {
-    MovieList_3(
+    MovieList_3.list(
         isLoading: false,
         movies: [mockMovie()],
         errorMessage: anyError().localizedDescription,
@@ -80,56 +114,41 @@ struct MovieList_3: View {
 }
 
 /*
- And then we delegate loading & refresh to whoever owns the state
- and will construct this view.
+ And then we delegate loading & refresh to the state owner so
+ we can simulate real case combinations in preview.
  */
-//struct MovieList_3_Wrapper: View {
-//    @State var isLoading = false
-//    @State var movies = [Movie]()
-//    @State var errorMessage: String?
-//    let loader: () async throws -> [Movie]
-//    var body: some View {
-//        MovieList_3(
-//            isLoading: isLoading,
-//            movies: movies,
-//            errorMessage: errorMessage,
-//            didTapErrorButton: {errorMessage = nil})
-//        .refreshable(action: load)
-//        .task(load)
-//    }
-//    
-//    func load() async {
-//        do {
-//            errorMessage = nil
-//            isLoading = true
-//            movies = try await loader()
-//            isLoading = false
-//        } catch {
-//            errorMessage = error.localizedDescription
-//            isLoading = false
-//        }
-//    }
-//}
-//
-//#Preview("Wrapped view - Success") {
-//    MovieList_3_Wrapper(loader: {
-//        try await Task.sleep(for: .seconds(2))
-//        return [mockMovie()]
-//    })
-//}
-//
-//#Preview("Wrapped view - failing on refresh") {
-//    var isFirstLoad = true
-//    MovieList_3_Wrapper(loader: {
-//        try await Task.sleep(for: .seconds(1))
-//        if isFirstLoad {
-//            isFirstLoad = false
-//            return [mockMovie()]
-//        } else {
-//            throw anyError()
-//        }
-//    })
-//}
+
+#Preview("Initial Loading - Success") {
+    MovieList_3(load: {
+        try await Task.sleep(for: .seconds(3))
+        return [mockMovie()]
+    })
+}
+
+#Preview("Initial Loading - Failing on refresh") {
+    var isFirstLoad = true
+    MovieList_3(load: {
+        try await Task.sleep(for: .seconds(1))
+        if isFirstLoad {
+            isFirstLoad = false
+            return [mockMovie()]
+        } else {
+            throw anyError()
+        }
+    })
+}
+
+#Preview("Initial Loading - Adding items on refresh") {
+    var count = 1
+    MovieList_3(load: {
+        try await Task.sleep(for: .seconds(1))
+        let items = Array(1...count).map {
+            Movie(id: $0.description, title: "Movie \($0)")
+        }
+        count += 1
+        return items
+    })
+}
 
 
 //

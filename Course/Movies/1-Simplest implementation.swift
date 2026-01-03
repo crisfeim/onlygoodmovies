@@ -26,7 +26,7 @@ REQUIREMENTS
 /*
  La implementación más sencilla posible de nuestra app
 */
-struct MovieList_1: View {
+struct MovieList: View {
     @State var isLoading = true
     @State var movies: [Movie] = []
     @State var errorMessage: String?
