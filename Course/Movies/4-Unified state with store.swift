@@ -80,7 +80,7 @@ fileprivate struct MovieList: View {
 #Preview("Success") {
     MovieList(load: {
         try await Task.sleep(for: .seconds(3))
-        return [mockMovie()]
+        return [anyMovie()]
     })
 }
 
@@ -90,7 +90,7 @@ fileprivate struct MovieList: View {
         try await Task.sleep(for: .seconds(1))
         if isFirstLoad {
             isFirstLoad = false
-            return [mockMovie()]
+            return [anyMovie()]
         } else {
             throw anyError()
         }

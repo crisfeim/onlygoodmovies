@@ -77,7 +77,7 @@ fileprivate struct MovieList: View {
 #Preview("Success") {
     let store = MovieList.Store(load: {
         try await Task.sleep(for: .seconds(3))
-        return [mockMovie()]
+        return [anyMovie()]
     })
     MovieList(store: store)
         .refreshable(action: store.refresh)
@@ -91,7 +91,7 @@ fileprivate struct MovieList: View {
         try await Task.sleep(for: .seconds(1))
         if isFirstLoad {
             isFirstLoad = false
-            return [mockMovie()]
+            return [anyMovie()]
         } else {
             throw anyError()
         }
@@ -156,7 +156,7 @@ fileprivate struct MoviesApp: View {
     }
     
     func loadFromRemote() async throws -> [Movie] {
-        [mockMovie(), mockMovie(), mockMovie()]
+        [anyMovie(), anyMovie(), anyMovie()]
     }
 }
 

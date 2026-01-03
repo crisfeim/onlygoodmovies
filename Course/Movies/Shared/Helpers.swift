@@ -1,6 +1,6 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
 
-func mockMovie() -> Movie {
+func anyMovie() -> Movie {
     Movie(id: "1", title: "The Passion of the Christ")
 }
 

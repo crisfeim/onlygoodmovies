@@ -73,9 +73,15 @@ fileprivate struct MovieList: View {
 }
 
 /*
- 
  Ahora podemos simular todos los estados ortogonales posibles
  y tener una preview del estado init loader:
+ 
+ 
+ /*
+  This allows us to test overlapping states:
+  - Loaded but refreshing
+  - Loaded & error after refresh, etc...
+  */
  */
 #Preview("Loading") {
     MovieList.list(
@@ -89,7 +95,7 @@ fileprivate struct MovieList: View {
 #Preview("Loaded") {
     MovieList.list(
         isLoading: false,
-        movies: [mockMovie()],
+        movies: [anyMovie()],
         errorMessage: nil,
         didTapErrorButton: {}
     )
@@ -104,15 +110,10 @@ fileprivate struct MovieList: View {
     )
 }
 
-/*
- This allows us to test overlapping states:
- - Loaded but refreshing
- - Loaded & error after refresh, etc...
- */
 #Preview("Error after reload") {
     MovieList.list(
         isLoading: false,
-        movies: [mockMovie()],
+        movies: [anyMovie()],
         errorMessage: anyError().localizedDescription,
         didTapErrorButton: {}
     )
@@ -123,27 +124,27 @@ fileprivate struct MovieList: View {
  we can simulate real case combinations in preview.
  */
 
-#Preview("Initial Loading - Success") {
+#Preview("Success after loading") {
     MovieList(load: {
         try await Task.sleep(for: .seconds(3))
-        return [mockMovie()]
+        return [anyMovie()]
     })
 }
 
-#Preview("Initial Loading - Failing on refresh") {
+#Preview("Failing on refresh") {
     var isFirstLoad = true
     MovieList(load: {
         try await Task.sleep(for: .seconds(1))
         if isFirstLoad {
             isFirstLoad = false
-            return [mockMovie()]
+            return [anyMovie()]
         } else {
             throw anyError()
         }
     })
 }
 
-#Preview("Initial Loading - Adding items on refresh") {
+#Preview("Adding items on refresh") {
     var count = 1
     MovieList(load: {
         try await Task.sleep(for: .seconds(1))

@@ -6,7 +6,7 @@ import SwiftUI
 struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Text("wip")
         }
     }
 }
