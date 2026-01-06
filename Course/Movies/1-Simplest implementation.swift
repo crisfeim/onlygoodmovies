@@ -56,7 +56,7 @@ fileprivate struct MovieList: View {
         }
     }
     
-    func load() async {
+    @Sendable func load() async {
         do {
             let (d, _) = try await  URLSession.shared.data(from: Api.movies!)
             movies = try JSONDecoder().decode([Movie].self, from: d)
@@ -65,7 +65,7 @@ fileprivate struct MovieList: View {
         }
     }
     
-    func initLoad() async {
+    @Sendable func initLoad() async {
         await load()
         isLoading = false
     }

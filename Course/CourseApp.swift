@@ -2,19 +2,56 @@
 
 import SwiftUI
 
+// --- EL BUG: DEMOSTRACIÓN ---
+
+struct BugDemoView: View {
+    @State private var showList = true
+    
+    var body: some View {
+        VStack {
+            Button("Alternar Vista (Simular Navegación/Cambio)") {
+                showList.toggle()
+            }
+            
+            if showList {
+                // Aquí usamos tu composer actual
+                compose_2(loader: SlowLoader())
+            } else {
+                Text("La vista ha sido destruida")
+            }
+        }
+    }
+}
+
+// Un loader que tarda 5 segundos para darnos tiempo a romperlo
+class SlowLoader: MoviesLoader {
+    func load() async throws -> [Movie] {
+        print("🚀 Loader: Iniciando carga pesada...")
+        try await Task.sleep(for: .seconds(5))
+        print("✅ Loader: Carga finalizada (si lees esto, no hubo bug)")
+        return [Movie(id: "1", title: "Inception", poster_url: "", release_year: 2010)]
+    }
+}
+
 @main
 struct CourseApp: App {
     
     class MockLoader: MoviesLoader {
+        
+        var count = 0
+        
         func load() async throws -> [Movie] {
-            try await Task.sleep(for: .seconds(2))
-            return [mockMovie()]
+            try await Task.sleep(for: .seconds(1))
+            count += 1
+            return (1...count).map {
+                anyMovie(id: "\($0)", title: "Movie \($0)")
+            }
         }
     }
     
     var body: some Scene {
         WindowGroup {
-            compose_2(loader: MockLoader())
+            BugDemoView()
         }
     }
 }
@@ -120,6 +157,7 @@ extension MoviesPresenter {
     }
 }
 
+@MainActor
 fileprivate class MoviesPresenter {
     
     let loader: MoviesLoader
@@ -127,6 +165,10 @@ fileprivate class MoviesPresenter {
     let listView: MovieListView
     let errorView: ErrorView
     let loadingView: LoadingView
+    
+    deinit {
+            print("💀 ERROR: El Presenter ha MUERTO antes de terminar la carga")
+        }
     
     
     init(
@@ -140,6 +182,7 @@ fileprivate class MoviesPresenter {
         self.errorView = errorView
         self.loadingView = loadingView
     }
+    
     
     func load() async {
         do {
@@ -180,7 +223,7 @@ fileprivate protocol MoviesLoader {
 }
 
 
-
+@MainActor
 fileprivate func compose_2(loader l: MoviesLoader) -> some View {
     let v = MoviesList(store: .init())
 
@@ -192,7 +235,7 @@ fileprivate func compose_2(loader l: MoviesLoader) -> some View {
     )
    
     return v
-        .refreshable(action: p.load)
+//        .refreshable(action: p.load)
         .task(p.load)
 }
 

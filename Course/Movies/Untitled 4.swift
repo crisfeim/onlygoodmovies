@@ -5,6 +5,8 @@
 
 import SwiftUI
 
+
+
 // UI module
 extension MoviesList {
     @Observable class Store {
@@ -86,19 +88,12 @@ extension MoviesList {
 
 // Presentation module
 extension MoviesPresenter {
-    protocol LoadingView {
-        func displayLoading(_ bool: Bool)
-    }
-
-    protocol ErrorView {
-        func displayError(_ message: String?)
-    }
-
-    protocol MovieListView {
-        func displayMovies(_ movies: [Movie])
-    }
+    protocol LoadingView   { func displayLoading(_ bool: Bool)     }
+    protocol ErrorView     { func displayError(_ message: String?) }
+    protocol MovieListView { func displayMovies(_ movies: [Movie]) }
 }
 
+@MainActor
 fileprivate class MoviesPresenter {
     
     let loader: MoviesLoader
@@ -130,6 +125,20 @@ fileprivate class MoviesPresenter {
             loadingView.displayLoading(false)
         }
     }
+    
+    func load_b() {
+        loadingView.displayLoading(true)
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                self.listView.displayMovies(try await loader.load())
+                self.loadingView.displayLoading(false)
+            } catch {
+                self.errorView.displayError(error.localizedDescription)
+                self.loadingView.displayLoading(false)
+            }
+        }
+    }
 }
 
 
@@ -154,12 +163,13 @@ extension MoviesList: MoviesPresenter.ErrorView {
 }
 
 
-fileprivate protocol MoviesLoader {
+fileprivate protocol MoviesLoader: Sendable {
     func load() async throws -> [Movie]
 }
 
 
 
+@MainActor
 fileprivate func compose_2(loader l: MoviesLoader) -> some View {
     let v = MoviesList()
 
@@ -175,13 +185,32 @@ fileprivate func compose_2(loader l: MoviesLoader) -> some View {
 
 
 #Preview {
-    class MockLoader: MoviesLoader {
+    final class MockLoader: MoviesLoader {
+         func load() async throws -> [Movie] {[mockMovie()]}
+    }
+    
+    final class LoaderDecorator: MoviesLoader {
+        let loader: MoviesLoader
+        let cache = MoviesCache()
+        init(loader: MoviesLoader) {
+            self.loader = loader
+        }
+        
         func load() async throws -> [Movie] {
-            try await Task.sleep(for: .seconds(2))
-            return [mockMovie()]
+            try await Pipeline(loader.load)
+                .handle(effects: cache.save)
+                .delay(for: 3)
+                .fetch()
         }
     }
 
-    return compose_2(loader: MockLoader())
+ 
+
+    return compose_2(loader: LoaderDecorator(loader: MockLoader()))
 }
+
+actor MoviesCache {
+    func save(_ movies: [Movie]) async {}
+}
+
 

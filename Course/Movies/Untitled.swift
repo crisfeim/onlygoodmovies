@@ -48,12 +48,14 @@ fileprivate struct LoadingSwiftUIView_2: View, LoadingView {
 }
 
 
+@MainActor
 fileprivate func compose() -> some View {
     let v = LoadingSwiftUIView()
     let p = Presenter(view: v)
     return v.onAppear(perform: p.load)
 }
 
+@MainActor
 fileprivate func compose_2() -> some View {
     let v = LoadingSwiftUIView_2()
     let p = Presenter(view: v)
@@ -95,6 +97,7 @@ fileprivate func compose_4() -> some View {
 
 
 
+@MainActor
 fileprivate func compose_3() -> some View {
     @State var isLoading = Observable(false)
     let v = LoadingSwiftUIView_3(isLoading: $isLoading.value)
@@ -102,6 +105,7 @@ fileprivate func compose_3() -> some View {
     return v.onAppear(perform: p.load)
 }
 
+@MainActor
 fileprivate func compose_5() -> some View {
     @State var isLoading = Observable(false)
     let v = LoadingSwiftUIView_3(isLoading: $isLoading.value)

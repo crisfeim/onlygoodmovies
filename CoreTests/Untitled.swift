@@ -35,6 +35,30 @@ fileprivate class PresenterTests: XCTestCase {
         trackForMemoryLeaks(p)
     }
     
+    // --- PRUEBA DE DATA RACE ---
+
+    class LoaderRaceMock: MoviesLoader {
+        func load() async throws -> [Movie] {
+            // Simulamos un retraso
+            try await Task.sleep(for: .nanoseconds(1))
+            return [Movie(id: "1", title: "Race", poster_url: "", release_year: 2024)]
+        }
+    }
+
+    // Escenario: El Presenter recibe datos en un hilo de fondo
+    // y los inyecta en el Store mientras SwiftUI intenta leerlos para pintar.
+    @MainActor
+    func testDataRace() {
+        let store = MoviesList.Store()
+        let view = MoviesList(store: store)
+        let presenter = MoviesPresenter(loader: LoaderRaceMock(), listView: view, errorView: view, loadingView: view)
+        for _ in 0..<100 {
+            Task.detached { // Task.detached fuerza que NO herede el MainActor
+                await presenter.load()
+            }
+        }
+    }
+    
 }
 
 import SwiftUI
@@ -120,20 +144,19 @@ extension MoviesList {
 
 // Presentation module
 extension MoviesPresenter {
-    @MainActor protocol LoadingView {
+    protocol LoadingView {
         func displayLoading(_ bool: Bool)
     }
 
-    @MainActor protocol ErrorView {
+    protocol ErrorView {
         func displayError(_ message: String?)
     }
 
-    @MainActor protocol MovieListView {
+    protocol MovieListView {
         func displayMovies(_ movies: [Movie])
     }
 }
 
-@MainActor
 fileprivate class MoviesPresenter {
     
     let loader: MoviesLoader
@@ -155,7 +178,7 @@ fileprivate class MoviesPresenter {
         self.loadingView = loadingView
     }
     
-    func load() async {
+    @Sendable func load() async {
         do {
             loadingView.displayLoading(true)
             listView.displayMovies(try await loader.load())

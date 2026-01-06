@@ -14,7 +14,7 @@ fileprivate struct Count: View {
     }
 }
 
-@Observable fileprivate class Store {
+@Observable @MainActor fileprivate class Store {
     var count = 0
     let loader: Loader
     
@@ -22,8 +22,8 @@ fileprivate struct Count: View {
         self.loader = loader
     }
     
-    func load() {}
-    func refresh() {}
+    func load() async {}
+    func refresh() async {}
 }
 
 fileprivate protocol Loader {}
@@ -68,6 +68,7 @@ fileprivate struct Composer_2<T, V: View>: View {
 }
 
 
+@MainActor
 fileprivate func composition_2() -> some View {
     @State var text = ""
     return Composer(value: text, view: Text(text)).onAppear { text = "hello world" }

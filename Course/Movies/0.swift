@@ -62,7 +62,7 @@ fileprivate struct MovieList: View {
     }
     
     
-    func load() async {
+    @Sendable func load() async {
         do {
             let movies = try await load()
             phase = .loaded(movies)

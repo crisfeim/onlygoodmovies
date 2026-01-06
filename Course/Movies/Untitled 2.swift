@@ -65,24 +65,20 @@ fileprivate struct MoviesScreen: View {
 
 // Presentation module
 extension MoviesPresenter {
-    protocol LoadingView {
+    @MainActor protocol LoadingView {
         func displayLoading(_ bool: Bool)
     }
 
-    protocol ErrorView {
+    @MainActor protocol ErrorView {
         func displayError(_ message: String?)
     }
 
-    protocol MovieListView {
+    @MainActor protocol MovieListView {
         func displayMovies(_ movies: [Movie])
     }
-    
-    protocol MoviesEmptyView {
-        func displayEmptyView(_ isShown: Bool)
-    }
-
 }
 
+@MainActor
 fileprivate class MoviesPresenter {
     
     let loader: MoviesLoader
@@ -150,7 +146,7 @@ fileprivate protocol MoviesLoader {
     func load() async throws -> [Movie]
 }
 
-
+@MainActor
 fileprivate func compose(loader: MoviesLoader) -> some View {
     @State var store = Store()
     let i = ActivityIndicator(isLoading: $store.isLoading)

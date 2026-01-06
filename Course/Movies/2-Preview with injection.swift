@@ -47,7 +47,7 @@ fileprivate struct MovieList: View {
         }
     }
     
-    func load() async {
+    @Sendable func load() async {
         do {
             movies = try await loader()
         } catch {
@@ -55,7 +55,7 @@ fileprivate struct MovieList: View {
         }
     }
     
-    func initLoad() async {
+    @Sendable func initLoad() async {
         await load()
         isLoading = false
     }

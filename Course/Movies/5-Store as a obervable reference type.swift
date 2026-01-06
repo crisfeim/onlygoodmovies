@@ -8,7 +8,7 @@ import SwiftUI
 // and unit test as much as I can.
 // so, one way of allowing testing is moving our store to a reference type and placing inside the state control logic.
 extension MovieList {
-    @Observable class Store {
+    @Observable @MainActor class Store {
         private(set) var firstLoading = true
         private(set) var movies = [Movie]()
         private(set) var errorMessage: String?
@@ -123,6 +123,7 @@ fileprivate struct MovieList: View {
  */
 fileprivate enum MovieListComposer {
     typealias Loader = () async throws -> [Movie]
+    @MainActor
     static func compose(loader: @escaping Loader) -> some View {
         let store = MovieList.Store(load: loader)
         let view = MovieList(store: store)
