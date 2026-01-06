@@ -1,28 +1,41 @@
-// © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
-
-import SwiftUI
-
-@main
-struct CourseApp: App {
-    
-    class MockLoader: MoviesLoader {
-        func load() async throws -> [Movie] {
-            try await Task.sleep(for: .seconds(2))
-            return [mockMovie()]
-        }
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            compose_2(loader: MockLoader())
-        }
-    }
-}
-
 // © 2026  Cristian Felipe Patiño Rojas. Created on 6/1/26.
 
 // © 2026  Cristian Felipe Patiño Rojas. Created on 5/1/26.
 
+import XCTest
+
+struct Movie: Identifiable, Decodable {
+    let id: String
+    let title: String
+    let poster_url: String
+    let release_year: Int
+}
+
+
+fileprivate class PresenterTests: XCTestCase {
+    class MockLoader: MoviesLoader {
+        func load() async throws -> [Movie] {
+            return []
+        }
+    }
+    
+    @MainActor
+    func test() {
+        let s = MoviesList.Store()
+        let v = MoviesList(store: s)
+
+        let p = MoviesPresenter(
+            loader: MockLoader(),
+            listView: v,
+            errorView: v,
+            loadingView: v
+        )
+        
+        trackForMemoryLeaks(s)
+        trackForMemoryLeaks(p)
+    }
+    
+}
 
 import SwiftUI
 
@@ -40,7 +53,7 @@ extension MoviesList {
 }
 
 fileprivate struct MoviesList: View {
-    @State var store = Store()
+    let store: Store
     var body: some View {
         List {
             if let movies = store.movies {
@@ -107,19 +120,20 @@ extension MoviesList {
 
 // Presentation module
 extension MoviesPresenter {
-    protocol LoadingView {
+    @MainActor protocol LoadingView {
         func displayLoading(_ bool: Bool)
     }
 
-    protocol ErrorView {
+    @MainActor protocol ErrorView {
         func displayError(_ message: String?)
     }
 
-    protocol MovieListView {
+    @MainActor protocol MovieListView {
         func displayMovies(_ movies: [Movie])
     }
 }
 
+@MainActor
 fileprivate class MoviesPresenter {
     
     let loader: MoviesLoader
@@ -181,30 +195,25 @@ fileprivate protocol MoviesLoader {
 
 
 
-fileprivate func compose_2(loader l: MoviesLoader) -> some View {
-    let v = MoviesList(store: .init())
+@MainActor
+fileprivate func compose_2(loader: MoviesLoader) -> some View {
+    let store = MoviesList.Store()
+    let m = MoviesList(store: store)
 
     let p = MoviesPresenter(
-        loader: l,
-        listView: v,
-        errorView: v,
-        loadingView: v
+        loader: loader,
+        listView: m,
+        errorView: m,
+        loadingView: m
     )
    
-    return v
-        .refreshable(action: p.load)
-        .task(p.load)
+    return m.task(p.load)
 }
 
 
-#Preview {
-    class MockLoader: MoviesLoader {
-        func load() async throws -> [Movie] {
-            try await Task.sleep(for: .seconds(2))
-            return [mockMovie()]
-        }
-    }
-
-    return compose_2(loader: MockLoader())
+fileprivate class MockLoader: MoviesLoader {
+    func load() async throws -> [Movie] {[]}
 }
+
+
 

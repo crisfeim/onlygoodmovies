@@ -1,24 +1,3 @@
-// © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
-
-import SwiftUI
-
-@main
-struct CourseApp: App {
-    
-    class MockLoader: MoviesLoader {
-        func load() async throws -> [Movie] {
-            try await Task.sleep(for: .seconds(2))
-            return [mockMovie()]
-        }
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            compose_2(loader: MockLoader())
-        }
-    }
-}
-
 // © 2026  Cristian Felipe Patiño Rojas. Created on 6/1/26.
 
 // © 2026  Cristian Felipe Patiño Rojas. Created on 5/1/26.
@@ -182,7 +161,7 @@ fileprivate protocol MoviesLoader {
 
 
 fileprivate func compose_2(loader l: MoviesLoader) -> some View {
-    let v = MoviesList(store: .init())
+    let v = MoviesList()
 
     let p = MoviesPresenter(
         loader: l,
@@ -191,9 +170,7 @@ fileprivate func compose_2(loader l: MoviesLoader) -> some View {
         loadingView: v
     )
    
-    return v
-        .refreshable(action: p.load)
-        .task(p.load)
+    return v.task(p.load)
 }
 
 

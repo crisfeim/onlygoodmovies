@@ -4,8 +4,10 @@
 import Foundation
 import SwiftUI
 
-struct Movie: Identifiable, Decodable, Equatable {
+
+struct Movie: Identifiable, Decodable {
     let id: String
     let title: String
+    let poster_url: String
+    let release_year: Int
 }
-

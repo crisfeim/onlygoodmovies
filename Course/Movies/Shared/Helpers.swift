@@ -1,7 +1,21 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
 
-func anyMovie() -> Movie {
-    Movie(id: "1", title: "The Passion of the Christ")
+func anyMovie(id: String = "0", title: String = "Any movie") -> Movie {
+    Movie(
+        id: id,
+        title: title,
+        poster_url: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
+        release_year: 2004
+    )
+}
+
+func mockMovie() -> Movie {
+    Movie(
+        id: "17",
+        title: "The Passion of the Christ",
+        poster_url: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
+        release_year: 2004
+    )
 }
 
 import Foundation

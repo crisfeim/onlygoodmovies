@@ -3,20 +3,21 @@
 import Foundation
 import SwiftUI
 
-
-fileprivate struct MovieList: View {
-    enum ViewState {
+extension MovieList {
+    enum Phase {
         case loading
         case loaded([Movie])
-        case error(String)
+        case error
     }
-    
-    @State var state = ViewState.loading
+}
+
+fileprivate struct MovieList: View {
+    @State var phase = Phase.loading
     var body: some View {
-        switch state {
+        switch phase {
         case .loading: ProgressView().task(load)
         case .loaded(let movies): List(movies, rowContent: cell)
-        case .error(let error): Text(error)
+        case .error: ErrorView()
         }
     }
     
@@ -44,9 +45,9 @@ fileprivate struct MovieList: View {
         do {
             let (d, _) = try await URLSession.shared.data(from: URL(string: "https://crisfe.im/apis/only-good-movies/v1")!)
             let decoded = try JSONDecoder().decode([Movie].self, from: d)
-            state = .loaded(decoded)
+            phase = .loaded(decoded)
         } catch {
-            state = .error(error.localizedDescription)
+            phase = .error
         }
     }
 }

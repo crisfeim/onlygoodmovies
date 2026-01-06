@@ -74,7 +74,7 @@ fileprivate struct MovieList: View {
     MovieList(loader: {
         callCount += 1
         return Array(0...callCount).map {
-            Movie(id: $0.description, title: "Movie \($0+1)")
+            anyMovie(id: $0.description, title: "Movie \($0+1)")
         }
     })
 }

@@ -12,15 +12,23 @@ extension MovieList {
 }
 
 fileprivate struct MovieList: View {
+    
     @State var phase = Phase.loading
     let load: () async throws -> [Movie]
     
-    var body: some View {
+    // Could be a different struct if needed
+    @ViewBuilder
+    static func list(phase: Phase) -> some View {
         switch phase {
-        case .loading: ProgressView().task(load)
+        case .loading: ProgressView()
         case .loaded(let movies): List(movies, rowContent: MovieCell.init)
         case .error: ErrorView()
         }
+    }
+    
+    var body: some View {
+        Self.list(phase: phase)
+            .task(load)
     }
     
     func load() async {
@@ -33,21 +41,23 @@ fileprivate struct MovieList: View {
     }
 }
 
+
+
+#Preview("Loading") {
+    MovieList.list(phase: .loading)
+}
+
 #Preview("Loaded") {
-    MovieList {
-        return [
-            Movie(
-                id: "17",
-                title: "The Passion of the Christ",
-                poster_url: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
-                release_year: 2004
-            )
-        ]
-    }
+    MovieList.list(phase: .loaded([
+        Movie(
+            id: "17",
+            title: "The Passion of the Christ",
+            poster_url: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
+            release_year: 2004
+        )
+    ]))
 }
 
 #Preview("Error") {
-    MovieList {
-        throw NSError(domain: "Any Error", code: 0)
-    }
+    MovieList.list(phase: .error)
 }

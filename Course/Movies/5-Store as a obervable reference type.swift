@@ -108,7 +108,7 @@ fileprivate struct MovieList: View {
         try await Task.sleep(for: .seconds(1))
         count += 1
         return (1...count).map {
-            Movie(id: "\($0)", title: "Movie \($0)")
+            anyMovie(id: "\($0)", title: "Movie \($0)")
         }
     })
     

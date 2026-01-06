@@ -149,7 +149,7 @@ fileprivate struct MovieList: View {
     MovieList(load: {
         try await Task.sleep(for: .seconds(1))
         let items = Array(1...count).map {
-            Movie(id: $0.description, title: "Movie \($0)")
+            anyMovie(id: $0.description, title: "Movie \($0)")
         }
         count += 1
         return items
