@@ -26,21 +26,40 @@ func anyError() -> Error {
 
 import SwiftUI
 
-struct ErrorButton: View {
-    let label: String
-    let action: () -> Void
+
+struct ErrorView: View {
     var body: some View {
-        Button {
-           action()
-        } label: {
-            HStack(spacing: 16) {
-                Text(label)
-                    .frame(maxWidth: 200)
-                Image(systemName: "xmark")
-                    .scaleEffect(0.7)
-                    .foregroundColor(.black)
-            }
-        }
-        .tint(Color.red)
+        ContentUnavailableView("Something went wrong", systemImage: "exclamationmark.triangle")
     }
 }
+
+struct EmptyMoviesView: View {
+    var body: some View {
+        ContentUnavailableView("Movies", systemImage: "film.stack")
+    }
+}
+
+
+struct Cell: View {
+    let movie: Movie
+    var body: some View {
+        HStack(spacing: 12) {
+            AsyncImage(url: URL(string: movie.poster_url)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 40, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(alignment: .leading) {
+                Text(movie.title)
+                Text(movie.release_year.description)
+                    .font(.footnote)
+                    .opacity(0.5)
+            }
+        }
+    }
+}
+
