@@ -42,50 +42,45 @@ class MoviesTests: XCTestCase {
     }
     
     func test_initDoesntMutatesState() {
-        var state = MoviesState()
-        let binding = Binding(get: { state }, set: { state = $0 })
-        let _ = makeSUT(binding)
-        XCTAssertNil(state.movies)
-        XCTAssertTrue(state.isLoading)
-        XCTAssertFalse(state.hasError)
+        let state = makeBinding(MoviesState())
+        let _ = makeSUT(state)
+        XCTAssertNil(state.wrappedValue.movies)
+        XCTAssertTrue(state.wrappedValue.isLoading)
+        XCTAssertFalse(state.wrappedValue.hasError)
     }
     
     func test_loadDeliversErrorOnLoaderFailure() async {
-        var state = MoviesState()
-        let binding = Binding(get: { state }, set: { state = $0 })
-        let sut = makeSUT(binding) { throw NSError(domain: "any-error", code: 0) }
+        let state = makeBinding(MoviesState())
+        let sut = makeSUT(state) { throw NSError(domain: "any-error", code: 0) }
         await sut.initLoad()
-        XCTAssertFalse(state.isLoading)
-        XCTAssertTrue(state.hasError)
+        XCTAssertFalse(state.wrappedValue.isLoading)
+        XCTAssertTrue(state.wrappedValue.hasError)
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
-        var state = MoviesState()
-        let binding = Binding(get: { state }, set: { state = $0 })
+        let state = makeBinding(MoviesState())
         let movie = Movie(id: UUID(), name: "anymovie")
-        let sut = makeSUT(binding) { [movie] }
+        let sut = makeSUT(state) { [movie] }
         await sut.initLoad()
-        XCTAssertEqual(state.movies, [movie])
-        XCTAssertEqual(state.isLoading, false)
+        XCTAssertEqual(state.wrappedValue.movies, [movie])
+        XCTAssertEqual(state.wrappedValue.isLoading, false)
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
-        var previouslyLoadedState = previouslyLoadedState()
-        let binding = Binding(get: { previouslyLoadedState }, set: { previouslyLoadedState = $0 })
-        let sut = makeSUT(binding) { throw NSError(domain: "any-error", code: 0) }
+        let state = makeBinding(previouslyLoadedState())
+        let sut = makeSUT(state) { throw NSError(domain: "any-error", code: 0) }
         await sut.refresh()
-        XCTAssertFalse(previouslyLoadedState.isLoading)
-        XCTAssertTrue(previouslyLoadedState.hasError)
+        XCTAssertFalse(state.wrappedValue.isLoading)
+        XCTAssertTrue(state.wrappedValue.hasError)
     }
     
     func test_refreshDeliversMoviesOnLoaderSuccess() async {
-        var state = previouslyLoadedState()
-        let binding = Binding(get: { state }, set: { state = $0 })
+        let state = makeBinding(previouslyLoadedState())
         let movie = Movie(id: UUID(), name: "anymovie")
-        let sut = makeSUT(binding) { [movie] }
+        let sut = makeSUT(state) { [movie] }
         await sut.refresh()
-        XCTAssertEqual(state.movies, [movie])
-        XCTAssertEqual(state.isLoading, false)
+        XCTAssertEqual(state.wrappedValue.movies, [movie])
+        XCTAssertEqual(state.wrappedValue.isLoading, false)
     }
     
     func test_refreshHidesError() async {
@@ -112,6 +107,11 @@ class MoviesTests: XCTestCase {
     typealias MoviesLoader = () async throws -> [Movie]
     static func anyLoader() -> MoviesLoader {
         { [ ]}
+    }
+    
+    func makeBinding<T>(_ value: T) -> Binding<T> {
+       var value = value
+       return Binding(get: { value }, set: { value = $0 })
     }
 
 }
