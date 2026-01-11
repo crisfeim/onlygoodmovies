@@ -27,10 +27,9 @@ class MoviesTests: XCTestCase {
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
-        let movie = Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
-        let (sut, state) = makeSUT() { [movie] }
+        let (sut, state) = makeSUT() { [mockMovie()] }
         await sut.load()
-        XCTAssertEqual(state().movies, [movie])
+        XCTAssertEqual(state().movies, [mockMovie()])
         XCTAssertEqual(state().isLoading, false)
     }
     
@@ -42,10 +41,9 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshDeliversMoviesOnLoaderSuccess() async {
-        let movie = Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
-        let (sut, state) = makeSUT(.previouslyLoaded()) { [movie] }
+        let (sut, state) = makeSUT(.previouslyLoaded()) { [mockMovie()] }
         await sut.refresh()
-        XCTAssertEqual(state().movies, [movie])
+        XCTAssertEqual(state().movies, [mockMovie()])
         XCTAssertEqual(state().isLoading, false)
     }
     
@@ -81,6 +79,9 @@ fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
    return Binding(get: { value }, set: { value = $0 })
 }
 
+fileprivate func mockMovie() -> Movie {
+    Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
+}
 
 fileprivate func anyError() -> Error {
     NSError(domain: "any-error", code: 0)
