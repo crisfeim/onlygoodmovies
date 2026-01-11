@@ -64,7 +64,7 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
-        let (sut, state) = makeSUT(Self.makeBinding(previouslyLoadedState())) { throw NSError(domain: "any-error", code: 0) }
+        let (sut, state) = makeSUT(.previouslyLoaded()) { throw NSError(domain: "any-error", code: 0) }
         await sut.refresh()
         XCTAssertFalse(state.wrappedValue.isLoading)
         XCTAssertTrue(state.wrappedValue.hasError)
@@ -72,30 +72,30 @@ class MoviesTests: XCTestCase {
     
     func test_refreshDeliversMoviesOnLoaderSuccess() async {
         let movie = Movie(id: UUID(), name: "anymovie")
-        let (sut, state) = makeSUT(Self.makeBinding(previouslyLoadedState())) { [movie] }
+        let (sut, state) = makeSUT(.previouslyLoaded()) { [movie] }
         await sut.refresh()
         XCTAssertEqual(state.wrappedValue.movies, [movie])
         XCTAssertEqual(state.wrappedValue.isLoading, false)
     }
     
     func test_refreshHidesError() async {
-        var prev = previouslyLoadedState(hasError: true)
+        var prev = MoviesState.previouslyLoaded(hasError: true)
         var states = [MoviesState]()
         let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
 
-        let (sut, state) = makeSUT(binding)
+        let (sut, _) = makeSUT(binding: binding)
         await sut.refresh()
         XCTAssertEqual(states[0].hasError, false)
         print(states)
     }
     
-    func previouslyLoadedState(hasError: Bool = false) -> MoviesState {
-        .init(movies: [], hasError: hasError, isLoading: false)
+    
+    func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
+        let binding = Self.makeBinding(state)
+        return (MoviesLogic(state: binding, loader: loader), binding)
     }
-    
 
-    
-    func makeSUT(_ binding: Binding<MoviesState> = makeBinding(MoviesState()), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
+    func makeSUT(binding: Binding<MoviesState>, loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
         (MoviesLogic(state: binding, loader: loader), binding)
     }
     
@@ -111,3 +111,9 @@ class MoviesTests: XCTestCase {
 
 }
 
+
+fileprivate extension MoviesTests.MoviesState {
+    static func previouslyLoaded(hasError: Bool = false) -> Self {
+        .init(movies: [], hasError: hasError, isLoading: false)
+    }
+}
