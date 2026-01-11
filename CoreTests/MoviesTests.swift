@@ -6,14 +6,15 @@ class MoviesTests: XCTestCase {
      struct MoviesState {
          var movies: [Movie]?
          var hasError = false
-         var isLoading = true
+         var isLoading: Bool {
+             movies == nil && !hasError
+         }
     }
     
     struct MoviesLogic {
         @Binding var state: MoviesState
         let loader: () async throws -> [Movie]
         func initLoad() async {
-            defer { state.isLoading = false }
             await load()
         }
         
@@ -108,6 +109,6 @@ func anyError() -> Error {
 
 fileprivate extension MoviesTests.MoviesState {
     static func previouslyLoaded(hasError: Bool = false) -> Self {
-        .init(movies: [], hasError: hasError, isLoading: false)
+        .init(movies: [], hasError: hasError)
     }
 }
