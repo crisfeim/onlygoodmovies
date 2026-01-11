@@ -148,7 +148,7 @@ class MoviesTests: XCTestCase {
     func test_initDoesntMutatesState() {
         var state = MoviesState()
         let binding = Binding(get: { state }, set: { state = $0 })
-        let _ = MoviesLogic(state: binding) {[]}
+        let _ = makeSUT(binding)
         XCTAssertNil(state.movies)
         XCTAssertTrue(state.isLoading)
         XCTAssertFalse(state.hasError)
@@ -157,9 +157,20 @@ class MoviesTests: XCTestCase {
     func test_deliversErrorOnLoaderFailure() async {
         var state = MoviesState()
         let binding = Binding(get: { state }, set: { state = $0 })
-        let sut = MoviesLogic(state: binding, loader: { throw NSError(domain: "any-error", code: 0) })
+        let sut = makeSUT(binding) { throw NSError(domain: "any-error", code: 0) }
         await sut.load()
         XCTAssertFalse(state.isLoading)
         XCTAssertTrue(state.hasError)
     }
+    
+    func makeSUT(_ binding: Binding<MoviesState>, loader: @escaping MoviesLoader = anyLoader()) -> MoviesLogic {
+        MoviesLogic(state: binding, loader: loader)
+    }
+    
+    typealias MoviesLoader = () async throws -> [Movie]
+    static func anyLoader() -> MoviesLoader {
+        { [ ]}
+    }
+
 }
+
