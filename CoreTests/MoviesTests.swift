@@ -122,11 +122,20 @@ class MoviesTests: XCTestCase {
      struct MoviesState {
          var movies: [Movie]?
          var hasError = false
-         var isLoading: Bool { movies == nil }
+         var isLoading = true
     }
     
     struct MoviesLogic {
         @Binding var state: MoviesState
+        let loader: () async throws -> [Movie]
+        func load() async {
+            do {
+                _ = try await loader()
+            } catch {
+                state.isLoading = false
+                state.hasError = true
+            }
+        }
     }
     
     func test_assertInitialState() {
@@ -139,9 +148,18 @@ class MoviesTests: XCTestCase {
     func test_initDoesntMutatesState() {
         var state = MoviesState()
         let binding = Binding(get: { state }, set: { state = $0 })
-        let _ = MoviesLogic(state: binding)
+        let _ = MoviesLogic(state: binding) {[]}
         XCTAssertNil(state.movies)
         XCTAssertTrue(state.isLoading)
         XCTAssertFalse(state.hasError)
+    }
+    
+    func test_deliversErrorOnLoaderFailure() async {
+        var state = MoviesState()
+        let binding = Binding(get: { state }, set: { state = $0 })
+        let sut = MoviesLogic(state: binding, loader: { throw NSError(domain: "any-error", code: 0) })
+        await sut.load()
+        XCTAssertFalse(state.isLoading)
+        XCTAssertTrue(state.hasError)
     }
 }
