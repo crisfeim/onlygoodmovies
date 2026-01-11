@@ -59,7 +59,7 @@ class MoviesTests: XCTestCase {
         print(states)
     }
     
-    func test_ensureUserCantRefreshWhileLoading() async {
+    func test_refreshIsNotTriggeredWhileLoading() async {
         var prev = MoviesState()
         var states = [MoviesState]()
         let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
