@@ -48,22 +48,35 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshHidesError() async {
-        var capturedStates = [MoviesState]()
-        let sut = MoviesLogic(state: .init(get: { .loadedWithError() }, set: { capturedStates.append($0) }), loader: anyLoader())
+        let spy = BindingSpy(initState: .loadedWithError())
+        let sut = MoviesLogic(state: spy.binding, loader: anyLoader())
         await sut.refresh()
-        XCTAssertFalse(capturedStates[0].hasError)
+        XCTAssertFalse(spy.capturedStates[0].hasError)
     }
     
     func test_refreshIsNotTriggeredWhileLoading() async {
-        var capturedStates = [MoviesState]()
-        let sut = MoviesLogic(state: .init(get: { .init() }, set: { capturedStates.append($0) }), loader: anyLoader())
+        let spy = BindingSpy()
+        let sut = MoviesLogic(state: spy.binding, loader: anyLoader())
         await sut.refresh()
-        XCTAssertEqual(capturedStates.count, 0)
+        XCTAssertEqual(spy.capturedStates.count, 0)
     }
     
     func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesState) {
         let binding = makeBinding(state)
         return (MoviesLogic(state: binding, loader: loader), { binding.wrappedValue })
+    }
+    
+    fileprivate class BindingSpy {
+        var capturedStates: [MoviesState] = []
+        private let initState: MoviesState
+        
+        init(initState: MoviesState = .init()) {
+            self.initState = initState
+        }
+        
+        var binding: Binding<MoviesState> {
+            .init(get: { self.initState }, set: { self.capturedStates.append($0) })
+        }
     }
 }
 
