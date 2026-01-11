@@ -14,39 +14,39 @@ class MoviesTests: XCTestCase {
     
     func test_initDoesntMutatesState() {
         let (_, state) = makeSUT()
-        XCTAssertEqual(state.wrappedValue.movies, [])
-        XCTAssertTrue(state.wrappedValue.isLoading)
-        XCTAssertFalse(state.wrappedValue.hasError)
+        XCTAssertEqual(state().movies, [])
+        XCTAssertTrue(state().isLoading)
+        XCTAssertFalse(state().hasError)
     }
     
     func test_loadDeliversErrorOnLoaderFailure() async {
         let (sut, state) = makeSUT() { throw anyError() }
         await sut.load()
-        XCTAssertFalse(state.wrappedValue.isLoading)
-        XCTAssertTrue(state.wrappedValue.hasError)
+        XCTAssertFalse(state().isLoading)
+        XCTAssertTrue(state().hasError)
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
         let movie = Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
         let (sut, state) = makeSUT() { [movie] }
         await sut.load()
-        XCTAssertEqual(state.wrappedValue.movies, [movie])
-        XCTAssertEqual(state.wrappedValue.isLoading, false)
+        XCTAssertEqual(state().movies, [movie])
+        XCTAssertEqual(state().isLoading, false)
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
         let (sut, state) = makeSUT(.previouslyLoaded()) { throw anyError() }
         await sut.refresh()
-        XCTAssertFalse(state.wrappedValue.isLoading)
-        XCTAssertTrue(state.wrappedValue.hasError)
+        XCTAssertFalse(state().isLoading)
+        XCTAssertTrue(state().hasError)
     }
     
     func test_refreshDeliversMoviesOnLoaderSuccess() async {
         let movie = Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
         let (sut, state) = makeSUT(.previouslyLoaded()) { [movie] }
         await sut.refresh()
-        XCTAssertEqual(state.wrappedValue.movies, [movie])
-        XCTAssertEqual(state.wrappedValue.isLoading, false)
+        XCTAssertEqual(state().movies, [movie])
+        XCTAssertEqual(state().isLoading, false)
     }
     
     func test_refreshHidesError() async {
@@ -67,9 +67,9 @@ class MoviesTests: XCTestCase {
         XCTAssertEqual(capturedStates.count, 0)
     }
     
-    func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
+    func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesState) {
         let binding = makeBinding(state)
-        return (MoviesLogic(state: binding, loader: loader), binding)
+        return (MoviesLogic(state: binding, loader: loader), { binding.wrappedValue })
     }
 }
 
