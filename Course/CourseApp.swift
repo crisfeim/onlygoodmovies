@@ -5,15 +5,15 @@ import SwiftUI
 
 fileprivate typealias HTTPGet = @Sendable (URL) async throws -> (Data, URLResponse) // @todo: should return a HTTPURLResponse instead
 
-fileprivate var RemoteLoader: (HTTPGet) async throws -> [Movie] {
+fileprivate var RemoteLoader: (HTTPGet) async throws -> [Core.Movie] {
     { get in
         let (d, r) = try await get(URL(string: "https://crisfe.im/apis/only-good-movies/v1")!)
         return try MoviesMapper(d, r)
     }
 }
 
-fileprivate var MoviesMapper: (Data, URLResponse) throws -> [Movie] { // @todo: should take a HTTPURLResponse instead
-    { d, _ in try JSONDecoder().decode([Movie].self, from: d) }
+fileprivate var MoviesMapper: (Data, URLResponse) throws -> [Core.Movie] { // @todo: should take a HTTPURLResponse instead
+    { d, _ in try JSONDecoder().decode([Core.Movie].self, from: d) }
 }
 
 fileprivate var remoteLoader: MoviesLoader {
@@ -56,16 +56,9 @@ func | <T, U, V>(lhs: @escaping (T, U) -> V, rhs: U) -> (T) -> V {
 }
 
 
-fileprivate typealias MoviesLoader = () async throws -> [Movie]
 
-fileprivate struct MoviesState {
-    var movies: [Movie]?
-    var showError = false
-    
-    var showLoading: Bool { movies == nil }
-    var showEmpty  : Bool { movies != nil && movies!.isEmpty }
-    
-}
+
+import Core
 
 fileprivate struct MoviesComposition: View {
     
@@ -73,28 +66,52 @@ fileprivate struct MoviesComposition: View {
     
     let moviesLoader : MoviesLoader
     
-    var body: some View {
-        MovieList(state: $state)
-        .task(load)
-        .refreshable(action: load)
+    var logic: MoviesLogic {
+        .init(state: $state, loader: moviesLoader)
     }
     
-    func load() async {
-        do { state.movies = try await moviesLoader() }
-        catch { state.showError = true }
+    var body: some View {
+        MovieList(state: $state)
+            .task(logic.load)
+            .refreshable(action: logic.refresh)
     }
 }
 
 fileprivate struct MovieList: View {
     @Binding var state: MoviesState
     var body: some View {
-        List(state.movies ?? [], rowContent: Cell.init)
-            .overlay { if state.showLoading { ProgressView() } }
-            .overlay { if state.showEmpty { EmptyMoviesView() } }
-            .toolbar { if state.showError { ErrorButton { state.showError = false } }
+        List(state.movies ?? [], rowContent: MovieCell.init)
+            .overlay { if state.isLoading { ProgressView() } }
+//            .overlay { if state.showEmpty { EmptyMoviesView() } }
+            .toolbar { if state.hasError { ErrorButton { state.hasError = false } }
         }
     }
 }
+
+
+struct MovieCell: View {
+    let movie: Core.Movie
+    var body: some View {
+        HStack(spacing: 12) {
+            AsyncImage(url: URL(string: movie.poster_url)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 40, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(alignment: .leading) {
+                Text(movie.title)
+                Text(movie.release_year.description)
+                    .font(.footnote)
+                    .opacity(0.5)
+            }
+        }
+    }
+}
+
 
 fileprivate func withRetry<T>(_ load: @escaping () async throws -> T, attempts: Int = 3) -> () async throws -> T {
     {

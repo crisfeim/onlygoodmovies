@@ -4,9 +4,9 @@ import SwiftUI
 
 public struct Movie: Identifiable, Decodable, Equatable, Sendable {
     public let id: String
-    let title: String
-    let poster_url: String
-    let release_year: Int
+    public let title: String
+    public let poster_url: String
+    public let release_year: Int
     
     public init(id: String, title: String, poster_url: String, release_year: Int) {
         self.id = id
