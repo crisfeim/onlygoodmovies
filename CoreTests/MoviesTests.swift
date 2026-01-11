@@ -56,7 +56,6 @@ class MoviesTests: XCTestCase {
         let sut = MoviesLogic(state: binding, loader: anyLoader())
         await sut.refresh()
         XCTAssertFalse(states[0].hasError)
-        print(states)
     }
     
     func test_refreshIsNotTriggeredWhileLoading() async {
@@ -66,7 +65,6 @@ class MoviesTests: XCTestCase {
         let sut = MoviesLogic(state: binding, loader: anyLoader())
         await sut.refresh()
         XCTAssertEqual(states.count, 0)
-        print(states)
     }
     
     func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
