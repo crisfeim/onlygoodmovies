@@ -33,10 +33,18 @@ struct ErrorView: View {
     }
 }
 
+#Preview("ErrorView", traits: .sizeThatFitsLayout) {
+    ErrorView()
+}
+
 struct EmptyMoviesView: View {
     var body: some View {
         ContentUnavailableView("Movies", systemImage: "film.stack")
     }
+}
+
+#Preview("EmptyMoviesView", traits: .sizeThatFitsLayout) {
+    EmptyMoviesView()
 }
 
 
@@ -63,3 +71,7 @@ struct Cell: View {
     }
 }
 
+
+#Preview("Cell", traits: .sizeThatFitsLayout) {
+    Cell(movie: mockMovie())
+}

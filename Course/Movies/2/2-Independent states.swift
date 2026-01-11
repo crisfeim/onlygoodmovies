@@ -9,15 +9,12 @@ fileprivate struct MovieListController: View {
     var body: some View {
         MovieList(movies: movies, showError: $showError)
             .task(load)
-            .refreshable(action: refresh)
+            .refreshable(action: refresh) // <- allows refreshig while loading ...
     }
     
     func load() async {
-        do {
-            movies = try await loader()
-        } catch {
-            showError = true
-        }
+        do { movies = try await loader()
+        } catch { showError = true }
     }
     
     func refresh() async {
@@ -55,7 +52,7 @@ fileprivate struct MovieList: View {
 #Preview("Controller") {
     var shouldFail = false
     MovieListController {
-        try await Task.sleep(for: .seconds(2))
+        try await Task.sleep(for: .seconds(32))
         
         if shouldFail {
             print("should fail")

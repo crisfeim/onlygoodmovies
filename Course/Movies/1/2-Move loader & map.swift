@@ -8,13 +8,7 @@ fileprivate struct MovieList: View {
     
     var body: some View {
         switch phase {
-        case .loading: ProgressView().task {
-            do {
-                phase = .loaded(try await loader())
-            } catch {
-                phase = .error
-            }
-        }
+        case .loading: ProgressView().task(load)
         case .loaded(let movies):
             List(movies, rowContent: Cell.init)
                 .overlay {
@@ -23,6 +17,15 @@ fileprivate struct MovieList: View {
                     }
                 }
         case .error: ErrorView()
+        }
+    }
+    
+    func load() async {
+        do {
+            phase = .loaded(try await loader())
+            
+        } catch {
+            phase = .error
         }
     }
 }
@@ -37,5 +40,5 @@ fileprivate extension MovieList {
 
 
 #Preview("Loaded") { MovieList { [mockMovie()] } }
-#Preview("Empty") { MovieList {[]} }
-#Preview("Error") { MovieList { throw anyError() } }
+#Preview("Empty")  { MovieList {[]} }
+#Preview("Error")  { MovieList { throw anyError() } }

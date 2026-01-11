@@ -2,7 +2,7 @@
 
 import XCTest
 
-class StoreTests: XCTestCase {
+class ValueTypeStoreTests: XCTestCase {
     struct Store {
         private(set) var movies = [String]()
         private(set) var showLoading = true

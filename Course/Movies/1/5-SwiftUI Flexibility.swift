@@ -62,11 +62,3 @@ extension Movie: View {
         }
     }
 }
-
-
-#Preview {
-    MovieListController {
-        let (d, _) = try await  URLSession.shared.data(from: Api.movies!)
-        return try JSONDecoder().decode([Movie].self, from: d)
-    }
-}

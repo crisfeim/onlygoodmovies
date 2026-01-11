@@ -5,16 +5,10 @@ import SwiftUI
 fileprivate struct MovieList: View {
     @State var phase = Phase.loading
     
+    
     var body: some View {
         switch phase {
-        case .loading: ProgressView().task {
-            do {
-                let (d, _) = try await  URLSession.shared.data(from: Api.movies!)
-                phase = .loaded(try JSONDecoder().decode([Movie].self, from: d))
-            } catch {
-                phase = .error
-            }
-        }
+        case .loading: ProgressView().task(load)
         case .loaded(let movies):
             List(movies, rowContent: Cell.init)
                 .overlay {
@@ -23,6 +17,15 @@ fileprivate struct MovieList: View {
                     }
                 }
         case .error: ErrorView()
+        }
+    }
+    
+    func load() async {
+        do {
+            let (d, _) = try await  URLSession.shared.data(from: Api.movies!)
+            phase = .loaded(try JSONDecoder().decode([Movie].self, from: d))
+        } catch {
+            phase = .error
         }
     }
 }
@@ -36,6 +39,4 @@ fileprivate extension MovieList {
 }
 
 
-#Preview {
-    MovieList()
-}
+#Preview { MovieList() }

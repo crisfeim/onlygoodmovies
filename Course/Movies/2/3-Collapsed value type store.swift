@@ -73,7 +73,7 @@ fileprivate struct MovieList: View {
     }
 }
 
-#Preview("Controller") {
+#Preview("Controller", traits: .sizeThatFitsLayout) {
     var shouldFail = false
     MovieListController {
         try await Task.sleep(for: .seconds(2))
