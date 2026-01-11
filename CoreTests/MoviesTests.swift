@@ -48,19 +48,15 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshHidesError() async {
-        var initial = MoviesState.previouslyLoaded(hasError: true)
         var capturedStates = [MoviesState]()
-        let binding = Binding(get: { initial }, set: { initial = $0  ; capturedStates.append($0) })
-        let sut = MoviesLogic(state: binding, loader: anyLoader())
+        let sut = MoviesLogic(state: .init(get: { .loadedWithError() }, set: { capturedStates.append($0) }), loader: anyLoader())
         await sut.refresh()
         XCTAssertFalse(capturedStates[0].hasError)
     }
     
     func test_refreshIsNotTriggeredWhileLoading() async {
-        var initial = MoviesState()
         var capturedStates = [MoviesState]()
-        let binding = Binding(get: { initial }, set: { initial = $0  ; capturedStates.append($0) })
-        let sut = MoviesLogic(state: binding, loader: anyLoader())
+        let sut = MoviesLogic(state: .init(get: { .init() }, set: { capturedStates.append($0) }), loader: anyLoader())
         await sut.refresh()
         XCTAssertEqual(capturedStates.count, 0)
     }
@@ -88,6 +84,10 @@ fileprivate func anyError() -> Error {
 }
 
 fileprivate extension MoviesState {
+    static func loadedWithError() -> Self {
+        previouslyLoaded(hasError: true)
+    }
+    
     static func previouslyLoaded(hasError: Bool = false) -> Self {
         .init(movies: [], hasError: hasError)
     }
