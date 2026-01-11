@@ -21,6 +21,7 @@ class MoviesTests: XCTestCase {
         }
         
         func refresh() async {
+            state.hasError = false
             await load()
         }
         
@@ -87,9 +88,21 @@ class MoviesTests: XCTestCase {
         XCTAssertEqual(state.isLoading, false)
     }
     
-    func previouslyLoadedState() -> MoviesState {
-        .init(movies: [], hasError: false, isLoading: false)
+    func test_refreshHidesError() async {
+        var state = previouslyLoadedState(hasError: true)
+        var states = [MoviesState]()
+        let binding = Binding(get: { state }, set: { state = $0  ; states.append($0) })
+
+        let sut = makeSUT(binding)
+        await sut.refresh()
+        XCTAssertEqual(states[0].hasError, false)
+        print(states)
     }
+    
+    func previouslyLoadedState(hasError: Bool = false) -> MoviesState {
+        .init(movies: [], hasError: hasError, isLoading: false)
+    }
+    
 
     
     func makeSUT(_ binding: Binding<MoviesState>, loader: @escaping MoviesLoader = anyLoader()) -> MoviesLogic {
