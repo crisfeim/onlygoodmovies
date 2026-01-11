@@ -82,21 +82,15 @@ class MoviesTests: XCTestCase {
         var prev = MoviesState.previouslyLoaded(hasError: true)
         var states = [MoviesState]()
         let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
-
-        let (sut, _) = makeSUT(binding: binding)
+        let sut = MoviesLogic(state: binding, loader: Self.anyLoader())
         await sut.refresh()
         XCTAssertEqual(states[0].hasError, false)
         print(states)
     }
     
-    
     func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
         let binding = Self.makeBinding(state)
         return (MoviesLogic(state: binding, loader: loader), binding)
-    }
-
-    func makeSUT(binding: Binding<MoviesState>, loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
-        (MoviesLogic(state: binding, loader: loader), binding)
     }
     
     typealias MoviesLoader = () async throws -> [Movie]
