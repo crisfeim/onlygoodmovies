@@ -24,7 +24,8 @@ fileprivate struct MoviesApp: View {
     }
     
     var body: some View {
-        MovieList(state: $state, refresh: logic.refresh)
+        MovieList(state: $state)
+            .environment(\.reload, logic.refresh)
             .task { await logic.load() }
     }
 }
@@ -32,15 +33,20 @@ fileprivate struct MoviesApp: View {
 
 fileprivate struct MovieList: View {
     @Binding var state: MoviesState
-    let refresh: () async -> Void
+    @Environment(\.reload) var reload
+    
     var body: some View {
         List(state.movies, rowContent: MovieCell.init)
-            .refreshable { await refresh() }
+            .refreshable { await reload() }
             .overlay { if state.isLoading { ProgressView() } }
             .overlay { if state.showEmpty { EmptyMoviesView() } }
             .toolbar { if state.hasError { ErrorButton { state.hasError = false } }
         }
     }
+}
+
+extension EnvironmentValues {
+    @Entry var reload: () async -> Void = {}
 }
 
 struct MovieCell: View {

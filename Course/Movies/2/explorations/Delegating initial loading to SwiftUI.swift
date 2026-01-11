@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-struct LoadableModifier: ViewModifier {
+fileprivate struct LoadableModifier: ViewModifier {
     @MainActor
     @Observable final class Store {
         @ObservationIgnored
@@ -37,7 +37,7 @@ struct LoadableModifier: ViewModifier {
     }
 }
 
-extension View {
+fileprivate extension View {
     func loadable(action: @escaping () async -> Void) -> some View {
         self.modifier(LoadableModifier(action: action))
     }
