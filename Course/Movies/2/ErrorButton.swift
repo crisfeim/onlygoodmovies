@@ -14,7 +14,6 @@ struct ErrorButton: ToolbarContent {
     fileprivate struct Button: View {
 
         let action: () -> Void
-        @State var opacity = 1.0
         var body: some View {
             SwiftUI.Button {
                action()
@@ -30,14 +29,6 @@ struct ErrorButton: ToolbarContent {
                 }
             }
             .tint(Color.gray)
-            .opacity(opacity)
-            .animation(.default, value: opacity)
-            .task {
-                try? await Task.sleep(for: .seconds(3))
-//                opacity = 0
-                try? await Task.sleep(for: .seconds(0.5))
-                action()
-            }
         }
     }
 }
@@ -58,10 +49,6 @@ struct ErrorButton: ToolbarContent {
             .toolbar {
                 if shown {
                     ErrorButton { shown = false }
-                } else {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button("") {}
-                    }
                 }
             }
         }
