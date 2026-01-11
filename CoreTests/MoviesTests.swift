@@ -1,33 +1,9 @@
 import SwiftUI
 import XCTest
+@preconcurrency import Core
 
 
 class MoviesTests: XCTestCase {
-     struct MoviesState {
-         var movies: [Movie]?
-         var hasError = false
-         var isLoading: Bool {
-             movies == nil && !hasError
-         }
-    }
-    
-    struct MoviesLogic {
-        @Binding var state: MoviesState
-        let loader: () async throws -> [Movie]
-        
-        func load() async {
-            do {
-                state.movies = try await loader()
-            } catch {
-                state.hasError = true
-            }
-        }
-
-        func refresh() async {
-            state.hasError = false
-            await load()
-        }
-    }
     
     func test_assertInitialState() {
         let state = MoviesState()
@@ -51,7 +27,7 @@ class MoviesTests: XCTestCase {
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
-        let movie = Movie(id: UUID(), name: "anymovie")
+        let movie = Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
         let (sut, state) = makeSUT() { [movie] }
         await sut.load()
         XCTAssertEqual(state.wrappedValue.movies, [movie])
@@ -66,7 +42,7 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshDeliversMoviesOnLoaderSuccess() async {
-        let movie = Movie(id: UUID(), name: "anymovie")
+        let movie = Movie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
         let (sut, state) = makeSUT(.previouslyLoaded()) { [movie] }
         await sut.refresh()
         XCTAssertEqual(state.wrappedValue.movies, [movie])
@@ -88,11 +64,11 @@ class MoviesTests: XCTestCase {
         return (MoviesLogic(state: binding, loader: loader), binding)
     }
     
-    typealias MoviesLoader = () async throws -> [Movie]
+
 }
 
 
-fileprivate func anyLoader() -> MoviesTests.MoviesLoader {{[]}}
+fileprivate func anyLoader() -> MoviesLoader {{[]}}
 
 fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
    var value = value
@@ -104,7 +80,7 @@ func anyError() -> Error {
     NSError(domain: "any-error", code: 0)
 }
 
-fileprivate extension MoviesTests.MoviesState {
+fileprivate extension MoviesState {
     static func previouslyLoaded(hasError: Bool = false) -> Self {
         .init(movies: [], hasError: hasError)
     }
