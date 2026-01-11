@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		407237F02F0BD3F300C276C3 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; };
+		4080DDFE2F142CD900A1F9C6 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; };
+		4080DDFF2F142CD900A1F9C6 /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,7 +27,28 @@
 			remoteGlobalIDString = 407237E62F0BD3F300C276C3;
 			remoteInfo = Core;
 		};
+		4080DE002F142CD900A1F9C6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 400084282F08877D00112D6B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 407237E62F0BD3F300C276C3;
+			remoteInfo = Core;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4080DE022F142CD900A1F9C6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4080DDFF2F142CD900A1F9C6 /* Core.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		400084302F08877D00112D6B /* Course.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Course.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4080DDFE2F142CD900A1F9C6 /* Core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,6 +135,7 @@
 				407237332F0B0FE600C276C3 /* watchApp */,
 				407237E82F0BD3F300C276C3 /* Core */,
 				407237F32F0BD3F300C276C3 /* CoreTests */,
+				4080DDFD2F142CD900A1F9C6 /* Frameworks */,
 				400084312F08877D00112D6B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,6 +150,13 @@
 				407237EF2F0BD3F300C276C3 /* CoreTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4080DDFD2F142CD900A1F9C6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -154,10 +186,12 @@
 				4000842C2F08877D00112D6B /* Sources */,
 				4000842D2F08877D00112D6B /* Frameworks */,
 				4000842E2F08877D00112D6B /* Resources */,
+				4080DE022F142CD900A1F9C6 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4080DE012F142CD900A1F9C6 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				400084322F08877D00112D6B /* Course */,
@@ -398,6 +432,11 @@
 			isa = PBXTargetDependency;
 			target = 407237E62F0BD3F300C276C3 /* Core */;
 			targetProxy = 407237F12F0BD3F300C276C3 /* PBXContainerItemProxy */;
+		};
+		4080DE012F142CD900A1F9C6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 407237E62F0BD3F300C276C3 /* Core */;
+			targetProxy = 4080DE002F142CD900A1F9C6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -742,6 +781,8 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_MODULE = YES;
@@ -749,6 +790,7 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -783,6 +825,8 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_MODULE = YES;
@@ -790,6 +834,7 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
