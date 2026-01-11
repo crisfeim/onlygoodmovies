@@ -110,8 +110,7 @@ fileprivate enum MoviesMapper {
 // Composition Decorators & Functional helpers
 
 infix operator ~>: AdditionPrecedence
-func ~> <T, U>(lhs: T, rhs: (T) -> U) -> U { rhs(lhs) }
-
+func ~> <T, V>(lhs: T, rhs: (T) -> V) -> V { rhs(lhs) }
 
 infix operator |: MultiplicationPrecedence
 func | <T, U, V>(lhs: @escaping (T, U) -> V, rhs: U) -> (T) -> V {
