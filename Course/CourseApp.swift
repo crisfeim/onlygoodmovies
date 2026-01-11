@@ -82,7 +82,7 @@ fileprivate struct MovieList: View {
     var body: some View {
         List(state.movies ?? [], rowContent: MovieCell.init)
             .overlay { if state.isLoading { ProgressView() } }
-//            .overlay { if state.showEmpty { EmptyMoviesView() } }
+            .overlay { if state.showEmpty { EmptyMoviesView() } }
             .toolbar { if state.hasError { ErrorButton { state.hasError = false } }
         }
     }

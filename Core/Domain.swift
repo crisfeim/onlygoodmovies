@@ -28,6 +28,11 @@ public struct MoviesState {
     public var isLoading: Bool {
         movies == nil && !hasError
     }
+    
+    public var showEmpty: Bool {
+        guard let movies else { return false }
+        return movies.isEmpty
+    }
 }
 
 public struct MoviesLogic {
