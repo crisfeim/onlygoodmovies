@@ -17,21 +17,26 @@ public struct Movie: Identifiable, Decodable, Equatable, Sendable {
 }
 
 public struct MoviesState {
-    public var movies: [Movie]?
+    public var movies: [Movie] {
+        get { data ?? [] }
+        set { data = newValue }
+    }
+    
+    private var data: [Movie]?
     public var hasError = false
     
     public init(movies: [Movie]? = nil, hasError: Bool = false) {
-        self.movies = movies
+        self.data = movies
         self.hasError = hasError
     }
     
     public var isLoading: Bool {
-        movies == nil && !hasError
+        data == nil && !hasError
     }
     
     public var showEmpty: Bool {
-        guard let movies else { return false }
-        return movies.isEmpty
+        guard let data = data else { return false }
+        return data.isEmpty
     }
 }
 

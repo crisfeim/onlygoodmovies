@@ -7,14 +7,14 @@ class MoviesTests: XCTestCase {
     
     func test_assertInitialState() {
         let state = MoviesState()
-        XCTAssertNil(state.movies)
+        XCTAssertEqual(state.movies, [])
         XCTAssertTrue(state.isLoading)
         XCTAssertFalse(state.hasError)
     }
     
     func test_initDoesntMutatesState() {
         let (_, state) = makeSUT()
-        XCTAssertNil(state.wrappedValue.movies)
+        XCTAssertEqual(state.wrappedValue.movies, [])
         XCTAssertTrue(state.wrappedValue.isLoading)
         XCTAssertFalse(state.wrappedValue.hasError)
     }

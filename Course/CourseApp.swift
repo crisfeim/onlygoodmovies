@@ -79,7 +79,7 @@ fileprivate struct MovieList: View {
     @Binding var state: MoviesState
     let refresh: () async -> Void
     var body: some View {
-        List(state.movies ?? [], rowContent: MovieCell.init)
+        List(state.movies, rowContent: MovieCell.init)
             .refreshable { await refresh() }
             .overlay { if state.isLoading { ProgressView() } }
             .overlay { if state.showEmpty { EmptyMoviesView() } }
