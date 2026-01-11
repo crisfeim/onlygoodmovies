@@ -94,9 +94,7 @@ class MoviesTests: XCTestCase {
     }
     
     typealias MoviesLoader = () async throws -> [Movie]
-    static func anyLoader() -> MoviesLoader {
-        { [ ]}
-    }
+    static func anyLoader() -> MoviesLoader {{[ ]}}
     
     static func makeBinding<T>(_ value: T) -> Binding<T> {
        var value = value
