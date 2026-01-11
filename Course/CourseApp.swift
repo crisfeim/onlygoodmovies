@@ -90,10 +90,11 @@ fileprivate enum RemoteLoader {
 }
 
 fileprivate enum MoviesMapper {
-     struct InvalidData: Error {}
-     static var map: (Data, HTTPURLResponse) throws -> [Core.Movie] {
+    struct InvalidData: Error {}
+    static let OK = 200
+    static var map: (Data, HTTPURLResponse) throws -> [Core.Movie] {
         { d, r in
-            guard r.statusCode == 200 else { throw InvalidData() }
+            guard r.statusCode == OK else { throw InvalidData() }
             return try JSONDecoder().decode([Core.Movie].self, from: d)
         }
     }
