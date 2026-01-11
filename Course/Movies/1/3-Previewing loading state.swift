@@ -1,5 +1,6 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 8/1/26.
 
+import Core
 import SwiftUI
 
 fileprivate struct MovieList: View {

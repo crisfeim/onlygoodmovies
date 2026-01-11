@@ -131,3 +131,37 @@ fileprivate func withRetry<T>(_ load: @escaping () async throws -> T, attempts: 
         throw lastError!
     }
 }
+
+
+// Previews
+
+#Preview("Loading") {
+    @Previewable @State var state = MoviesState()
+    MovieList(state: $state)
+}
+
+#Preview("Loaded") {
+    @Previewable @State var state = MoviesState(movies: [mockMovie(), mockMovie(), mockMovie()])
+    MovieList(state: $state)
+}
+
+#Preview("Empty") {
+    @Previewable @State var state = MoviesState(movies: [], hasError: false)
+    MovieList(state: $state)
+}
+
+#Preview("Error") {
+    @Previewable @State var state = MoviesState(movies: nil, hasError: true)
+    MovieList(state: $state)
+}
+
+#Preview("Loaded + Error") {
+    @Previewable @State var state = MoviesState(movies: [mockMovie(), mockMovie(), mockMovie()], hasError: true)
+    MovieList(state: $state)
+}
+
+#Preview("Error") {
+    @Previewable @State var state = MoviesState(movies: [], hasError: true)
+    MovieList(state: $state)
+}
+

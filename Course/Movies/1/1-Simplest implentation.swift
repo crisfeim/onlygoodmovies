@@ -1,6 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 6/1/26.
 
 import SwiftUI
+import Core
 
 fileprivate struct MovieList: View {
     @State var phase = Phase.loading

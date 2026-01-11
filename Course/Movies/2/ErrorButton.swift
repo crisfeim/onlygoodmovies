@@ -57,7 +57,7 @@ struct ErrorButton: ToolbarContent {
             .animation(.default, value: shown)
             .toolbar {
                 if shown {
-                    ErrorButton { }
+                    ErrorButton { shown = false }
                 } else {
                     ToolbarItem(placement: .bottomBar) {
                         Button("") {}
