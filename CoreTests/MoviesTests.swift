@@ -82,7 +82,7 @@ fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
 }
 
 
-func anyError() -> Error {
+fileprivate func anyError() -> Error {
     NSError(domain: "any-error", code: 0)
 }
 
