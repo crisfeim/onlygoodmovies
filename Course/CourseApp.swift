@@ -5,9 +5,13 @@ import Core
 
 // UI
 @main struct CourseApp: App {
+    var remoteLoader: MoviesLoader {
+        { try await RemoteLoader.with(urlSessionHttpGetClient) }
+    }
+    
     var body: some Scene {
         WindowGroup {
-           MoviesApp()
+            MoviesApp(loader: remoteLoader ~> withRetry|2)
         }
     }
 }
@@ -15,12 +19,10 @@ import Core
 fileprivate struct MoviesApp: View {
     @State var state = MoviesState()
     
-    var remoteLoader: MoviesLoader {
-        { try await RemoteLoader.with(urlSessionHttpGetClient) }
-    }
+    let loader: MoviesLoader
 
     var logic: MoviesLogic {
-        .init(state: $state, loader: remoteLoader~>withRetry | 2)
+        .init(state: $state, loader: loader)
     }
     
     var body: some View {
@@ -134,6 +136,23 @@ fileprivate func withRetry<T>(_ load: @escaping () async throws -> T, attempts: 
 
 
 // Previews
+
+#Preview("App") {
+    var shouldFail = false
+    MoviesApp {
+        try await Task.sleep(for: .seconds(1.5))
+
+        if shouldFail {
+            print("should fail")
+            shouldFail = false
+            throw anyError()
+        } else {
+            print("should not fail")
+            shouldFail = true
+            return [mockMovie(), mockMovie()]
+        }
+    }
+}
 
 #Preview("Loading") {
     @Previewable @State var state = MoviesState()
