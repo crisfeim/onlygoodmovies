@@ -55,7 +55,17 @@ class MoviesTests: XCTestCase {
         let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
         let sut = MoviesLogic(state: binding, loader: anyLoader())
         await sut.refresh()
-        XCTAssertEqual(states[0].hasError, false)
+        XCTAssertFalse(states[0].hasError)
+        print(states)
+    }
+    
+    func test_ensureUserCantRefreshWhileLoading() async {
+        var prev = MoviesState()
+        var states = [MoviesState]()
+        let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
+        let sut = MoviesLogic(state: binding, loader: anyLoader())
+        await sut.refresh()
+        XCTAssertEqual(states.count, 0)
         print(states)
     }
     

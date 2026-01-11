@@ -53,6 +53,7 @@ public struct MoviesLogic {
    }
 
    public func refresh() async {
+       guard !state.isLoading else { return }
        state.hasError = false
        await load()
    }
