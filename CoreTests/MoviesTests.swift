@@ -50,29 +50,27 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshHidesError() async {
-        var prev = MoviesState.previouslyLoaded(hasError: true)
-        var states = [MoviesState]()
-        let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
+        var initial = MoviesState.previouslyLoaded(hasError: true)
+        var capturedStates = [MoviesState]()
+        let binding = Binding(get: { initial }, set: { initial = $0  ; capturedStates.append($0) })
         let sut = MoviesLogic(state: binding, loader: anyLoader())
         await sut.refresh()
-        XCTAssertFalse(states[0].hasError)
+        XCTAssertFalse(capturedStates[0].hasError)
     }
     
     func test_refreshIsNotTriggeredWhileLoading() async {
-        var prev = MoviesState()
-        var states = [MoviesState]()
-        let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
+        var initial = MoviesState()
+        var capturedStates = [MoviesState]()
+        let binding = Binding(get: { initial }, set: { initial = $0  ; capturedStates.append($0) })
         let sut = MoviesLogic(state: binding, loader: anyLoader())
         await sut.refresh()
-        XCTAssertEqual(states.count, 0)
+        XCTAssertEqual(capturedStates.count, 0)
     }
     
     func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
         let binding = makeBinding(state)
         return (MoviesLogic(state: binding, loader: loader), binding)
     }
-    
-
 }
 
 
