@@ -14,21 +14,18 @@ class MoviesTests: XCTestCase {
     struct MoviesLogic {
         @Binding var state: MoviesState
         let loader: () async throws -> [Movie]
-        func initLoad() async {
-            await load()
-        }
         
-        func refresh() async {
-            state.hasError = false
-            await load()
-        }
-        
-        private func load() async {
+        func load() async {
             do {
                 state.movies = try await loader()
             } catch {
                 state.hasError = true
             }
+        }
+
+        func refresh() async {
+            state.hasError = false
+            await load()
         }
     }
     
@@ -48,7 +45,7 @@ class MoviesTests: XCTestCase {
     
     func test_loadDeliversErrorOnLoaderFailure() async {
         let (sut, state) = makeSUT() { throw anyError() }
-        await sut.initLoad()
+        await sut.load()
         XCTAssertFalse(state.wrappedValue.isLoading)
         XCTAssertTrue(state.wrappedValue.hasError)
     }
@@ -56,7 +53,7 @@ class MoviesTests: XCTestCase {
     func test_loadDeliversMoviesOnLoaderSuccess() async {
         let movie = Movie(id: UUID(), name: "anymovie")
         let (sut, state) = makeSUT() { [movie] }
-        await sut.initLoad()
+        await sut.load()
         XCTAssertEqual(state.wrappedValue.movies, [movie])
         XCTAssertEqual(state.wrappedValue.isLoading, false)
     }
