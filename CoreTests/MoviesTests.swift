@@ -15,18 +15,18 @@ class MoviesTests: XCTestCase {
     struct MoviesLogic {
         @Binding var state: MoviesState
         let loader: () async throws -> [Movie]
-        func load() async {
+        func initLoad() async {
             defer { state.isLoading = false }
-            do {
-                state.movies = try await loader()
-            } catch {
-                state.hasError = true
-            }
+            await load()
         }
         
         func refresh() async {
+            await load()
+        }
+        
+        private func load() async {
             do {
-                _ =  try await loader()
+                state.movies = try await loader()
             } catch {
                 state.hasError = true
             }
@@ -49,21 +49,21 @@ class MoviesTests: XCTestCase {
         XCTAssertFalse(state.hasError)
     }
     
-    func test_deliversErrorOnLoaderFailure() async {
+    func test_loadDeliversErrorOnLoaderFailure() async {
         var state = MoviesState()
         let binding = Binding(get: { state }, set: { state = $0 })
         let sut = makeSUT(binding) { throw NSError(domain: "any-error", code: 0) }
-        await sut.load()
+        await sut.initLoad()
         XCTAssertFalse(state.isLoading)
         XCTAssertTrue(state.hasError)
     }
     
-    func test_deliversMoviesOnLoaderSuccess() async {
+    func test_loadDeliversMoviesOnLoaderSuccess() async {
         var state = MoviesState()
         let binding = Binding(get: { state }, set: { state = $0 })
         let movie = Movie(id: UUID(), name: "anymovie")
         let sut = makeSUT(binding) { [movie] }
-        await sut.load()
+        await sut.initLoad()
         XCTAssertEqual(state.movies, [movie])
         XCTAssertEqual(state.isLoading, false)
     }
@@ -75,6 +75,16 @@ class MoviesTests: XCTestCase {
         await sut.refresh()
         XCTAssertFalse(previouslyLoadedState.isLoading)
         XCTAssertTrue(previouslyLoadedState.hasError)
+    }
+    
+    func test_refreshDeliversMoviesOnLoaderSuccess() async {
+        var state = previouslyLoadedState()
+        let binding = Binding(get: { state }, set: { state = $0 })
+        let movie = Movie(id: UUID(), name: "anymovie")
+        let sut = makeSUT(binding) { [movie] }
+        await sut.refresh()
+        XCTAssertEqual(state.movies, [movie])
+        XCTAssertEqual(state.isLoading, false)
     }
     
     func previouslyLoadedState() -> MoviesState {
