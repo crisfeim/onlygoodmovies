@@ -49,7 +49,7 @@ class MoviesTests: XCTestCase {
     }
     
     func test_loadDeliversErrorOnLoaderFailure() async {
-        let (sut, state) = makeSUT() { throw NSError(domain: "any-error", code: 0) }
+        let (sut, state) = makeSUT() { throw anyError() }
         await sut.initLoad()
         XCTAssertFalse(state.wrappedValue.isLoading)
         XCTAssertTrue(state.wrappedValue.hasError)
@@ -64,7 +64,7 @@ class MoviesTests: XCTestCase {
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
-        let (sut, state) = makeSUT(.previouslyLoaded()) { throw NSError(domain: "any-error", code: 0) }
+        let (sut, state) = makeSUT(.previouslyLoaded()) { throw anyError() }
         await sut.refresh()
         XCTAssertFalse(state.wrappedValue.isLoading)
         XCTAssertTrue(state.wrappedValue.hasError)
@@ -82,27 +82,32 @@ class MoviesTests: XCTestCase {
         var prev = MoviesState.previouslyLoaded(hasError: true)
         var states = [MoviesState]()
         let binding = Binding(get: { prev }, set: { prev = $0  ; states.append($0) })
-        let sut = MoviesLogic(state: binding, loader: Self.anyLoader())
+        let sut = MoviesLogic(state: binding, loader: anyLoader())
         await sut.refresh()
         XCTAssertEqual(states[0].hasError, false)
         print(states)
     }
     
     func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, Binding<MoviesState>) {
-        let binding = Self.makeBinding(state)
+        let binding = makeBinding(state)
         return (MoviesLogic(state: binding, loader: loader), binding)
     }
     
     typealias MoviesLoader = () async throws -> [Movie]
-    static func anyLoader() -> MoviesLoader {{[ ]}}
-    
-    static func makeBinding<T>(_ value: T) -> Binding<T> {
-       var value = value
-       return Binding(get: { value }, set: { value = $0 })
-    }
-
 }
 
+
+fileprivate func anyLoader() -> MoviesTests.MoviesLoader {{[ ]}}
+
+fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
+   var value = value
+   return Binding(get: { value }, set: { value = $0 })
+}
+
+
+func anyError() -> Error {
+    NSError(domain: "any-error", code: 0)
+}
 
 fileprivate extension MoviesTests.MoviesState {
     static func previouslyLoaded(hasError: Bool = false) -> Self {
