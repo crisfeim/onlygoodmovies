@@ -1,8 +1,5 @@
-
-
 import SwiftUI
 import XCTest
-
 
 
 class MoviesTests: XCTestCase {
@@ -97,7 +94,7 @@ class MoviesTests: XCTestCase {
 }
 
 
-fileprivate func anyLoader() -> MoviesTests.MoviesLoader {{[ ]}}
+fileprivate func anyLoader() -> MoviesTests.MoviesLoader {{[]}}
 
 fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
    var value = value
