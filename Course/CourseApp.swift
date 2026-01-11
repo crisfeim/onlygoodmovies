@@ -63,7 +63,6 @@ import Core
 fileprivate struct MoviesComposition: View {
     
     @Binding var state: MoviesState
-    
     let moviesLoader : MoviesLoader
     
     var logic: MoviesLogic {
@@ -71,16 +70,17 @@ fileprivate struct MoviesComposition: View {
     }
     
     var body: some View {
-        MovieList(state: $state)
-            .task(logic.load)
-            .refreshable(action: logic.refresh)
+        MovieList(state: $state, refresh: logic.refresh)
+            .task { await logic.load() }
     }
 }
 
 fileprivate struct MovieList: View {
     @Binding var state: MoviesState
+    let refresh: () async -> Void
     var body: some View {
         List(state.movies ?? [], rowContent: MovieCell.init)
+            .refreshable { await refresh() }
             .overlay { if state.isLoading { ProgressView() } }
             .overlay { if state.showEmpty { EmptyMoviesView() } }
             .toolbar { if state.hasError { ErrorButton { state.hasError = false } }
