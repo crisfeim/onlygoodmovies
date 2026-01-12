@@ -29,7 +29,7 @@ fileprivate struct MovieList: View {
     let movies: [Movie]?
     @Binding var showError: Bool
     var body: some View {
-        List(movies ?? [], rowContent: Cell.init)
+        List(movies ?? [], rowContent: MovieCell.init)
         .overlay {
             if movies == nil {
                 ProgressView()

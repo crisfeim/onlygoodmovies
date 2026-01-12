@@ -38,7 +38,7 @@ fileprivate struct MovieList: View {
         switch phase {
         case .loading: ProgressView()
         case .loaded(let movies, let showError):
-            List(movies, rowContent: Cell.init)
+            List(movies, rowContent: MovieCell.init)
                 .overlay {
                     if movies.isEmpty {
                         EmptyMoviesView()

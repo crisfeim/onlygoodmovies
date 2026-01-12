@@ -51,29 +51,6 @@ extension EnvironmentValues {
     @Entry var reload: () async -> Void = {}
 }
 
-struct MovieCell: View {
-    let movie: Movie
-    var body: some View {
-        HStack(spacing: 12) {
-            AsyncImage(url: URL(string: movie.poster_url)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        ProgressView()
-                    }
-                    .frame(width: 40, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            VStack(alignment: .leading) {
-                Text(movie.title)
-                Text(movie.release_year.description)
-                    .font(.footnote)
-                    .opacity(0.5)
-            }
-        }
-    }
-}
-
 // Infrastructure
 
 fileprivate typealias HTTPGetClient = @Sendable (URL) async throws -> (Data, HTTPURLResponse)
