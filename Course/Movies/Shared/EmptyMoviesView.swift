@@ -8,6 +8,6 @@ struct EmptyMoviesView: View {
     }
 }
 
-#Preview("EmptyMoviesView", traits: .sizeThatFitsLayout) {
+#Preview(traits: .sizeThatFitsLayout) {
     EmptyMoviesView()
 }

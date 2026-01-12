@@ -8,6 +8,6 @@ struct ErrorView: View {
     }
 }
 
-#Preview("ErrorView", traits: .sizeThatFitsLayout) {
+#Preview(traits: .sizeThatFitsLayout) {
     ErrorView()
 }
