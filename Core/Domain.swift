@@ -17,26 +17,16 @@ public struct Movie: Identifiable, Decodable, Equatable, Sendable {
 }
 
 public struct MoviesState {
-    public var movies: [Movie] {
-        get { data ?? [] }
-        set { data = newValue }
-    }
+    public var movies: [Movie]
+    public var hasError: Bool
+    public var isLoading: Bool
+    public var showEmpty: Bool
     
-    private var data: [Movie]?
-    public var hasError = false
-    
-    public init(movies: [Movie]? = nil, hasError: Bool = false) {
-        self.data = movies
+    public init(movies: [Movie] = [], isLoading: Bool = true, hasError: Bool = false, showEmpty: Bool = false) {
+        self.movies = movies
+        self.isLoading = isLoading
         self.hasError = hasError
-    }
-    
-    public var isLoading: Bool {
-        data == nil && !hasError
-    }
-    
-    public var showEmpty: Bool {
-        guard let data = data else { return false }
-        return data.isEmpty
+        self.showEmpty = showEmpty
     }
 }
 
@@ -50,8 +40,10 @@ public struct MoviesLogic {
     }
    
    public func load() async {
+       defer { state.isLoading = false }
        do {
            state.movies = try await loader()
+           state.showEmpty = state.movies.isEmpty
        } catch {
            state.hasError = true
        }

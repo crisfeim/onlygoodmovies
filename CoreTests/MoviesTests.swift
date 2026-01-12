@@ -10,6 +10,7 @@ class MoviesTests: XCTestCase {
         XCTAssertEqual(state.movies, [])
         XCTAssertTrue(state.isLoading)
         XCTAssertFalse(state.hasError)
+        XCTAssertFalse(state.showEmpty)
     }
     
     func test_initDoesntMutatesState() {
@@ -17,6 +18,7 @@ class MoviesTests: XCTestCase {
         XCTAssertEqual(state().movies, [])
         XCTAssertTrue(state().isLoading)
         XCTAssertFalse(state().hasError)
+        XCTAssertFalse(state().showEmpty)
     }
     
     func test_loadDeliversErrorOnLoaderFailure() async {
@@ -24,13 +26,23 @@ class MoviesTests: XCTestCase {
         await sut.load()
         XCTAssertFalse(state().isLoading)
         XCTAssertTrue(state().hasError)
+        XCTAssertFalse(state().showEmpty)
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
         let (sut, state) = makeSUT() { [mockMovie()] }
         await sut.load()
         XCTAssertEqual(state().movies, [mockMovie()])
-        XCTAssertEqual(state().isLoading, false)
+        XCTAssertFalse(state().isLoading)
+        XCTAssertFalse(state().showEmpty)
+    }
+    
+    func test_loadShowsEmptyOnLoaderSuccessWithEmptyData() async {
+        let (sut, state) = makeSUT() { [] }
+        await sut.load()
+        XCTAssertEqual(state().movies, [])
+        XCTAssertFalse(state().isLoading)
+        XCTAssertTrue(state().showEmpty)
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
@@ -102,6 +114,6 @@ fileprivate extension MoviesState {
     }
     
     static func previouslyLoaded(hasError: Bool = false) -> Self {
-        .init(movies: [], hasError: hasError)
+        .init(movies: [], isLoading: false, hasError: hasError)
     }
 }
