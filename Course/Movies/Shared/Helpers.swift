@@ -27,28 +27,6 @@ func anyError() -> Error {
 
 import SwiftUI
 
-
-struct ErrorView: View {
-    var body: some View {
-        ContentUnavailableView("Something went wrong", systemImage: "exclamationmark.triangle")
-    }
-}
-
-#Preview("ErrorView", traits: .sizeThatFitsLayout) {
-    ErrorView()
-}
-
-struct EmptyMoviesView: View {
-    var body: some View {
-        ContentUnavailableView("Movies", systemImage: "film.stack")
-    }
-}
-
-#Preview("EmptyMoviesView", traits: .sizeThatFitsLayout) {
-    EmptyMoviesView()
-}
-
-
 struct Cell: View {
     let movie: Movie
     var body: some View {
