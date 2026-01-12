@@ -23,7 +23,7 @@ fileprivate struct MovieList: View {
     
     func load() async {
         do {
-            let (d, _) = try await  URLSession.shared.data(from: Api.movies!)
+            let (d, _) = try await  URLSession.shared.data(from: Api.movies)
             phase = .loaded(try JSONDecoder().decode([Movie].self, from: d))
         } catch {
             phase = .error
