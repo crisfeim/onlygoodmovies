@@ -52,7 +52,7 @@ extension EnvironmentValues {
 }
 
 struct MovieCell: View {
-    let movie: Core.Movie
+    let movie: Movie
     var body: some View {
         HStack(spacing: 12) {
             AsyncImage(url: URL(string: movie.poster_url)) { image in
@@ -89,7 +89,7 @@ fileprivate var urlSessionHttpGetClient: HTTPGetClient {
 
 fileprivate enum RemoteLoader {
     
-    static var with: (HTTPGetClient) async throws -> [Core.Movie] {
+    static var with: (HTTPGetClient) async throws -> [Movie] {
         { get in
             let (d, r) = try await get(URL(string: "https://crisfe.im/apis/only-good-movies/v1")!)
             return try MoviesMapper.map(d, r)
@@ -100,10 +100,10 @@ fileprivate enum RemoteLoader {
 fileprivate enum MoviesMapper {
     struct InvalidData: Error {}
     static let OK = 200
-    static var map: (Data, HTTPURLResponse) throws -> [Core.Movie] {
+    static var map: (Data, HTTPURLResponse) throws -> [Movie] {
         { d, r in
             guard r.statusCode == OK else { throw InvalidData() }
-            return try JSONDecoder().decode([Core.Movie].self, from: d)
+            return try JSONDecoder().decode([Movie].self, from: d)
         }
     }
 }
