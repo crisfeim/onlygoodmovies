@@ -40,9 +40,9 @@ fileprivate struct MovieList: View {
     var body: some View {
         List(state.movies, rowContent: MovieCell.init)
             .refreshable { await reload() }
-            .overlay { if state.isLoading { ProgressView() } }
+            .overlay { if state.showLoading { ProgressView() } }
             .overlay { if state.showEmpty { EmptyMoviesView() } }
-            .toolbar { if state.hasError { ErrorButton { state.hasError = false } }
+            .toolbar { if state.showError { ErrorButton { state.showError = false } }
         }
     }
 }
@@ -136,8 +136,8 @@ fileprivate extension MoviesState {
     static func loading() -> Self {
         .init(
             movies: [],
-            isLoading: true,
-            hasError: false,
+            showLoading: true,
+            showError: false,
             showEmpty: false
         )
     }
@@ -145,8 +145,8 @@ fileprivate extension MoviesState {
     static func loaded() -> Self {
         .init(
             movies: [mockMovie(), mockMovie()],
-            isLoading: false,
-            hasError: false,
+            showLoading: false,
+            showError: false,
             showEmpty: false
         )
     }
@@ -154,8 +154,8 @@ fileprivate extension MoviesState {
     static func loadedWithError() -> Self {
         .init(
             movies: [mockMovie(), mockMovie()],
-            isLoading: false,
-            hasError: true,
+            showLoading: false,
+            showError: true,
             showEmpty: false
         )
     }
@@ -163,8 +163,8 @@ fileprivate extension MoviesState {
     static func error() -> Self {
         .init(
             movies: [],
-            isLoading: false,
-            hasError: true,
+            showLoading: false,
+            showError: true,
             showEmpty: false
         )
     }
@@ -172,8 +172,8 @@ fileprivate extension MoviesState {
     static func empty() -> Self {
         .init(
             movies: [],
-            isLoading: false,
-            hasError: false,
+            showLoading: false,
+            showError: false,
             showEmpty: true
         )
     }
