@@ -2,4 +2,4 @@
 
 import Foundation
 
-typealias HTTPClient = @Sendable (URL) async throws -> (Data, HTTPURLResponse)
+public typealias HTTPClient = @Sendable (URL) async throws -> (Data, HTTPURLResponse)

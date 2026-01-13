@@ -2,7 +2,6 @@
 
 
 import SwiftUI
-import Core
 
 struct MovieList: View {
     @Binding var state: MoviesState

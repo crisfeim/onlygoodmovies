@@ -1,5 +1,4 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
-import Core
 
 func anyMovie(id: String = "0", title: String = "Any movie") -> RemoteMovie {
     RemoteMovie(
@@ -10,12 +9,12 @@ func anyMovie(id: String = "0", title: String = "Any movie") -> RemoteMovie {
     )
 }
 
-func mockMovie() -> RemoteMovie {
-    RemoteMovie(
+func mockMovie() -> Movie {
+    Movie(
         id: "17",
         title: "The Passion of the Christ",
-        poster_url: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
-        release_year: 2004
+        posterURL: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
+        releaseYear: 2004
     )
 }
 

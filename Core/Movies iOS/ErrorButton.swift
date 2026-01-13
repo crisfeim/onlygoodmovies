@@ -14,9 +14,11 @@ struct ErrorButton: ToolbarContent {
     }
     #endif
     
+    #if os(macOS)
     var body: some ToolbarContent {
         ToolbarItem {}
     }
+    #endif
     
     fileprivate struct Button: View {
 

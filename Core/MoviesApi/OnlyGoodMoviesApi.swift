@@ -4,6 +4,6 @@
 import Foundation
 import SwiftUI
 
-enum OnlyGoodMoviesApi {
-    static let movies = URL(string: "https://crisfe.im/apis/only-good-movies/v1")!
+public enum OnlyGoodMoviesApi {
+    public static let movies = URL(string: "https://crisfe.im/apis/only-good-movies/v1")!
 }

@@ -1,12 +1,11 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 12/1/26.
-import Core
 import SwiftUI
 
 struct MovieCell: View {
-    let movie: RemoteMovie
+    let movie: Movie
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: URL(string: movie.poster_url)) { image in
+            AsyncImage(url: URL(string: movie.posterURL)) { image in
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -17,7 +16,7 @@ struct MovieCell: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             VStack(alignment: .leading) {
                 Text(movie.title)
-                Text(movie.release_year.description)
+                Text(movie.releaseYear.description)
                     .font(.footnote)
                     .opacity(0.5)
             }

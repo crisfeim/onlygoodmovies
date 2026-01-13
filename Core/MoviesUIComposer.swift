@@ -2,9 +2,8 @@
 
 
 import SwiftUI
-import Core
 
-struct MoviesUIComposer: View {
+public struct MoviesUIComposer: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
@@ -13,7 +12,11 @@ struct MoviesUIComposer: View {
         .init(state: $state, loader: loader)
     }
     
-    var body: some View {
+    public init(loader: @escaping MoviesLoader) {
+        self.loader = loader
+    }
+    
+    public var body: some View {
         MovieList(state: $state)
             .environment(\.reload, useCase.refresh)
             .task { await useCase.load() }

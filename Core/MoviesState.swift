@@ -4,7 +4,7 @@
 import SwiftUI
 
 public struct MoviesState {
-    public var movies: [RemoteMovie]
+    public var movies: [Movie]
     public var showError: Bool
     public var showLoading: Bool
     public var showEmpty: Bool
@@ -16,7 +16,7 @@ public struct MoviesState {
         showEmpty = false
     }
     
-    public init(movies: [RemoteMovie], showLoading: Bool, showError: Bool, showEmpty: Bool) {
+    public init(movies: [Movie], showLoading: Bool, showError: Bool, showEmpty: Bool) {
         self.movies = movies
         self.showLoading = showLoading
         self.showError = showError

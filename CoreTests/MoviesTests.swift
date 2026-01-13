@@ -102,8 +102,8 @@ fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
    return Binding(get: { value }, set: { value = $0 })
 }
 
-fileprivate func mockMovie() -> RemoteMovie {
-    RemoteMovie(id: "id", title: "title", poster_url: "potter_url", release_year: 2020)
+fileprivate func mockMovie() -> Movie {
+    Movie(id: "id", title: "title", posterURL: "potter_url", releaseYear: 2020)
 }
 
 fileprivate func anyError() -> Error {

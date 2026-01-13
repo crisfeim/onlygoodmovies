@@ -2,4 +2,4 @@
 
 import SwiftUI
 
-public typealias MoviesLoader = () async throws -> [RemoteMovie]
+public typealias MoviesLoader = () async throws -> [Movie]
