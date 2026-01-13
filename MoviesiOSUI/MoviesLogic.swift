@@ -2,6 +2,7 @@
 
 
 import SwiftUI
+import Core
 
 public struct MoviesLogic {
    @Binding var state: MoviesState

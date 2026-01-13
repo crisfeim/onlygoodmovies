@@ -1,4 +1,5 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
+import Core
 
 func anyMovie(id: String = "0", title: String = "Any movie") -> RemoteMovie {
     RemoteMovie(

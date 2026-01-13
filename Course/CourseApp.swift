@@ -2,6 +2,7 @@
 
 import SwiftUI
 import Core
+import MoviesiOSUI
 
 // UI
 @main struct CourseApp: App {

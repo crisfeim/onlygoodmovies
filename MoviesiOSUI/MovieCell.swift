@@ -1,5 +1,6 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 12/1/26.
 import SwiftUI
+import Core
 
 struct MovieCell: View {
     let movie: Movie

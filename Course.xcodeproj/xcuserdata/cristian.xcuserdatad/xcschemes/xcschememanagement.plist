@@ -7,12 +7,22 @@
 		<key>Core.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 		<key>Course.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>MoviesiOS.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>MoviesiOSUI.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -23,6 +33,11 @@
 			<true/>
 		</dict>
 		<key>4000843C2F08877F00112D6B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4080DF6B2F16BE3100A1F9C6</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -1,7 +1,7 @@
 import SwiftUI
 import XCTest
-@preconcurrency import Core
-
+import MoviesiOSUI
+import Core
 
 class MoviesTests: XCTestCase {
     
