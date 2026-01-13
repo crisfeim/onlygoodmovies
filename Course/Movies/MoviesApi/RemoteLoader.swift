@@ -2,9 +2,9 @@
 import Core
 import Foundation
 
-var RemoteLoader: (HTTPClient) async throws -> [Movie] {
-   { get in
-       let (d, r) = try await get(URL(string: "https://crisfe.im/apis/only-good-movies/v1")!)
+var RemoteLoader: (URL, HTTPClient) async throws -> [Movie] {
+   { url, get in
+       let (d, r) = try await get(url)
        return try MoviesMapper.map(d, r)
    }
 }
