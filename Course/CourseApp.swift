@@ -6,7 +6,7 @@ import Core
 // UI
 @main struct CourseApp: App {
     var remoteLoader: MoviesLoader {
-        { try await RemoteLoader.with(urlSessionHttpGetClient) }
+        { try await RemoteLoader(urlSessionHTTPClient) }
     }
     
     var body: some Scene {
@@ -21,14 +21,14 @@ fileprivate struct MoviesApp: View {
     
     let loader: MoviesLoader
 
-    var logic: MoviesLogic {
+    var useCase: MoviesLogic {
         .init(state: $state, loader: loader)
     }
     
     var body: some View {
         MovieList(state: $state)
-            .environment(\.reload, logic.refresh)
-            .task { await logic.load() }
+            .environment(\.reload, useCase.refresh)
+            .task { await useCase.load() }
     }
 }
 
@@ -53,9 +53,9 @@ extension EnvironmentValues {
 
 // Infrastructure
 
-fileprivate typealias HTTPGetClient = @Sendable (URL) async throws -> (Data, HTTPURLResponse)
+fileprivate typealias HTTPClient = @Sendable (URL) async throws -> (Data, HTTPURLResponse)
 
-fileprivate var urlSessionHttpGetClient: HTTPGetClient {
+fileprivate var urlSessionHTTPClient: HTTPClient {
     struct UnexpectedValuesRepresentation: Error {}
     return { url in
         let (d, r) = try await URLSession.shared.data(from: url)
@@ -64,14 +64,11 @@ fileprivate var urlSessionHttpGetClient: HTTPGetClient {
     }
 }
 
-fileprivate enum RemoteLoader {
-    
-    static var with: (HTTPGetClient) async throws -> [Movie] {
-        { get in
-            let (d, r) = try await get(URL(string: "https://crisfe.im/apis/only-good-movies/v1")!)
-            return try MoviesMapper.map(d, r)
-        }
-    }
+fileprivate var RemoteLoader: (HTTPClient) async throws -> [Movie] {
+   { get in
+       let (d, r) = try await get(URL(string: "https://crisfe.im/apis/only-good-movies/v1")!)
+       return try MoviesMapper.map(d, r)
+   }
 }
 
 fileprivate enum MoviesMapper {
