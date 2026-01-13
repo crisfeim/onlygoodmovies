@@ -31,7 +31,8 @@ func | <T, U, V>(lhs: @escaping (T, U) -> V, rhs: U) -> (T) -> V {
 }
 
 
-fileprivate func withRetry<T>(_ load: @escaping () async throws -> T, attempts: Int = 3) -> () async throws -> T {
+fileprivate typealias Load<T> = () async throws -> T
+fileprivate func withRetry<T>(_ load: @escaping Load<T>, attempts: Int = 3) ->  Load<T> {
     {
         var lastError: Error?
         for _ in 0..<attempts {

@@ -32,11 +32,9 @@ public struct MoviesUIComposer: View {
         try await Task.sleep(for: .seconds(1.5))
 
         if shouldFail {
-            print("should fail")
             shouldFail = false
             throw anyError()
         } else {
-            print("should not fail")
             shouldFail = true
             return [mockMovie(), mockMovie()]
         }
