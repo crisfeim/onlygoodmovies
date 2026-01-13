@@ -1,7 +1,7 @@
 import SwiftUI
 import XCTest
 import MoviesiOSUI
-import Core
+import Movies
 
 class MoviesTests: XCTestCase {
     

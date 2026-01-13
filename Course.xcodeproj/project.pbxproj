@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		401EB0A72F16C02700A32AB3 /* MoviesiOSUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401EB09E2F16C02700A32AB3 /* MoviesiOSUI.framework */; };
-		401EB0BD2F16C0BF00A32AB3 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; };
-		401EB0BE2F16C0BF00A32AB3 /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		401EB0BD2F16C0BF00A32AB3 /* Movies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Movies.framework */; };
+		401EB0BE2F16C0BF00A32AB3 /* Movies.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Movies.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		401EB0C52F16C21400A32AB3 /* MoviesiOSUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401EB09E2F16C02700A32AB3 /* MoviesiOSUI.framework */; };
 		401EB0C62F16C21400A32AB3 /* MoviesiOSUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 401EB09E2F16C02700A32AB3 /* MoviesiOSUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		407237F02F0BD3F300C276C3 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; };
-		4080DDFE2F142CD900A1F9C6 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; };
-		4080DDFF2F142CD900A1F9C6 /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		407237F02F0BD3F300C276C3 /* Movies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Movies.framework */; };
+		4080DDFE2F142CD900A1F9C6 /* Movies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Movies.framework */; };
+		4080DDFF2F142CD900A1F9C6 /* Movies.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 407237E72F0BD3F300C276C3 /* Movies.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +69,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				401EB0BE2F16C0BF00A32AB3 /* Core.framework in Embed Frameworks */,
+				401EB0BE2F16C0BF00A32AB3 /* Movies.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,7 +80,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4080DDFF2F142CD900A1F9C6 /* Core.framework in Embed Frameworks */,
+				4080DDFF2F142CD900A1F9C6 /* Movies.framework in Embed Frameworks */,
 				401EB0C62F16C21400A32AB3 /* MoviesiOSUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -93,8 +93,8 @@
 		4000843D2F08877F00112D6B /* CourseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		401EB09E2F16C02700A32AB3 /* MoviesiOSUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MoviesiOSUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		401EB0A62F16C02700A32AB3 /* MoviesiOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoviesiOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		407237E72F0BD3F300C276C3 /* Core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		407237EF2F0BD3F300C276C3 /* CoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		407237E72F0BD3F300C276C3 /* Movies.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Movies.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		407237EF2F0BD3F300C276C3 /* MoviesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoviesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -118,14 +118,14 @@
 			path = MoviesiOSUITests;
 			sourceTree = "<group>";
 		};
-		407237E82F0BD3F300C276C3 /* Core */ = {
+		407237E82F0BD3F300C276C3 /* Movies */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Core;
+			path = Movies;
 			sourceTree = "<group>";
 		};
-		407237F32F0BD3F300C276C3 /* CoreTests */ = {
+		407237F32F0BD3F300C276C3 /* MoviesTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CoreTests;
+			path = MoviesTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -135,7 +135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4080DDFE2F142CD900A1F9C6 /* Core.framework in Frameworks */,
+				4080DDFE2F142CD900A1F9C6 /* Movies.framework in Frameworks */,
 				401EB0C52F16C21400A32AB3 /* MoviesiOSUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,7 +151,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				401EB0BD2F16C0BF00A32AB3 /* Core.framework in Frameworks */,
+				401EB0BD2F16C0BF00A32AB3 /* Movies.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,7 +174,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				407237F02F0BD3F300C276C3 /* Core.framework in Frameworks */,
+				407237F02F0BD3F300C276C3 /* Movies.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,8 +186,8 @@
 			children = (
 				400084322F08877D00112D6B /* Course */,
 				400084402F08877F00112D6B /* CourseTests */,
-				407237E82F0BD3F300C276C3 /* Core */,
-				407237F32F0BD3F300C276C3 /* CoreTests */,
+				407237E82F0BD3F300C276C3 /* Movies */,
+				407237F32F0BD3F300C276C3 /* MoviesTests */,
 				401EB09F2F16C02700A32AB3 /* MoviesiOSUI */,
 				401EB0AA2F16C02700A32AB3 /* MoviesiOSUITests */,
 				4080DDFD2F142CD900A1F9C6 /* Frameworks */,
@@ -200,8 +200,8 @@
 			children = (
 				400084302F08877D00112D6B /* Course.app */,
 				4000843D2F08877F00112D6B /* CourseTests.xctest */,
-				407237E72F0BD3F300C276C3 /* Core.framework */,
-				407237EF2F0BD3F300C276C3 /* CoreTests.xctest */,
+				407237E72F0BD3F300C276C3 /* Movies.framework */,
+				407237EF2F0BD3F300C276C3 /* MoviesTests.xctest */,
 				401EB09E2F16C02700A32AB3 /* MoviesiOSUI.framework */,
 				401EB0A62F16C02700A32AB3 /* MoviesiOSUITests.xctest */,
 			);
@@ -331,9 +331,9 @@
 			productReference = 401EB0A62F16C02700A32AB3 /* MoviesiOSUITests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		407237E62F0BD3F300C276C3 /* Core */ = {
+		407237E62F0BD3F300C276C3 /* Movies */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 407237F62F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "Core" */;
+			buildConfigurationList = 407237F62F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "Movies" */;
 			buildPhases = (
 				407237E22F0BD3F300C276C3 /* Headers */,
 				407237E32F0BD3F300C276C3 /* Sources */,
@@ -345,18 +345,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				407237E82F0BD3F300C276C3 /* Core */,
+				407237E82F0BD3F300C276C3 /* Movies */,
 			);
-			name = Core;
+			name = Movies;
 			packageProductDependencies = (
 			);
 			productName = Core;
-			productReference = 407237E72F0BD3F300C276C3 /* Core.framework */;
+			productReference = 407237E72F0BD3F300C276C3 /* Movies.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		407237EE2F0BD3F300C276C3 /* CoreTests */ = {
+		407237EE2F0BD3F300C276C3 /* MoviesTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 407237F92F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "CoreTests" */;
+			buildConfigurationList = 407237F92F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "MoviesTests" */;
 			buildPhases = (
 				407237EB2F0BD3F300C276C3 /* Sources */,
 				407237EC2F0BD3F300C276C3 /* Frameworks */,
@@ -368,13 +368,13 @@
 				407237F22F0BD3F300C276C3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				407237F32F0BD3F300C276C3 /* CoreTests */,
+				407237F32F0BD3F300C276C3 /* MoviesTests */,
 			);
-			name = CoreTests;
+			name = MoviesTests;
 			packageProductDependencies = (
 			);
 			productName = CoreTests;
-			productReference = 407237EF2F0BD3F300C276C3 /* CoreTests.xctest */;
+			productReference = 407237EF2F0BD3F300C276C3 /* MoviesTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -424,8 +424,8 @@
 			targets = (
 				4000842F2F08877D00112D6B /* Course */,
 				4000843C2F08877F00112D6B /* CourseTests */,
-				407237E62F0BD3F300C276C3 /* Core */,
-				407237EE2F0BD3F300C276C3 /* CoreTests */,
+				407237E62F0BD3F300C276C3 /* Movies */,
+				407237EE2F0BD3F300C276C3 /* MoviesTests */,
 				401EB09D2F16C02700A32AB3 /* MoviesiOSUI */,
 				401EB0A52F16C02700A32AB3 /* MoviesiOSUITests */,
 			);
@@ -535,7 +535,7 @@
 		};
 		401EB0C02F16C0BF00A32AB3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 407237E62F0BD3F300C276C3 /* Core */;
+			target = 407237E62F0BD3F300C276C3 /* Movies */;
 			targetProxy = 401EB0BF2F16C0BF00A32AB3 /* PBXContainerItemProxy */;
 		};
 		401EB0C82F16C21400A32AB3 /* PBXTargetDependency */ = {
@@ -545,12 +545,12 @@
 		};
 		407237F22F0BD3F300C276C3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 407237E62F0BD3F300C276C3 /* Core */;
+			target = 407237E62F0BD3F300C276C3 /* Movies */;
 			targetProxy = 407237F12F0BD3F300C276C3 /* PBXContainerItemProxy */;
 		};
 		4080DE012F142CD900A1F9C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 407237E62F0BD3F300C276C3 /* Core */;
+			target = 407237E62F0BD3F300C276C3 /* Movies */;
 			targetProxy = 4080DE002F142CD900A1F9C6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1089,7 +1089,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		407237F62F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "Core" */ = {
+		407237F62F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "Movies" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				407237F72F0BD3F300C276C3 /* Debug */,
@@ -1098,7 +1098,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		407237F92F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "CoreTests" */ = {
+		407237F92F0BD3F300C276C3 /* Build configuration list for PBXNativeTarget "MoviesTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				407237FA2F0BD3F300C276C3 /* Debug */,

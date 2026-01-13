@@ -4,15 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Core.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>2</integer>
-		</dict>
 		<key>Course.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>Movies.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
 		</dict>
 		<key>MoviesiOS.xcscheme_^#shared#^_</key>
 		<dict>
@@ -33,6 +33,16 @@
 			<true/>
 		</dict>
 		<key>4000843C2F08877F00112D6B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>407237E62F0BD3F300C276C3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>407237EE2F0BD3F300C276C3</key>
 		<dict>
 			<key>primary</key>
 			<true/>

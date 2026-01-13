@@ -2,7 +2,7 @@
 
 
 import SwiftUI
-import Core
+import Movies
 
 public struct MoviesState {
     public var movies: [Movie]
