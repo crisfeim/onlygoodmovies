@@ -35,6 +35,7 @@ class MoviesTests: XCTestCase {
         XCTAssertEqual(state().movies, [mockMovie()])
         XCTAssertFalse(state().showLoading)
         XCTAssertFalse(state().showEmpty)
+        XCTAssertFalse(state().showError)
     }
     
     func test_loadShowsEmptyOnLoaderSuccessWithEmptyData() async {
@@ -43,6 +44,7 @@ class MoviesTests: XCTestCase {
         XCTAssertEqual(state().movies, [])
         XCTAssertFalse(state().showLoading)
         XCTAssertTrue(state().showEmpty)
+        XCTAssertFalse(state().showError)
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
