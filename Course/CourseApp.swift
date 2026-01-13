@@ -6,7 +6,7 @@ import Core
 // UI
 @main struct CourseApp: App {
     var remoteLoader: MoviesLoader {
-        { try await RemoteLoader(OnlyGoodMoviesApi.movies, urlSessionHTTPClient) }
+        { try await RemoteMoviesLoader(OnlyGoodMoviesApi.movies, urlSessionHTTPClient) }
     }
     
     var body: some Scene {
