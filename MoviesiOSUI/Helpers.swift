@@ -1,7 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
 import Movies
 
-func mockMovie() -> Movie {
+public func mockMovie() -> Movie {
     Movie(
         id: "17",
         title: "The Passion of the Christ",
@@ -12,6 +12,6 @@ func mockMovie() -> Movie {
 
 import Foundation
 
-func anyError() -> Error {
+public func anyError() -> Error {
     NSError(domain: "any-error", code: 0)
 }
