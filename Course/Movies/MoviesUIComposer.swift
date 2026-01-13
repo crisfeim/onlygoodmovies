@@ -4,7 +4,7 @@
 import SwiftUI
 import Core
 
-struct MoviesApp: View {
+struct MoviesUIComposer: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
@@ -25,7 +25,7 @@ struct MoviesApp: View {
 
 #Preview("App") {
     var shouldFail = false
-    MoviesApp {
+    MoviesUIComposer {
         try await Task.sleep(for: .seconds(1.5))
 
         if shouldFail {

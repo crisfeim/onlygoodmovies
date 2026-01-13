@@ -11,13 +11,12 @@ import Core
     
     var body: some Scene {
         WindowGroup {
-            MoviesApp(loader: remoteLoader ~> withRetry|2)
+            MoviesUIComposer(loader: remoteLoader ~> withRetry|2)
         }
     }
 }
 
 // Composition Decorators & Functional helpers
-
 infix operator ~>: AdditionPrecedence
 func ~> <T, V>(lhs: T, rhs: (T) -> V) -> V { rhs(lhs) }
 
