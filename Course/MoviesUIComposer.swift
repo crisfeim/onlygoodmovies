@@ -29,15 +29,22 @@ public struct MoviesUIComposer: View {
 
 #Preview("App") {
     var shouldFail = false
+    let movie = Movie(
+        id: "17",
+        title: "The Passion of the Christ",
+        posterURL: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
+        releaseYear: 2004
+    )
+    
     MoviesUIComposer {
         try await Task.sleep(for: .seconds(1.5))
 
         if shouldFail {
             shouldFail = false
-            throw anyError()
+            throw NSError(domain: "any-error", code: 0)
         } else {
             shouldFail = true
-            return [mockMovie(), mockMovie()]
+            return [movie, movie]
         }
     }
 }
