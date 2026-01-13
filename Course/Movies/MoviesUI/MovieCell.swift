@@ -3,7 +3,7 @@ import Core
 import SwiftUI
 
 struct MovieCell: View {
-    let movie: Movie
+    let movie: RemoteMovie
     var body: some View {
         HStack(spacing: 12) {
             AsyncImage(url: URL(string: movie.poster_url)) { image in

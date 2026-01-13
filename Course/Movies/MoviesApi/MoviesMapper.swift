@@ -6,10 +6,10 @@ import Core
 enum MoviesMapper {
     struct InvalidData: Error {}
     static let OK = 200
-    static var map: (Data, HTTPURLResponse) throws -> [Movie] {
+    static var map: (Data, HTTPURLResponse) throws -> [RemoteMovie] {
         { d, r in
             guard r.statusCode == OK else { throw InvalidData() }
-            return try JSONDecoder().decode([Movie].self, from: d)
+            return try JSONDecoder().decode([RemoteMovie].self, from: d)
         }
     }
 }

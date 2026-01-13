@@ -2,7 +2,7 @@
 import Core
 import Foundation
 
-var RemoteMoviesLoader: (URL, HTTPClient) async throws -> [Movie] {
+var RemoteMoviesLoader: (URL, HTTPClient) async throws -> [RemoteMovie] {
    { url, get in
        let (d, r) = try await get(url)
        return try MoviesMapper.map(d, r)
