@@ -57,6 +57,23 @@
 		407237EF2F0BD3F300C276C3 /* CoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4080DF552F16BA3B00A1F9C6 /* Exceptions for "Core" folder in "Course" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				MoviesUIComposer.swift,
+			);
+			target = 4000842F2F08877D00112D6B /* Course */;
+		};
+		4080DF562F16BA3B00A1F9C6 /* Exceptions for "Core" folder in "Core" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				MoviesUIComposer.swift,
+			);
+			target = 407237E62F0BD3F300C276C3 /* Core */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		400084322F08877D00112D6B /* Course */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -70,6 +87,10 @@
 		};
 		407237E82F0BD3F300C276C3 /* Core */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4080DF552F16BA3B00A1F9C6 /* Exceptions for "Core" folder in "Course" target */,
+				4080DF562F16BA3B00A1F9C6 /* Exceptions for "Core" folder in "Core" target */,
+			);
 			path = Core;
 			sourceTree = "<group>";
 		};
