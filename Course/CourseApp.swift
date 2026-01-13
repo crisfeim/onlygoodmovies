@@ -6,8 +6,12 @@ import MoviesiOSUI
 
 // UI
 @main struct CourseApp: App {
+    var httpClient: HTTPClient {
+        URLSessionHTTPClient(URLSession.shared)
+    }
+    
     var remoteLoader: MoviesLoader {
-        { try await RemoteMoviesLoader(OnlyGoodMoviesApi.movies, urlSessionHTTPClient) }
+        RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
     }
     
     var body: some Scene {
