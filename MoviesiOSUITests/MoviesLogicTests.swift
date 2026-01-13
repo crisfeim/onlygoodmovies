@@ -3,7 +3,7 @@ import XCTest
 import MoviesiOSUI
 import Movies
 
-class MoviesTests: XCTestCase {
+class MoviesLogicTests: XCTestCase {
     
     func test_assertInitialState() {
         let state = MoviesState()
