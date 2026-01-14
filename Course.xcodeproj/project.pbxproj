@@ -97,6 +97,23 @@
 		407237EF2F0BD3F300C276C3 /* MoviesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoviesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		401EB1B52F182AF100A32AB3 /* Exceptions for "MoviesiOSUI" folder in "MoviesiOSUI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ImageCacheLogic.swift,
+			);
+			target = 401EB09D2F16C02700A32AB3 /* MoviesiOSUI */;
+		};
+		401EB1B62F182AF100A32AB3 /* Exceptions for "MoviesiOSUI" folder in "MoviesiOSUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ImageCacheLogic.swift,
+			);
+			target = 401EB0A52F16C02700A32AB3 /* MoviesiOSUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		400084322F08877D00112D6B /* Course */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -110,6 +127,10 @@
 		};
 		401EB09F2F16C02700A32AB3 /* MoviesiOSUI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				401EB1B52F182AF100A32AB3 /* Exceptions for "MoviesiOSUI" folder in "MoviesiOSUI" target */,
+				401EB1B62F182AF100A32AB3 /* Exceptions for "MoviesiOSUI" folder in "MoviesiOSUITests" target */,
+			);
 			path = MoviesiOSUI;
 			sourceTree = "<group>";
 		};

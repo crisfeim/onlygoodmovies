@@ -5,18 +5,7 @@ import SwiftUI
 import Movies
 
 
-struct ImageCacheLogic {
-    @Binding var cache: ImageCache
-    let url: URL?
-    let client: HTTPClient
-    let mapper: (Data) -> UIImage?
-    
-    func loadImage() async {
-       if let url, let (d, _) = try? await client(url), let image = mapper(d) {
-            cache.cache(url, image)
-        }
-    }
-}
+
 
 
 class AsyncImageWithCacheTests: XCTestCase {
