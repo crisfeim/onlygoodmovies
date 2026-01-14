@@ -17,34 +17,31 @@ struct MovieCell: View {
     }
 }
 
+import UIKit
+
 fileprivate struct MoviePoster: View {
     @Environment(\.imageRenderer) var imageRenderer
     let path: String
     private var url: URL? { URL(string: path) }
     
     var body: some View {
-        imageRenderer(url)
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 40, height: 60)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+       imageRenderer(url)
+        .aspectRatio(contentMode: .fill)
+        .frame(width: 40, height: 60)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         
     }
 }
 
-struct DefaultImageRenderer: View {
-    let url: URL?
-
-    var body: some View {
-        AsyncImage(url: url) { image in
-            image.resizable()
-        } placeholder: {
-            ProgressView()
-        }
-    }
-}
-
 extension EnvironmentValues {
-    @Entry var imageRenderer: (URL?) -> DefaultImageRenderer = DefaultImageRenderer.init
+    @Entry var imageRenderer: (URL?) -> AsyncImageWithCache = { url in
+        AsyncImageWithCache(
+            cache: NSURLCache(countLimit: 1),
+            url: url,
+            client: URLSessionHTTPClient(URLSession.shared),
+            mapper: UIImage.init
+        )
+    }
 }
 
 fileprivate struct Shimmer: ViewModifier {

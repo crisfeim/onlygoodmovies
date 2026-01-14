@@ -2,54 +2,31 @@
 
 import SwiftUI
 
-public struct AsyncImageWithCache<Image: AnyObject, Fallback: View, Rendered: View>: View {
-    let cache: NSURLCache<Image>
+public struct AsyncImageWithCache: View {
+    let cache: NSURLCache<UIImage>
     let url: URL?
-    let fallback: (URL?) -> Fallback
-    let renderer: (Image) -> Rendered
-
     let client: HTTPClient
-    let mapper: (Data) -> Image?
+    let mapper: (Data) -> UIImage?
     
-    public enum Content: View {
-        case rendered(Rendered)
-        case fallback(Fallback)
-
-        @ViewBuilder
-        public var body: some View {
-            switch self {
-            case .rendered(let view): view
-            case .fallback(let view): view
-            }
-        }
-    }
-    
-    public init(
-        cache: NSURLCache<Image>,
-        url: URL?,
-        fallback: @escaping (URL?) -> Fallback,
-        renderer: @escaping (Image) -> Rendered,
-        client: @escaping HTTPClient,
-        mapper: @escaping (Data) -> Image?,
-        content: Content? = nil
-    ) {
+    public init(cache: NSURLCache<UIImage>, url: URL?, client: @escaping HTTPClient, mapper: @escaping (Data) -> UIImage?) {
         self.cache = cache
         self.url = url
-        self.fallback = fallback
-        self.renderer = renderer
         self.client = client
         self.mapper = mapper
-        self.content = content
     }
     
-    @State var content: Content?
     public var body: some View {
-        if let content { content }
-        else {
-            ProgressView()
-                .task { content = await render() }
+        if let url, let image = cache.get(url) {
+            Image(uiImage: image)
+        } else {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image.task { await loadImage() }
+                default: ProgressView()
+               }
+            }
         }
-            
     }
     
    public func loadImage() async {
@@ -57,13 +34,5 @@ public struct AsyncImageWithCache<Image: AnyObject, Fallback: View, Rendered: Vi
             cache.cache(url, image)
         }
     }
-   
-    public func render() async -> Content {
-        if let url, let image = cache.get(url) {
-            return .rendered(renderer(image))
-        } else {
-            await loadImage()
-            return .fallback(fallback(url))
-        }
-    }
 }
+

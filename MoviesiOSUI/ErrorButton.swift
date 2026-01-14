@@ -6,19 +6,11 @@ import SwiftUI
 struct ErrorButton: ToolbarContent {
     let action: () -> Void
     
-    #if os(iOS)
     var body: some ToolbarContent {
         ToolbarItem(placement: .bottomBar) {
             Button(action: action)
         }
     }
-    #endif
-    
-    #if os(macOS)
-    var body: some ToolbarContent {
-        ToolbarItem {}
-    }
-    #endif
     
     fileprivate struct Button: View {
 
