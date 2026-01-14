@@ -6,15 +6,7 @@ struct MovieCell: View {
     let movie: Movie
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: URL(string: movie.posterURL)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        ProgressView()
-                    }
-                    .frame(width: 40, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            MoviePoster(url: movie.posterURL)
             VStack(alignment: .leading) {
                 Text(movie.title)
                 Text(movie.releaseYear.description)
@@ -23,6 +15,50 @@ struct MovieCell: View {
             }
         }
     }
+}
+
+fileprivate struct MoviePoster: View {
+    let url: String
+    var body: some View {
+        AsyncImage(url: URL(string: url)) { image in
+            image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+        } placeholder: {
+            Rectangle()
+                .foregroundColor(.gray.opacity(0.5))
+                .modifier(Shimmer(opacity: 0.1))
+                
+        }
+        .frame(width: 40, height: 60)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+fileprivate struct Shimmer: ViewModifier {
+    
+    @State var isInitialState: Bool = true
+    private let color = Color.black
+    var opacity = 0.4
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                LinearGradient(
+                    gradient: .init(colors: [color.opacity(0.4), color, color.opacity(0.4)]),
+                    startPoint: (isInitialState ? .init(x: -0.3, y: -0.3) : .init(x: 1, y: 1)),
+                    endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 1.3, y: 1.3))
+                ).opacity(opacity)
+            }
+            .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
+            .onAppear() {
+                isInitialState = false
+            }
+    }
+}
+
+#Preview("MoviePoster", traits: .sizeThatFitsLayout) {
+    MoviePoster(url: "invalid").padding()
 }
 
 
