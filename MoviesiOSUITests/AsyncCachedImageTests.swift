@@ -5,53 +5,7 @@ import XCTest
 import SwiftUI
 import Movies
 
-struct AsyncImageWithCache<Image: AnyObject, Fallback: View, Rendered: View>: View {
-    let cache: NSURLCache<Image>
-    let url: URL?
-    let fallback: (URL?) -> Fallback
-    let renderer: (Image) -> Rendered
 
-    let client: HTTPClient
-    let mapper: (Data) -> Image?
-    
-    enum Content: View {
-        case rendered(Rendered)
-        case fallback(Fallback)
-
-        @ViewBuilder
-        var body: some View {
-            switch self {
-            case .rendered(let view): view
-            case .fallback(let view): view
-            }
-        }
-    }
-    
-    @State var content: Content?
-    var body: some View {
-        if let content { content }
-        else {
-            ProgressView()
-                .task { content = await render() }
-        }
-            
-    }
-    
-    func loadImage() async {
-        if let url, let (d, _) = try? await client(url), let image = mapper(d) {
-            cache.cache(url, image)
-        }
-    }
-   
-    func render() async -> Content {
-        if let url, let image = cache.get(url) {
-            return .rendered(renderer(image))
-        } else {
-            await loadImage()
-            return .fallback(fallback(url))
-        }
-    }
-}
 
 class AsyncImageWithCacheTests: XCTestCase {
     class Dummy {}
