@@ -1,28 +1,9 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 14/1/26.
 
 import XCTest
+import Movies
 
 class NSURLCacheTests: XCTestCase {
-    
-    class NSURLCache<Object: AnyObject> {
-        private let cache: NSCache<NSURL, Object> = {
-            let cache = NSCache<NSURL, Object>()
-            cache.totalCostLimit = 25 * 1024 * 1024
-            return cache
-        }()
-        
-        init(countLimit: Int) {
-            cache.countLimit = countLimit
-        }
-        
-        func get(_ url: URL) -> Object? {
-            cache.object(forKey: url as NSURL)
-        }
-        
-        func cache(_ url: URL, _ value: Object) {
-            cache.setObject(value, forKey: url as NSURL)
-        }
-    }
     
     func test_cache_storesAndRetrievesImage() {
         class Dummy { var some = "hello world" }
@@ -35,16 +16,16 @@ class NSURLCacheTests: XCTestCase {
     }
     
     func test_cache_evictsOldestItemWhenReachingCountLimit() {
-            let sut = NSURLCache<NSObject>(countLimit: 1)
-            let url1 = URL(string: "https://url1.com")!
-            let url2 = URL(string: "https://url2.com")!
-            let dummy1 = NSObject()
-            let dummy2 = NSObject()
-            
-            sut.cache(url1, dummy1)
-            sut.cache(url2, dummy2)
-            
-            XCTAssertNil(sut.get(url1), "First item should have been evicted")
-            XCTAssertNotNil(sut.get(url2), "Second image should exist")
-        }
+        let sut = NSURLCache<NSObject>(countLimit: 1)
+        let url1 = URL(string: "https://url1.com")!
+        let url2 = URL(string: "https://url2.com")!
+        let dummy1 = NSObject()
+        let dummy2 = NSObject()
+        
+        sut.cache(url1, dummy1)
+        sut.cache(url2, dummy2)
+        
+        XCTAssertNil(sut.get(url1), "First item should have been evicted")
+        XCTAssertNotNil(sut.get(url2), "Second image should exist")
+    }
 }
