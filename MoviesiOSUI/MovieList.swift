@@ -6,7 +6,7 @@ import SwiftUI
 public struct MovieList: View {
     @Binding var state: MoviesState
     @Environment(\.reload) var reload
-    
+   
     public init(state: Binding<MoviesState>) {
         self._state = state
     }
@@ -16,10 +16,29 @@ public struct MovieList: View {
             .refreshable { await reload() }
             .overlay { if state.showLoading { ProgressView() } }
             .overlay { if state.showEmpty { EmptyMoviesView() } }
-            .toolbar { if state.showError { ErrorButton { state.showError = false } }
-        }
+            .toolbar { if state.showError { ErrorButton { state.showError = false }}
+            }
+            .environment(\.imageCache, imageCache())
+    }
+    
+    // This will live as long as the MovieList parent lives.
+    // if MovieList is redrawn, cache will be destroyed
+    func imageCache() -> ImageCache {
+       var imageCacheStorage = [URL: Image]()
+       return (
+            get: { url in imageCacheStorage[url] },
+            set: { url, image in imageCacheStorage[url] = image }
+        )
     }
 }
+
+
+typealias ImageCache = (get: (URL) -> Image?, set: (URL, Image) -> Void)
+
+extension EnvironmentValues {
+    @Entry var imageCache: ImageCache = (get: { _ in nil }, set: { _, _ in })
+}
+
 
 public extension EnvironmentValues {
     @Entry var reload: () async -> Void = {}
@@ -99,3 +118,4 @@ fileprivate extension MoviesState {
     @Previewable @State var state = MoviesState.loadedWithError()
     MovieList(state: $state)
 }
+
