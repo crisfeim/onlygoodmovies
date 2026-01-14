@@ -4,29 +4,43 @@ import SwiftUI
 import Movies
 
 public struct AsyncImageWithCache: View {
-    @Environment(EnvironmentImageCache.self) var cache
-    let url: URL?
+   
+    @State var image: UIImage? = nil
     
+    static let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = .returnCacheDataElseLoad
+        config.urlCache = URLCache(
+            memoryCapacity: 50*1024*1024,
+            diskCapacity: 100*1024*1024,
+            diskPath: "images"
+        )
+        return URLSession(configuration: config)
+    }()
+    
+    let url: URL?
     public var body: some View {
-        if let url, let image = cache.get(url) {
-            Image(uiImage: image).resizable()
-        } else {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .task { await loadImage() }
-                default: Rectangle().foregroundColor(.gray.opacity(0.5))
-               }
+    Rectangle()
+        .fill(Color.gray.opacity(0.3))
+        .overlay {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
+        }
+        .onAppear {
+            if let url, let cachedResponse = Self.session.configuration.urlCache?.cachedResponse(for: URLRequest(url: url)),
+               let cachedImage = UIImage(data: cachedResponse.data) {
+                self.image = cachedImage
+                return
+            }
+        }
+        .task(id: url) {
+            if let url, let (data, _) = try? await Self.session.data(from: url),
+               let downloadedImage = UIImage(data: data) {
+               self.image = downloadedImage
             }
         }
     }
-    
-    func loadImage() async {
-       if let url, let (d, _) = try? await URLSession.shared.data(from: url), let image = UIImage(data: d) {
-            cache.cache(url, image)
-        }
-    }
 }
-
