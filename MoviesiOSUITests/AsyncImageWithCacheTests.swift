@@ -5,7 +5,6 @@ import SwiftUI
 import Movies
 
 
-@MainActor
 struct ImageCacheLogic {
     @Binding var cache: ImageCache
     let url: URL?
@@ -20,7 +19,6 @@ struct ImageCacheLogic {
 }
 
 
-@MainActor
 class AsyncImageWithCacheTests: XCTestCase {
     func test_loadImageDoesntCachesOnFailure() async {
         var cache = ImageCache(countLimit: 1)
