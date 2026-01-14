@@ -1,6 +1,5 @@
 import SwiftUI
 import XCTest
-import MoviesiOSUI
 import Movies
 
 class MoviesLogicTests: XCTestCase {

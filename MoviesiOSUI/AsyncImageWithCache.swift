@@ -3,21 +3,6 @@
 import SwiftUI
 import Movies
 
-@Observable public class EnvironmentImageCache {
-    private let cache: ImageCache
-    public init(countLimit: Int) {
-        cache = ImageCache(countLimit: countLimit)
-    }
-    
-    func cache(_ url: URL, _ value: UIImage) {
-        cache.cache(url, value)
-    }
-    
-    func get(_ url: URL) -> UIImage? {
-        cache.get(url)
-    }
-}
-
 public struct AsyncImageWithCache: View {
     @Environment(EnvironmentImageCache.self) var cache
     let url: URL?

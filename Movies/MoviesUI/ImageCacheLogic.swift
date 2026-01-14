@@ -1,18 +1,15 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 14/1/26.
 
-
-import XCTest
 import SwiftUI
-import Movies
 
-public struct ImageCacheLogic {
-    @Binding var cache: ImageCache
+public struct ImageCacheLogic<Image: AnyObject> {
+    let cache: ImageCache<Image>
     let url: URL?
     let client: HTTPClient
-    let mapper: (Data) -> UIImage?
+    let mapper: (Data) -> Image?
     
-    public init(cache: Binding<ImageCache>, url: URL?, client: @escaping HTTPClient, mapper: @escaping (Data) -> UIImage?) {
-        self._cache = cache
+    public init(cache: ImageCache<Image>, url: URL?, client: @escaping HTTPClient, mapper: @escaping (Data) -> Image?) {
+        self.cache = cache
         self.url = url
         self.client = client
         self.mapper = mapper

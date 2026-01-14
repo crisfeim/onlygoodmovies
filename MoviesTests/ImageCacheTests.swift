@@ -7,7 +7,7 @@ class NSURLCacheTests: XCTestCase {
     
     func test_cache_storesAndRetrievesImage() {
         class Dummy { var some = "hello world" }
-        let sut = NSURLCache<Dummy>(countLimit: 1)
+        let sut = ImageCache<Dummy>(countLimit: 1)
         let url = URL(string: "https://any-url.com")!
         let image = Dummy()
         sut.cache(url, image)
@@ -16,7 +16,7 @@ class NSURLCacheTests: XCTestCase {
     }
     
     func test_cache_evictsOldestItemWhenReachingCountLimit() {
-        let sut = NSURLCache<NSObject>(countLimit: 1)
+        let sut = ImageCache<NSObject>(countLimit: 1)
         let url1 = URL(string: "https://url1.com")!
         let url2 = URL(string: "https://url2.com")!
         let dummy1 = NSObject()
