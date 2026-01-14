@@ -21,6 +21,7 @@ public struct MoviesUIComposer: View {
         MovieList(state: $state)
             .environment(\.reload, useCase.refresh)
             .task { await useCase.load() }
+            .environment(EnvironmentImageCache(countLimit: 50))
     }
 }
 

@@ -2,6 +2,11 @@
 import SwiftUI
 import Movies
 
+struct MovieCellController {
+    let movie: Movie
+    func loadImage() {}
+}
+
 struct MovieCell: View {
     let movie: Movie
     var body: some View {
@@ -21,12 +26,12 @@ struct MovieCell: View {
 
 import UIKit
 
+
 fileprivate struct MoviePoster: View {
-    @Environment(\.imageRenderer) var imageRenderer
     let url: URL
     
     var body: some View {
-       imageRenderer(url)
+       AsyncImageWithCache(url: url)
         .aspectRatio(contentMode: .fill)
         .frame(width: 40, height: 60)
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -34,15 +39,6 @@ fileprivate struct MoviePoster: View {
     }
 }
 
-public extension EnvironmentValues {
-    @Entry var imageRenderer: (URL?) -> AsyncImageWithCache = { url in
-        AsyncImageWithCache(
-            cache: NSURLCache(countLimit: 1),
-            url: url,
-            mapper: UIImage.init
-        )
-    }
-}
 
  struct Shimmer: ViewModifier {
     

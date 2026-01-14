@@ -3,17 +3,25 @@
 import SwiftUI
 import Movies
 
-public struct AsyncImageWithCache: View {
-    let cache: NSURLCache<UIImage>
-    let url: URL?
-    let mapper: (Data) -> UIImage?
-    
-    public init(cache: NSURLCache<UIImage>, url: URL?, mapper: @escaping (Data) -> UIImage?) {
-        self.cache = cache
-        self.url = url
-        self.mapper = mapper
+@Observable public class EnvironmentImageCache {
+    private let cache: ImageCache
+    public init(countLimit: Int) {
+        cache = ImageCache(countLimit: countLimit)
     }
+    
+    func cache(_ url: URL, _ value: UIImage) {
+        cache.cache(url, value)
+    }
+    
+    func get(_ url: URL) -> UIImage? {
+        cache.get(url)
+    }
+}
 
+public struct AsyncImageWithCache: View {
+    @Environment(EnvironmentImageCache.self) var cache
+    let url: URL?
+    
     public var body: some View {
         if let url, let image = cache.get(url) {
             Image(uiImage: image).resizable()
@@ -31,7 +39,7 @@ public struct AsyncImageWithCache: View {
     }
     
     func loadImage() async {
-       if let url, let (d, _) = try? await URLSession.shared.data(from: url), let image = mapper(d) {
+       if let url, let (d, _) = try? await URLSession.shared.data(from: url), let image = UIImage(data: d) {
             cache.cache(url, image)
         }
     }
