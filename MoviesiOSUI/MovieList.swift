@@ -16,29 +16,9 @@ public struct MovieList: View {
             .refreshable { await reload() }
             .overlay { if state.showLoading { ProgressView() } }
             .overlay { if state.showEmpty { EmptyMoviesView() } }
-            .toolbar { if state.showError { ErrorButton { state.showError = false }}
-            }
-            .environment(\.imageCache, imageCache())
-    }
-    
-    // This will live as long as the MovieList parent lives.
-    // if MovieList is redrawn, cache will be destroyed
-    func imageCache() -> ImageCache {
-       var imageCacheStorage = [URL: Image]()
-       return (
-            get: { url in imageCacheStorage[url] },
-            set: { url, image in imageCacheStorage[url] = image }
-        )
+            .toolbar { if state.showError { ErrorButton { state.showError = false } } }
     }
 }
-
-
-typealias ImageCache = (get: (URL) -> Image?, set: (URL, Image) -> Void)
-
-extension EnvironmentValues {
-    @Entry var imageCache: ImageCache = (get: { _ in nil }, set: { _, _ in })
-}
-
 
 public extension EnvironmentValues {
     @Entry var reload: () async -> Void = {}
