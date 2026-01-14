@@ -2,44 +2,18 @@
 
 import XCTest
 
-/*
- Solution
- 
- - Uses underlying AsyncImage
- - If AsyncImage with success, caches image
- - Allows decoupling from solution
- - Handles memory pressure
- - Is functional, doesn't creates clasess
- */
-
-/*
- 
- CustomImage(url) ->
-    Cache
-    AsyncImage
- 
- Cache
-    Api:
-        access() -> Cache
-        get(url) -> UIImage?
-        set(url)
-    Limits
-        100 images
-        25mb
- */
-
-
-import XCTest
-
 class NSURLCacheTests: XCTestCase {
     
     class NSURLCache<Object: AnyObject> {
         private let cache: NSCache<NSURL, Object> = {
             let cache = NSCache<NSURL, Object>()
-            cache.countLimit = 100
             cache.totalCostLimit = 25 * 1024 * 1024
             return cache
         }()
+        
+        init(countLimit: Int) {
+            cache.countLimit = countLimit
+        }
         
         func get(_ url: URL) -> Object? {
             cache.object(forKey: url as NSURL)
@@ -52,11 +26,25 @@ class NSURLCacheTests: XCTestCase {
     
     func test_cache_storesAndRetrievesImage() {
         class Dummy { var some = "hello world" }
-        let sut = NSURLCache<Dummy>()
+        let sut = NSURLCache<Dummy>(countLimit: 1)
         let url = URL(string: "https://any-url.com")!
         let image = Dummy()
         sut.cache(url, image)
         
         XCTAssertEqual(sut.get(url)?.some, "hello world")
     }
+    
+    func test_cache_evictsOldestItemWhenReachingCountLimit() {
+            let sut = NSURLCache<NSObject>(countLimit: 1)
+            let url1 = URL(string: "https://url1.com")!
+            let url2 = URL(string: "https://url2.com")!
+            let dummy1 = NSObject()
+            let dummy2 = NSObject()
+            
+            sut.cache(url1, dummy1)
+            sut.cache(url2, dummy2)
+            
+            XCTAssertNil(sut.get(url1), "First item should have been evicted")
+            XCTAssertNotNil(sut.get(url2), "Second image should exist")
+        }
 }
