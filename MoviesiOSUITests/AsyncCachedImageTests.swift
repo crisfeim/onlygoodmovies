@@ -7,11 +7,14 @@ import Movies
 
 struct AsyncImageWithCache<Image: AnyObject> {
     let cache: NSURLCache<Image>
+    let url: URL?
+    
     let client: HTTPClient
     let mapper: (Data) -> Image?
+  
     
-    func loadImage(url: URL) async {
-        if let (d, _) = try? await client(url), let image = mapper(d) {
+    func loadImage() async {
+        if let url, let (d, _) = try? await client(url), let image = mapper(d) {
             cache.cache(url, image)
         }
     }
@@ -22,29 +25,32 @@ class AsyncImageWithCacheTests: XCTestCase {
         class Dummy {}
         let cache = NSURLCache<Dummy>(countLimit: 1)
         
+        let url = URL(string: "https://www.google.com")!
+        
         let sut = AsyncImageWithCache<Dummy>(
             cache: cache,
+            url: url,
             client: { _ in throw NSError(domain: "any-error", code: 0) },
             mapper: { _ in Dummy() }
         )
 
-        let url = URL(string: "https://www.google.com")!
-        await sut.loadImage(url: url)
+       
+        await sut.loadImage()
         XCTAssertNil(cache.get(url))
     }
     
     func test_loadImageCachesDataOnRequesSuccess() async {
         class Dummy {}
         let cache = NSURLCache<Dummy>(countLimit: 1)
-        
+        let url = URL(string: "https://www.google.com")!
         let sut = AsyncImageWithCache<Dummy>(
             cache: cache,
+            url: url,
             client: { _ in (Data(), HTTPURLResponse()) },
             mapper: { _ in Dummy() }
         )
-
-        let url = URL(string: "https://www.google.com")!
-        await sut.loadImage(url: url)
+       
+        await sut.loadImage()
         XCTAssertNotNil(cache.get(url))
     }
 }
