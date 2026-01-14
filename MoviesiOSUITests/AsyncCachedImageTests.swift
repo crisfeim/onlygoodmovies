@@ -8,15 +8,20 @@ import Movies
 struct AsyncImageWithCache<Image: AnyObject> {
     let cache: NSURLCache<Image>
     let url: URL?
+    let fallback: (URL?) -> AsyncImage<Text>
     
     let client: HTTPClient
     let mapper: (Data) -> Image?
-    
+   
     
     func loadImage() async {
         if let url, let (d, _) = try? await client(url), let image = mapper(d) {
             cache.cache(url, image)
         }
+    }
+    
+    func render() {
+       _ = fallback(url)
     }
 }
 
@@ -38,11 +43,31 @@ class AsyncImageWithCacheTests: XCTestCase {
         XCTAssertNotNil(cache.get(url))
     }
     
-    func makeSUT(url: URL, client: @escaping HTTPClient, mapper: @escaping (Data) -> Dummy? = anyMapper()) -> (sut: AsyncImageWithCache<Dummy>, cache: NSURLCache<Dummy>) {
+    func test_renderDisplaysFallbackOnNonExistentImage() async {
+        let url = URL(string: "https://www.google.com")!
+        var fallbackCalled = false
+        let fallback = { url in
+            fallbackCalled = true
+            return AsyncImage(url: url) { _ in
+                Text("hello")
+            }
+        }
+        let (sut, _) = makeSUT(url: url, fallback: fallback, client: { _ in (Data(), HTTPURLResponse()) })
+        sut.render()
+        XCTAssertTrue(fallbackCalled)
+    }
+    
+    func makeSUT(
+        url: URL,
+        fallback: @escaping (URL?) -> AsyncImage<Text> = { url in AsyncImage(url: url) { _ in  Text("hello") } },
+        client: @escaping HTTPClient,
+        mapper: @escaping (Data) -> Dummy? = anyMapper()
+    ) -> (sut: AsyncImageWithCache<Dummy>, cache: NSURLCache<Dummy>) {
         let cache = NSURLCache<Dummy>(countLimit: 1)
         let sut = AsyncImageWithCache<Dummy>(
             cache: cache,
             url: url,
+            fallback: fallback,
             client: client,
             mapper: mapper
         )
