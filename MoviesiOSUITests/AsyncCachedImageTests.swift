@@ -5,11 +5,12 @@ import XCTest
 import SwiftUI
 import Movies
 
-struct AsyncImageWithCache<Image: AnyObject> {
+struct AsyncImageWithCache<Image: AnyObject, Rendered: View> {
     let cache: NSURLCache<Image>
     let url: URL?
     let fallback: (URL?) -> AsyncImage<Text>
-    
+    let renderer: (Image) -> Rendered
+
     let client: HTTPClient
     let mapper: (Data) -> Image?
    
@@ -21,7 +22,11 @@ struct AsyncImageWithCache<Image: AnyObject> {
     }
     
     func render() {
-       _ = fallback(url)
+        if let url, let image = cache.get(url) {
+            _ = renderer(image)
+        } else {
+            _ = fallback(url)
+        }
     }
 }
 
@@ -57,17 +62,29 @@ class AsyncImageWithCacheTests: XCTestCase {
         XCTAssertTrue(fallbackCalled)
     }
     
+    func test_renderDisplaysImageOnExistentImage() async {
+        let url = URL(string: "https://www.google.com")!
+        var rendererCalled = false
+        let renderer = { (_: Dummy) in rendererCalled = true ; return Text("rendered") }
+        let (sut, _) = makeSUT(url: url, renderer: renderer, client: { _ in (Data(), HTTPURLResponse()) })
+        await sut.loadImage()
+        sut.render()
+        XCTAssertTrue(rendererCalled)
+    }
+    
     func makeSUT(
         url: URL,
         fallback: @escaping (URL?) -> AsyncImage<Text> = { url in AsyncImage(url: url) { _ in  Text("hello") } },
+        renderer: @escaping (Dummy) -> Text = { _ in Text("rendered") },
         client: @escaping HTTPClient,
         mapper: @escaping (Data) -> Dummy? = anyMapper()
-    ) -> (sut: AsyncImageWithCache<Dummy>, cache: NSURLCache<Dummy>) {
+    ) -> (sut: AsyncImageWithCache<Dummy, Text>, cache: NSURLCache<Dummy>) {
         let cache = NSURLCache<Dummy>(countLimit: 1)
-        let sut = AsyncImageWithCache<Dummy>(
+        let sut = AsyncImageWithCache<Dummy, Text>(
             cache: cache,
             url: url,
             fallback: fallback,
+            renderer: renderer,
             client: client,
             mapper: mapper
         )
