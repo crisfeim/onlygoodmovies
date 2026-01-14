@@ -5,27 +5,50 @@ import XCTest
 import SwiftUI
 import Movies
 
-struct AsyncImageWithCache<Image: AnyObject, Rendered: View> {
+struct AsyncImageWithCache<Image: AnyObject, Fallback: View, Rendered: View>: View {
     let cache: NSURLCache<Image>
     let url: URL?
-    let fallback: (URL?) -> AsyncImage<Text>
+    let fallback: (URL?) -> Fallback
     let renderer: (Image) -> Rendered
 
     let client: HTTPClient
     let mapper: (Data) -> Image?
-   
+    
+    enum Content: View {
+        case rendered(Rendered)
+        case fallback(Fallback)
+
+        @ViewBuilder
+        var body: some View {
+            switch self {
+            case .rendered(let view): view
+            case .fallback(let view): view
+            }
+        }
+    }
+    
+    @State var content: Content?
+    var body: some View {
+        if let content { content }
+        else {
+            ProgressView()
+                .task { content = await render() }
+        }
+            
+    }
     
     func loadImage() async {
         if let url, let (d, _) = try? await client(url), let image = mapper(d) {
             cache.cache(url, image)
         }
     }
-    
-    func render() {
+   
+    func render() async -> Content {
         if let url, let image = cache.get(url) {
-            _ = renderer(image)
+            return .rendered(renderer(image))
         } else {
-            _ = fallback(url)
+            await loadImage()
+            return .fallback(fallback(url))
         }
     }
 }
@@ -58,7 +81,7 @@ class AsyncImageWithCacheTests: XCTestCase {
             }
         }
         let (sut, _) = makeSUT(url: url, fallback: fallback, client: { _ in (Data(), HTTPURLResponse()) })
-        sut.render()
+        _ = await sut.render()
         XCTAssertTrue(fallbackCalled)
     }
     
@@ -68,8 +91,15 @@ class AsyncImageWithCacheTests: XCTestCase {
         let renderer = { (_: Dummy) in rendererCalled = true ; return Text("rendered") }
         let (sut, _) = makeSUT(url: url, renderer: renderer, client: { _ in (Data(), HTTPURLResponse()) })
         await sut.loadImage()
-        sut.render()
+        _ = await sut.render()
         XCTAssertTrue(rendererCalled)
+    }
+    
+    func test_renderCachesImageOnNonExistentImage() async {
+        let url = URL(string: "https://www.google.com")!
+        let (sut, cache) = makeSUT(url: url, client: { _ in (Data(), HTTPURLResponse()) })
+        _ = await sut.render()
+        XCTAssertNotNil(cache.get(url))
     }
     
     func makeSUT(
@@ -78,9 +108,9 @@ class AsyncImageWithCacheTests: XCTestCase {
         renderer: @escaping (Dummy) -> Text = { _ in Text("rendered") },
         client: @escaping HTTPClient,
         mapper: @escaping (Data) -> Dummy? = anyMapper()
-    ) -> (sut: AsyncImageWithCache<Dummy, Text>, cache: NSURLCache<Dummy>) {
+    ) -> (sut: AsyncImageWithCache<Dummy, AsyncImage<Text>, Text>, cache: NSURLCache<Dummy>) {
         let cache = NSURLCache<Dummy>(countLimit: 1)
-        let sut = AsyncImageWithCache<Dummy, Text>(
+        let sut = AsyncImageWithCache<Dummy, AsyncImage<Text>, Text>(
             cache: cache,
             url: url,
             fallback: fallback,
