@@ -6,7 +6,7 @@ struct MovieCell: View {
     let movie: Movie
     var body: some View {
         HStack(spacing: 12) {
-            MoviePoster(url: movie.posterURL)
+            MoviePoster(path: movie.posterURL)
             VStack(alignment: .leading) {
                 Text(movie.title)
                 Text(movie.releaseYear.description)
@@ -18,37 +18,34 @@ struct MovieCell: View {
 }
 
 fileprivate struct MoviePoster: View {
-    @Environment(\.imageCache) var imageCache
-    let url: String
+    @Environment(\.imageRenderer) var imageRenderer
+    let path: String
+    private var url: URL? { URL(string: path) }
+    
     var body: some View {
-        if let url = URL(string: url), let image = imageCache.get(url) {
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 40, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-        } else {
-            AsyncImage(url: URL(string: url)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .onAppear {
-                        print("Caching: \(url)")
-                        print("Is cached: \(imageCache.get(URL(string: url)!) != nil)")
-                        imageCache.set(URL(string: url)!, image)
-                    }
-            } placeholder: {
-                Rectangle()
-                    .foregroundColor(.gray.opacity(0.5))
-                    .modifier(Shimmer(opacity: 0.1))
-                
-            }
+        imageRenderer(url)
+            .aspectRatio(contentMode: .fill)
             .frame(width: 40, height: 60)
             .clipShape(RoundedRectangle(cornerRadius: 8))
+        
+    }
+}
+
+struct DefaultImageRenderer: View {
+    let url: URL?
+
+    var body: some View {
+        AsyncImage(url: url) { image in
+            image.resizable()
+        } placeholder: {
+            ProgressView()
         }
     }
 }
 
+extension EnvironmentValues {
+    @Entry var imageRenderer: (URL?) -> DefaultImageRenderer = DefaultImageRenderer.init
+}
 
 fileprivate struct Shimmer: ViewModifier {
     
@@ -80,3 +77,4 @@ fileprivate struct Shimmer: ViewModifier {
 #Preview(traits: .sizeThatFitsLayout) {
     MovieCell(movie: mockMovie()).padding()
 }
+
