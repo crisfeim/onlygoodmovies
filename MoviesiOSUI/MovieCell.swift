@@ -6,7 +6,9 @@ struct MovieCell: View {
     let movie: Movie
     var body: some View {
         HStack(spacing: 12) {
-            MoviePoster(path: movie.posterURL)
+            if let url = URL(string: movie.posterURL) {
+                MoviePoster(url: url)
+            }
             VStack(alignment: .leading) {
                 Text(movie.title)
                 Text(movie.releaseYear.description)
@@ -21,8 +23,7 @@ import UIKit
 
 fileprivate struct MoviePoster: View {
     @Environment(\.imageRenderer) var imageRenderer
-    let path: String
-    private var url: URL? { URL(string: path) }
+    let url: URL
     
     var body: some View {
        imageRenderer(url)
@@ -33,18 +34,17 @@ fileprivate struct MoviePoster: View {
     }
 }
 
-extension EnvironmentValues {
+public extension EnvironmentValues {
     @Entry var imageRenderer: (URL?) -> AsyncImageWithCache = { url in
         AsyncImageWithCache(
             cache: NSURLCache(countLimit: 1),
             url: url,
-            client: URLSessionHTTPClient(URLSession.shared),
             mapper: UIImage.init
         )
     }
 }
 
-fileprivate struct Shimmer: ViewModifier {
+ struct Shimmer: ViewModifier {
     
     @State var isInitialState: Bool = true
     private let color = Color.black

@@ -8,7 +8,7 @@ public struct MoviesUIComposer: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
-
+   
     var useCase: MoviesLogic {
         .init(state: $state, loader: loader)
     }

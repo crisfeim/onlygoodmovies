@@ -6,9 +6,7 @@ import MoviesiOSUI
 
 // UI
 @main struct CourseApp: App {
-    var httpClient: HTTPClient {
-        URLSessionHTTPClient(URLSession.shared)
-    }
+    let httpClient = URLSessionHTTPClient(URLSession.shared)
     
     var remoteLoader: MoviesLoader {
         RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
@@ -16,8 +14,18 @@ import MoviesiOSUI
     
     var body: some Scene {
         WindowGroup {
-            MoviesUIComposer(loader: remoteLoader ~> withRetry|2)
+            MoviesUIComposer(loader: remoteLoader)
+                .environment(\.imageRenderer, imageRenderer)
         }
+    }
+    
+    private let cache = NSURLCache<UIImage>(countLimit: 50)
+    func imageRenderer(_ url: URL?) -> AsyncImageWithCache {
+        AsyncImageWithCache(
+            cache: cache,
+            url: url,
+            mapper: UIImage.init(data:)
+        )
     }
 }
 
