@@ -4,19 +4,7 @@ import SwiftUI
 @MainActor
 class ImageLoadFromCacheUseCaseTests: XCTestCase {
     
-    typealias ImagesStore = (URL) -> Image?
-    
-    struct AsyncImageLogic {
-        let url: URL?
-        @Binding var image: Image?
-        let store: ImagesStore
-        func load() {
-            guard image == nil, let url, let image = store(url) else { return }
-            self.image = image
-        }
-    }
-    
-    func test_loadDoesntDeliverImageOnInit() {
+    func test_initDoesntDeliverImage() {
         let binding = makeBinding(Optional<Image>.none)
         let _ = makeSUT(image: binding)
         XCTAssertNil(binding.wrappedValue)
@@ -55,6 +43,32 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase {
         }
         sut.load()
         XCTAssertFalse(storeCalled)
+    }
+    
+    func makeSUT(url: URL? = anyURL(), image: Binding<Image?>, store: @escaping ImagesStore = { _ in nil }) -> AsyncImageLogic {
+        AsyncImageLogic(url: url, image: image, store: store)
+    }
+}
+
+
+typealias ImagesStore = (URL) -> Image?
+
+struct AsyncImageLogic {
+    let url: URL?
+    @Binding var image: Image?
+    let store: ImagesStore
+    func load() {
+        guard image == nil, let url, let image = store(url) else { return }
+        self.image = image
+    }
+}
+
+@MainActor
+class ImageLoadFromRemoteUseCaseTests: XCTestCase {
+    func test_initDoesntDeliverImage() {
+        let binding = makeBinding(Optional<Image>.none)
+        let _ = makeSUT(image: binding)
+        XCTAssertNil(binding.wrappedValue)
     }
     
     func makeSUT(url: URL? = anyURL(), image: Binding<Image?>, store: @escaping ImagesStore = { _ in nil }) -> AsyncImageLogic {
