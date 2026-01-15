@@ -2,6 +2,7 @@ import SwiftUI
 import XCTest
 import Movies
 
+@MainActor
 class MoviesLogicTests: XCTestCase {
     
     func test_assertInitialState() {
@@ -79,6 +80,7 @@ class MoviesLogicTests: XCTestCase {
         return (MoviesLogic(state: binding, loader: loader), { binding.wrappedValue })
     }
     
+    
     fileprivate class BindingSpy {
         var capturedStates: [MoviesState] = []
         private let initState: MoviesState
@@ -87,6 +89,7 @@ class MoviesLogicTests: XCTestCase {
             self.initState = initState
         }
         
+        @MainActor
         var binding: Binding<MoviesState> {
             .init(get: { self.initState }, set: { self.capturedStates.append($0) })
         }
@@ -96,6 +99,7 @@ class MoviesLogicTests: XCTestCase {
 
 fileprivate func anyLoader() -> MoviesLoader {{[]}}
 
+@MainActor
 fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
    var value = value
    return Binding(get: { value }, set: { value = $0 })
