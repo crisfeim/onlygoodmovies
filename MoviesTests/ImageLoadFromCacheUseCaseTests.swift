@@ -65,7 +65,7 @@ struct AsyncImageLogic {
     }
     
     func download() async {
-        guard let url else { return }
+        guard let url, image == nil else { return }
         image = try? await loader(url)
     }
 }
@@ -91,6 +91,15 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase {
         await sut.download()
         XCTAssertNotNil(binding.wrappedValue)
     }
+    
+    func test_downloadDoesntLoadDataWhenExistentImage() async {
+        let binding = makeBinding(Optional<Image>.some(Image("")))
+        var loaderCalled = false
+        let sut = makeSUT(image: binding) { _ in  loaderCalled = true ; return Image("")}
+        await sut.download()
+        XCTAssertFalse(loaderCalled)
+    }
+    
     
    
     func makeSUT(url: URL? = anyURL(), image: Binding<Image?>, loader: @escaping ImagesLoader = { _ in nil }) -> AsyncImageLogic {
