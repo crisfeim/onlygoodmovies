@@ -4,13 +4,12 @@ import SwiftUI
 import Movies
 import MoviesiOSUI
 
-// UI
-@main struct CourseApp: App {
+fileprivate let httpClient   = URLSessionHTTPClient(URLSession.shared)
+fileprivate let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
 
+@main struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
-             let httpClient = URLSessionHTTPClient(URLSession.shared)
-             let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
              MoviesUIComposer(loader: remoteLoader)
         }
     }
