@@ -9,33 +9,42 @@ public struct AsyncImageLogic {
     public typealias Result = Swift.Result<Image, Error>
     struct ImageDecodingError: Error {}
     let url: URL?
-    @Binding var result: Result?
+    @Binding var phase: AsyncImagePhase
     let store: ImagesStore?
     let loader: ImagesLoader?
     
-    public init(url: URL?, result: Binding<Result?>, store: ImagesStore?, loader: ImagesLoader?) {
+    public init(url: URL?, phase: Binding<AsyncImagePhase>, store: ImagesStore?, loader: ImagesLoader?) {
         self.url = url
-        self._result = result
+        self._phase = phase
         self.store = store
         self.loader = loader
     }
     
     public func load() {
-        guard result == nil, let url, let image = store?(url) else { return }
-        self.result = .success(image)
+        guard phase.image == nil, let url, let image = store?(url) else { return }
+        phase = .success(image)
     }
     
     public func download() async {
-        guard let url, result == nil else { return }
+        guard let url, phase.image == nil else { return }
         do {
             guard let image = try await loader?(url) else {
-                result = .failure(ImageDecodingError())
+                phase = .failure(ImageDecodingError())
                 return
             }
-            result = .success(image)
+            phase = .success(image)
         } catch {
-            result = .failure(error)
+            phase = .failure(error)
         }
       
+    }
+}
+
+fileprivate extension AsyncImagePhase {
+    var image: Image? {
+        switch self {
+        case .success(let i): return i
+        default: return nil
+        }
     }
 }

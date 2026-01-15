@@ -4,22 +4,22 @@ import SwiftUI
 import Movies
 
 @MainActor
-class ImageLoadFromRemoteUseCaseTests: XCTestCase {
+class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     func test_initDoesntDeliverImage() {
         let (_, state) = makeSUT()
-        XCTAssertNil(state())
+        XCTAssertTrue(isEmpty(state()))
     }
     
     func test_downloadDeliversErrorOnLoadingFailure() async {
         let (sut, state) = makeSUT() { _ in throw NSError(domain: "any-error", code: 0) }
         await sut.download()
-        XCTAssertNotNil(state()?.error)
+        XCTAssertNotNil(state().error)
     }
     
     func test_downloadDeliversImageOnLoaderSuccess() async {
         let (sut, state) = makeSUT() { _ in  Image("") }
         await sut.download()
-        XCTAssertEqual(try? state()?.get(), Image(""))
+        XCTAssertEqual(state().image, Image(""))
     }
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
@@ -29,9 +29,9 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase {
         XCTAssertFalse(loaderCalled)
     }
    
-    func makeSUT(url: URL? = anyURL(), _ result: AsyncImageLogic.Result? = nil, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: AsyncImageLogic, state: () -> AsyncImageLogic.Result?) {
-        let binding = makeBinding(result)
-        return (sut: AsyncImageLogic(url: url, result: binding, store: { _ in nil }, loader: loader), state: { binding.wrappedValue })
+    func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: AsyncImageLogic, state: () -> AsyncImagePhase) {
+        let binding = makeBinding(phase)
+        return (sut: AsyncImageLogic(url: url, phase: binding, store: { _ in nil }, loader: loader), state: { binding.wrappedValue })
     }
 }
 

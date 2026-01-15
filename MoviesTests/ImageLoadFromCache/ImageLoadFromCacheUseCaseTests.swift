@@ -3,17 +3,17 @@ import SwiftUI
 import Movies
 
 @MainActor
-class ImageLoadFromCacheUseCaseTests: XCTestCase {
+class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     
     func test_initDoesntDeliverResult() {
         let (_, state) = makeSUT()
-        XCTAssertNil(state())
+        XCTAssertTrue(isEmpty(state()))
     }
     
     func test_loadDoesntDeliverImageOnEmptyStore() {
         let (sut, state) =  makeSUT()
         sut.load()
-        XCTAssertNil(state())
+        XCTAssertTrue(isEmpty(state()))
     }
     
     func test_loadDoesntDeliverImageIfURLDoesntMatchWhenNonEmptyStore() {
@@ -22,13 +22,13 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase {
             return Image("")
         }
         sut.load()
-        XCTAssertNil(state())
+        XCTAssertTrue(isEmpty(state()))
     }
     
     func test_loadDeliversImageIfURLMatchesWithStoredImage() {
         let (sut, state) = makeSUT() { url in url == anyURL()! ? Image("") : nil }
         sut.load()
-        XCTAssertEqual(try? state()?.get(), Image(""))
+        XCTAssertEqual(state().image, Image(""))
     }
     
     func test_loadDoesntMessagesTheStoreIfImageIsAlreadySet() {
@@ -41,9 +41,9 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase {
         XCTAssertFalse(storeCalled)
     }
     
-    func makeSUT(url: URL? = anyURL(), _ result: AsyncImageLogic.Result? = nil, store: @escaping ImagesStore = { _ in nil }) -> (sut: AsyncImageLogic, state: () -> AsyncImageLogic.Result?) {
-        let binding = makeBinding(result)
-        return (sut: AsyncImageLogic(url: url, result: binding, store: store, loader: { _ in nil }), state: { binding.wrappedValue })
+    func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: AsyncImageLogic, state: () -> AsyncImagePhase) {
+        let binding = makeBinding(phase)
+        return (sut: AsyncImageLogic(url: url, phase: binding, store: store, loader: { _ in nil }), state: { binding.wrappedValue })
     }
 }
 
