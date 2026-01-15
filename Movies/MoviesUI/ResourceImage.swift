@@ -3,7 +3,7 @@
 import SwiftUI
 
 @MainActor
-public struct AsyncImage<Content: View>: View {
+public struct ResourceImage<Content: View>: View {
     
     @Environment(\.imagesStore) var store
     @Environment(\.imagesLoader) var loader
@@ -13,7 +13,7 @@ public struct AsyncImage<Content: View>: View {
     
     @State private var phase = AsyncImagePhase.empty
     
-    var logic: AsyncImageLogic {
+    var logic: ResourceImageLogic {
         .init(url: url, phase: $phase, store: store, loader: loader)
     }
     

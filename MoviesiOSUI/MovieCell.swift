@@ -21,7 +21,7 @@ fileprivate struct MoviePoster: View {
     let path: String
     
     var body: some View {
-        Movies.AsyncImage(url: URL(string: path)) { phase in
+        ResourceImage(url: URL(string: path)) { phase in
             switch phase {
             case .success(let image): image.resizable()
             case .failure: Text("Error")

@@ -5,7 +5,7 @@ public typealias ImagesStore = (URL) -> Image?
 public typealias ImagesLoader = (URL) async throws -> Image?
 
 @MainActor
-public struct AsyncImageLogic {
+public struct ResourceImageLogic {
     public typealias Result = Swift.Result<Image, Error>
     struct ImageDecodingError: Error {}
     let url: URL?
