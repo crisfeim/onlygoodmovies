@@ -99,11 +99,6 @@ class MoviesLogicTests: XCTestCase {
 
 fileprivate func anyLoader() -> MoviesLoader {{[]}}
 
-@MainActor
-fileprivate func makeBinding<T>(_ value: T) -> Binding<T> {
-   var value = value
-   return Binding(get: { value }, set: { value = $0 })
-}
 
 fileprivate func mockMovie() -> Movie {
     Movie(id: "id", title: "title", posterURL: "potter_url", releaseYear: 2020)
