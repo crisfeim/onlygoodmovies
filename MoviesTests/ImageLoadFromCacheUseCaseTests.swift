@@ -4,7 +4,7 @@ import SwiftUI
 @MainActor
 class ImageLoadFromCacheUseCaseTests: XCTestCase {
     
-    func test_initDoesntDeliverImage() {
+    func test_initDoesntDeliverResult() {
         let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
         let _ = makeSUT(binding: binding)
         XCTAssertNil(binding.wrappedValue)
@@ -31,7 +31,7 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase {
         let binding =  makeBinding(Optional<AsyncImageLogic.Result>.none)
         let sut = makeSUT(binding: binding) { url in url == anyURL()! ? Image("") : nil }
         sut.load()
-        XCTAssertNotNil(binding.wrappedValue)
+        XCTAssertEqual(try? binding.wrappedValue?.get(), Image(""))
     }
     
     func test_loadDoesntMessagesTheStoreIfImageIsAlreadySet() {
@@ -100,7 +100,7 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase {
         let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
         let sut = makeSUT(binding: binding) { _ in  Image("") }
         await sut.download()
-        XCTAssertNotNil(binding.wrappedValue)
+        XCTAssertEqual(try? binding.wrappedValue?.get(), Image(""))
     }
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
