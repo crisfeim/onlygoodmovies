@@ -2,11 +2,6 @@
 import SwiftUI
 import Movies
 
-struct MovieCellController {
-    let movie: Movie
-    func loadImage() {}
-}
-
 struct MovieCell: View {
     let movie: Movie
     var body: some View {
@@ -23,9 +18,6 @@ struct MovieCell: View {
         }
     }
 }
-
-import UIKit
-
 
 fileprivate struct MoviePoster: View {
     let url: URL
