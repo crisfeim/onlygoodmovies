@@ -31,9 +31,9 @@ class AsyncImageLogicTests: XCTestCase {
     
     func test_loadDoesntDeliverImageIfURLDoesntMatchWhenNonEmptyStore() {
         let binding = makeBinding(Optional<Image>.none)
-        let storage: [URL: Image] = [URL(string: "https://some-stored-url.com")!: Image("")]
         let sut = makeSUT(image: binding) { url in
-            storage[url]
+            if url != URL(string: "https://stored.com") { return nil }
+            return Image("")
         }
         sut.load()
         XCTAssertNil(binding.wrappedValue)
@@ -41,8 +41,7 @@ class AsyncImageLogicTests: XCTestCase {
     
     func test_loadDeliversImageIfURLMatchesWithStoredImage() {
         let binding = makeBinding(Optional<Image>.none)
-        let storage: [URL: Image] = [anyURL()!: Image("")]
-        let sut = makeSUT(image: binding) { url in storage[url] }
+        let sut = makeSUT(image: binding) { url in url == anyURL()! ? Image("") : nil }
         sut.load()
         XCTAssertNotNil(binding.wrappedValue)
     }
