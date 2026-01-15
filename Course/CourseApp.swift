@@ -10,7 +10,7 @@ fileprivate let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, http
 @main struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
-             MoviesUIComposer(loader: remoteLoader)
+             MoviesUIComposer(loader: remoteLoader~>withRetry|2)
         }
     }
 }
@@ -25,8 +25,8 @@ func | <T, U, V>(lhs: @escaping (T, U) -> V, rhs: U) -> (T) -> V {
 }
 
 
-fileprivate typealias Load<T> = () async throws -> T
-fileprivate func withRetry<T>(_ load: @escaping Load<T>, attempts: Int = 3) ->  Load<T> {
+fileprivate typealias Loader<T: Sendable> = @Sendable () async throws -> T
+fileprivate func withRetry<T>(_ load: @escaping Loader<T>, attempts: Int = 3) ->  Loader<T> {
     {
         var lastError: Error?
         for _ in 0..<attempts {
