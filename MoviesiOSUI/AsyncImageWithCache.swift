@@ -10,7 +10,7 @@ public struct AsyncImageWithCache: View {
             config.urlCache = URLCache(
                 memoryCapacity: 50*1024*1024,
                 diskCapacity: 150*1024*1024,
-                diskPath: "movie_images"
+                diskPath: "images"
             )
             return URLSession(configuration: config)
         }()
