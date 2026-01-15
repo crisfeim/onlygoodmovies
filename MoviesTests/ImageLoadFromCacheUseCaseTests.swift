@@ -64,7 +64,10 @@ struct AsyncImageLogic {
         self.image = image
     }
     
-    func download() async {}
+    func download() async {
+        guard let url else { return }
+        image = try? await loader(url)
+    }
 }
 
 @MainActor
@@ -80,6 +83,13 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase {
         let sut = makeSUT(image: binding) { _ in throw NSError(domain: "any-error", code: 0) }
         await sut.download()
         XCTAssertNil(binding.wrappedValue)
+    }
+    
+    func test_downloadDeliversImageOnLoaderSuccess() async {
+        let binding = makeBinding(Optional<Image>.none)
+        let sut = makeSUT(image: binding) { _ in  Image("") }
+        await sut.download()
+        XCTAssertNotNil(binding.wrappedValue)
     }
     
    
