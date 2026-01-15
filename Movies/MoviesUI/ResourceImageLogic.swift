@@ -1,8 +1,8 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 15/1/26.
 import SwiftUI
 
-public typealias ImagesStore = (URL) -> Image?
-public typealias ImagesLoader = (URL) async throws -> Image?
+public typealias ImagesStore  = @Sendable (URL) -> Image?
+public typealias ImagesLoader = @Sendable (URL) async throws -> Image?
 
 @MainActor
 public struct ResourceImageLogic {

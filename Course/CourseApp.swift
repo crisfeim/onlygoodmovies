@@ -6,7 +6,7 @@ import MoviesiOSUI
 
 fileprivate let httpClient   = URLSessionHTTPClient(URLSession.shared)
 fileprivate let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
-fileprivate let imagesLoader: (URL) async throws -> Image? = { url in
+fileprivate let imagesLoader: @Sendable (URL) async throws -> Image? = { url in
     let (d, _) = try await httpClient(url)
     return UIImage(data: d).map { Image(uiImage: $0) }
 }

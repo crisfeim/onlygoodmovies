@@ -32,7 +32,7 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     }
     
     func test_loadDoesntMessagesTheStoreIfImageIsAlreadySet() {
-        var storeCalled = false
+        nonisolated(unsafe) var storeCalled = false
         let (sut, _)  = makeSUT(.success(Image(""))) { _ in
             storeCalled = true
             return Image("")

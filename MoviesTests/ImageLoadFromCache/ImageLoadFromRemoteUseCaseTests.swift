@@ -23,7 +23,7 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     }
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
-        var loaderCalled = false
+        nonisolated(unsafe) var loaderCalled = false
         let (sut, _) = makeSUT(.success(Image(""))) { _ in  loaderCalled = true ; return Image("")}
         await sut.download()
         XCTAssertFalse(loaderCalled)
