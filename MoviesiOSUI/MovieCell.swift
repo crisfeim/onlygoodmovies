@@ -6,9 +6,7 @@ struct MovieCell: View {
     let movie: Movie
     var body: some View {
         HStack(spacing: 12) {
-            if let url = URL(string: movie.posterURL) {
-                MoviePoster(url: url)
-            }
+            MoviePoster(path: movie.posterURL)
             VStack(alignment: .leading) {
                 Text(movie.title)
                 Text(movie.releaseYear.description)
@@ -20,14 +18,19 @@ struct MovieCell: View {
 }
 
 fileprivate struct MoviePoster: View {
-    let url: URL
+    let path: String
     
     var body: some View {
-       AsyncImageWithCache(url: url)
+        Movies.AsyncImage(url: URL(string: path)) { phase in
+            switch phase {
+            case .success(let image): image.resizable()
+            case .failure: Text("Error")
+            default: ProgressView()
+            }
+        }
         .aspectRatio(contentMode: .fill)
         .frame(width: 40, height: 60)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        
     }
 }
 

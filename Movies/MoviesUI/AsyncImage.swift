@@ -3,35 +3,34 @@
 import SwiftUI
 
 @MainActor
-struct AsyncImage<Content: View>: View {
+public struct AsyncImage<Content: View>: View {
     
     @Environment(\.imagesStore) var store
     @Environment(\.imagesLoader) var loader
     
-    @ViewBuilder let content: (AsyncImagePhase) -> Content
-    
+    let content: (AsyncImagePhase) -> Content
     let url: URL?
-    @State private var phase: AsyncImagePhase
+    
+    @State private var phase = AsyncImagePhase.empty
     
     var logic: AsyncImageLogic {
         .init(url: url, phase: $phase, store: store, loader: loader)
     }
     
-    struct UnhandledCase: Error {}
-    var body: some View {
-        ZStack {
-            switch phase {
-            case .empty: content(.empty).task(logic.download)
-            case .success(let image): content(.success(image))
-            case .failure(let error): content(.failure(error))
-            @unknown default: content(.failure(UnhandledCase()))
-            }
-        }.onAppear(perform: logic.load)
+    public init(url: URL?, @ViewBuilder content: @escaping (AsyncImagePhase) -> Content) {
+        self.content = content
+        self.url = url
+    }
+    
+    public var body: some View {
+        content(phase)
+            .task(logic.download)
+            .onAppear(perform: logic.load)
     }
 }
 
 
-extension EnvironmentValues {
+public extension EnvironmentValues {
     @Entry var imagesStore: ImagesStore?
     @Entry var imagesLoader: ImagesLoader?
 }
