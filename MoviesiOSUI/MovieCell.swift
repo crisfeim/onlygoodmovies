@@ -40,22 +40,26 @@ fileprivate struct MoviePoster: View {
 }
 
  struct Shimmer: ViewModifier {
-    @State var isInitialState: Bool = true
-    private let color = Color.white
+    @State private var isInitialState: Bool = true
+    let isActive: Bool
     
     func body(content: Content) -> some View {
         content
             .overlay {
-                LinearGradient(
-                    gradient: .init(colors: [.clear, color.opacity(0.6), .clear]),
-                    startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
-                    endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
-                )
+                if isActive {
+                    LinearGradient(
+                        gradient: .init(colors: [.clear, Color.white.opacity(0.6), .clear]),
+                        startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
+                        endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
+                    )
+                    .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
+                    .onAppear() {
+                        isInitialState = false
+                    }
+                }
             }
-            .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
-            .onAppear() {
-                isInitialState = false
-            }
+            .mask(content)
+            
     }
 }
 

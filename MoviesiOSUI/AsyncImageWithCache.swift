@@ -19,8 +19,8 @@ fileprivate struct Root: View {
     
     var body: some View {
     Rectangle()
-        .fill(Color.gray.opacity(0.3))
-        .modifier(Shimmer())
+        .modifier(Shimmer(isActive: image == nil))
+        .foregroundColor(Color.gray.opacity(0.3))
         .overlay {
             if let image {
                Image(uiImage: image)
@@ -83,7 +83,7 @@ fileprivate protocol ImageSession {
 #Preview("Image loading transition") {
      class MockCache: ImageSession {
         func downloadImage(from url: URL) async throws -> UIImage? {
-            try await Task.sleep(for: .seconds(2))
+            try await Task.sleep(for: .seconds(4))
             return UIImage.image(with: .red)
         }
         
@@ -92,6 +92,7 @@ fileprivate protocol ImageSession {
     
    return Root(url: URL(string: "any-url"))
         .environment(\.imageSession, MockCache())
+        .aspectRatio(contentMode: .fill)
         .frame(width: 40, height: 60)
         .clipShape(RoundedRectangle(cornerRadius: 8))
 }
