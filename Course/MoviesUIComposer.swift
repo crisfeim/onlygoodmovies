@@ -35,8 +35,9 @@ public struct MoviesUIComposer: View {
         posterURL: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
         releaseYear: 2004
     )
-    
-    MoviesUIComposer {
+   
+   
+    MoviesUIComposer { @MainActor in
         try await Task.sleep(for: .seconds(1.5))
 
         if shouldFail {
