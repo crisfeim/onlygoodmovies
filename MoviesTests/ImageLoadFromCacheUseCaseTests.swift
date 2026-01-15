@@ -75,9 +75,18 @@ struct AsyncImageLogic {
             }
             result = .success(image)
         } catch {
-            
+            result = .failure(error)
         }
       
+    }
+}
+
+fileprivate extension Result {
+    var error: Error? {
+        switch self {
+        case .failure(let e): return e
+        default: return nil
+        }
     }
 }
 
@@ -89,11 +98,11 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase {
         XCTAssertNil(binding.wrappedValue)
     }
     
-    func test_downloadDoesntDeliversErrorOnLoadingFailure() async {
+    func test_downloadDeliversErrorOnLoadingFailure() async {
         let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
         let sut = makeSUT(binding: binding) { _ in throw NSError(domain: "any-error", code: 0) }
         await sut.download()
-        XCTAssertNil(binding.wrappedValue)
+        XCTAssertNotNil(binding.wrappedValue?.error)
     }
     
     func test_downloadDeliversImageOnLoaderSuccess() async {
