@@ -8,7 +8,11 @@ class AsyncImageLogicTests: XCTestCase {
         let url: URL?
         @Binding var image: Image?
         let store: (URL) -> Image?
-        func load() {}
+        func load() {
+            if let url, let image = store(url) {
+                self.image = image
+            }
+        }
     }
     
     func test_loadDoesntDeliverImageOnInit() {
@@ -32,6 +36,14 @@ class AsyncImageLogicTests: XCTestCase {
         }
         sut.load()
         XCTAssertNil(binding.wrappedValue)
+    }
+    
+    func test_loadDeliversImageIfURLMatchesWithStoredImage() {
+        let binding = makeBinding(Optional<Image>.none)
+        let storage: [URL: Image] = [anyURL()!: Image("")]
+        let sut = AsyncImageLogic(url: anyURL(), image: binding) { url in storage[url] }
+        sut.load()
+        XCTAssertNotNil(binding.wrappedValue)
     }
 }
 
