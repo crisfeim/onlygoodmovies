@@ -4,7 +4,7 @@ import SwiftUI
 
 public struct AsyncImageWithCache: View {
     fileprivate class DefaultImageSession: ImageSession {
-        let session: URLSession = {
+        fileprivate let session: URLSession = {
             let config = URLSessionConfiguration.default
             config.requestCachePolicy = .returnCacheDataElseLoad
             config.urlCache = URLCache(
