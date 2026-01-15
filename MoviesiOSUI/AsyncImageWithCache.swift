@@ -51,7 +51,7 @@ fileprivate struct Content: View {
             if let image {
                Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
         }
