@@ -46,21 +46,25 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase {
     }
     
     func makeSUT(url: URL? = anyURL(), image: Binding<Image?>, store: @escaping ImagesStore = { _ in nil }) -> AsyncImageLogic {
-        AsyncImageLogic(url: url, image: image, store: store)
+        AsyncImageLogic(url: url, image: image, store: store, loader: { _ in nil })
     }
 }
 
 
 typealias ImagesStore = (URL) -> Image?
+typealias ImagesLoader = (URL) async throws -> Image?
 
 struct AsyncImageLogic {
     let url: URL?
     @Binding var image: Image?
     let store: ImagesStore
+    let loader: ImagesLoader
     func load() {
         guard image == nil, let url, let image = store(url) else { return }
         self.image = image
     }
+    
+    func download() async {}
 }
 
 @MainActor
@@ -71,8 +75,16 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase {
         XCTAssertNil(binding.wrappedValue)
     }
     
-    func makeSUT(url: URL? = anyURL(), image: Binding<Image?>, store: @escaping ImagesStore = { _ in nil }) -> AsyncImageLogic {
-        AsyncImageLogic(url: url, image: image, store: store)
+    func test_downloadDoesntDeliversImageOnLoadingFailure() async {
+        let binding = makeBinding(Optional<Image>.none)
+        let sut = makeSUT(image: binding) { _ in throw NSError(domain: "any-error", code: 0) }
+        await sut.download()
+        XCTAssertNil(binding.wrappedValue)
+    }
+    
+   
+    func makeSUT(url: URL? = anyURL(), image: Binding<Image?>, loader: @escaping ImagesLoader = { _ in nil }) -> AsyncImageLogic {
+        AsyncImageLogic(url: url, image: image, store: { _ in nil }, loader: loader)
     }
 }
 
