@@ -46,6 +46,7 @@ fileprivate struct Content: View {
     var body: some View {
     Rectangle()
         .fill(Color.gray.opacity(0.3))
+        .modifier(Shimmer())
         .overlay {
             if let image {
                Image(uiImage: image)

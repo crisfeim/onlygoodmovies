@@ -39,21 +39,18 @@ fileprivate struct MoviePoster: View {
     }
 }
 
-
  struct Shimmer: ViewModifier {
-    
     @State var isInitialState: Bool = true
-    private let color = Color.black
-    var opacity = 0.4
+    private let color = Color.white
     
     func body(content: Content) -> some View {
         content
             .overlay {
                 LinearGradient(
-                    gradient: .init(colors: [color.opacity(0.4), color, color.opacity(0.4)]),
-                    startPoint: (isInitialState ? .init(x: -0.3, y: -0.3) : .init(x: 1, y: 1)),
-                    endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 1.3, y: 1.3))
-                ).opacity(opacity)
+                    gradient: .init(colors: [.clear, color.opacity(0.6), .clear]),
+                    startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
+                    endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
+                )
             }
             .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
             .onAppear() {
@@ -61,10 +58,6 @@ fileprivate struct MoviePoster: View {
             }
     }
 }
-
-//#Preview("MoviePoster", traits: .sizeThatFitsLayout) {
-//    MoviePoster(url: "invalid").padding()
-//}
 
 
 #Preview(traits: .sizeThatFitsLayout) {
