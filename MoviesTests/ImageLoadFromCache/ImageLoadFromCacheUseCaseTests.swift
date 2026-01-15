@@ -1,5 +1,6 @@
 import XCTest
 import SwiftUI
+import Movies
 
 @MainActor
 class ImageLoadFromCacheUseCaseTests: XCTestCase {

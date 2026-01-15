@@ -1,6 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 15/1/26.
 import XCTest
 import SwiftUI
+import Movies
 
 @MainActor
 class ImageLoadFromRemoteUseCaseTests: XCTestCase {
