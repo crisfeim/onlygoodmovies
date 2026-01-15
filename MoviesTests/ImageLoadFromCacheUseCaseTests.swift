@@ -2,7 +2,7 @@ import XCTest
 import SwiftUI
 
 @MainActor
-class AsyncImageLogicTests: XCTestCase {
+class ImageLoadFromCacheUseCaseTests: XCTestCase {
     
     typealias ImagesStore = (URL) -> Image?
     
