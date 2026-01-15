@@ -7,3 +7,8 @@ func makeBinding<T>(_ value: T) -> Binding<T> {
    var value = value
    return Binding(get: { value }, set: { value = $0 })
 }
+
+
+func anyURL() -> URL? {
+    URL(string: "https://any-url.com")
+}
