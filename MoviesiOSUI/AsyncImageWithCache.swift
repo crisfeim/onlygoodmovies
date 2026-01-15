@@ -3,46 +3,20 @@
 import SwiftUI
 
 public struct AsyncImageWithCache: View {
-    fileprivate class DefaultImageSession: ImageSession {
-        fileprivate let session: URLSession = {
-            let config = URLSessionConfiguration.default
-            config.requestCachePolicy = .returnCacheDataElseLoad
-            config.urlCache = URLCache(
-                memoryCapacity: 50*1024*1024,
-                diskCapacity: 150*1024*1024,
-                diskPath: "images"
-            )
-            return URLSession(configuration: config)
-        }()
-        
-        func downloadImage(from url: URL) async throws -> UIImage? {
-            let (d, _) = try await session.data(from: url)
-            return UIImage(data: d)
-        }
-        
-        func getCachedImage(for url: URL) -> UIImage? {
-            let req = URLRequest(url: url)
-            guard
-            let res = session.configuration.urlCache?.cachedResponse(for: req),
-            let image = UIImage(data: res.data) else { return nil }
-            return image
-        }
-    }
-    
     private static let session = DefaultImageSession()
     
     let url: URL?
     
     public var body: some View {
-        Content(url: url)
-        .environment(\.imageSession, Self.session)
+        Root(url: url).environment(\.imageSession, Self.session)
     }
 }
 
-fileprivate struct Content: View {
+fileprivate struct Root: View {
     @Environment(\.imageSession) private var imageSession
     @State private var image: UIImage?
     let url: URL?
+    
     var body: some View {
     Rectangle()
         .fill(Color.gray.opacity(0.3))
@@ -55,7 +29,6 @@ fileprivate struct Content: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
         }
-       
         .onAppear {
             if let url, let cached = imageSession?.getCachedImage(for: url) {
                 image = cached
@@ -69,6 +42,32 @@ fileprivate struct Content: View {
                 }
             }
         }
+    }
+}
+
+fileprivate class DefaultImageSession: ImageSession {
+    fileprivate let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = .returnCacheDataElseLoad
+        config.urlCache = URLCache(
+            memoryCapacity: 50*1024*1024,
+            diskCapacity: 150*1024*1024,
+            diskPath: "images"
+        )
+        return URLSession(configuration: config)
+    }()
+    
+    func downloadImage(from url: URL) async throws -> UIImage? {
+        let (d, _) = try await session.data(from: url)
+        return UIImage(data: d)
+    }
+    
+    func getCachedImage(for url: URL) -> UIImage? {
+        let req = URLRequest(url: url)
+        guard
+        let res = session.configuration.urlCache?.cachedResponse(for: req),
+        let image = UIImage(data: res.data) else { return nil }
+        return image
     }
 }
 
@@ -91,7 +90,7 @@ fileprivate protocol ImageSession {
         func getCachedImage(for url: URL) -> UIImage? { nil }
     }
     
-   return Content(url: URL(string: "anyurl"))
+   return Root(url: URL(string: "any-url"))
         .environment(\.imageSession, MockCache())
         .frame(width: 40, height: 60)
         .clipShape(RoundedRectangle(cornerRadius: 8))
