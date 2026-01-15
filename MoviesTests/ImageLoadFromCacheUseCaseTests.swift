@@ -5,39 +5,34 @@ import SwiftUI
 class ImageLoadFromCacheUseCaseTests: XCTestCase {
     
     func test_initDoesntDeliverResult() {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let _ = makeSUT(binding: binding)
-        XCTAssertNil(binding.wrappedValue)
+        let (_, state) = makeSUT()
+        XCTAssertNil(state())
     }
     
     func test_loadDoesntDeliverImageOnEmptyStore() {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let sut =  makeSUT(binding: binding)
+        let (sut, state) =  makeSUT()
         sut.load()
-        XCTAssertNil(binding.wrappedValue)
+        XCTAssertNil(state())
     }
     
     func test_loadDoesntDeliverImageIfURLDoesntMatchWhenNonEmptyStore() {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let sut = makeSUT(binding: binding) { url in
+        let (sut, state) = makeSUT() { url in
             if url != URL(string: "https://stored.com") { return nil }
             return Image("")
         }
         sut.load()
-        XCTAssertNil(binding.wrappedValue)
+        XCTAssertNil(state())
     }
     
     func test_loadDeliversImageIfURLMatchesWithStoredImage() {
-        let binding =  makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let sut = makeSUT(binding: binding) { url in url == anyURL()! ? Image("") : nil }
+        let (sut, state) = makeSUT() { url in url == anyURL()! ? Image("") : nil }
         sut.load()
-        XCTAssertEqual(try? binding.wrappedValue?.get(), Image(""))
+        XCTAssertEqual(try? state()?.get(), Image(""))
     }
     
     func test_loadDoesntMessagesTheStoreIfImageIsAlreadySet() {
-        let binding =  makeBinding(Optional<AsyncImageLogic.Result>.some(.success(Image(""))))
         var storeCalled = false
-        let sut = makeSUT(binding: binding) { _ in
+        let (sut, _)  = makeSUT(.success(Image(""))) { _ in
             storeCalled = true
             return Image("")
         }
@@ -45,8 +40,9 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase {
         XCTAssertFalse(storeCalled)
     }
     
-    func makeSUT(url: URL? = anyURL(), binding: Binding<AsyncImageLogic.Result?>, store: @escaping ImagesStore = { _ in nil }) -> AsyncImageLogic {
-        AsyncImageLogic(url: url, result: binding, store: store, loader: { _ in nil })
+    func makeSUT(url: URL? = anyURL(), _ result: AsyncImageLogic.Result? = nil, store: @escaping ImagesStore = { _ in nil }) -> (sut: AsyncImageLogic, state: () -> AsyncImageLogic.Result?) {
+        let binding = makeBinding(result)
+        return (sut: AsyncImageLogic(url: url, result: binding, store: store, loader: { _ in nil }), state: { binding.wrappedValue })
     }
 }
 

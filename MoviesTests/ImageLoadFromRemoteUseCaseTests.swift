@@ -5,35 +5,32 @@ import SwiftUI
 @MainActor
 class ImageLoadFromRemoteUseCaseTests: XCTestCase {
     func test_initDoesntDeliverImage() {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let _ = makeSUT(binding: binding)
-        XCTAssertNil(binding.wrappedValue)
+        let (_, state) = makeSUT()
+        XCTAssertNil(state())
     }
     
     func test_downloadDeliversErrorOnLoadingFailure() async {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let sut = makeSUT(binding: binding) { _ in throw NSError(domain: "any-error", code: 0) }
+        let (sut, state) = makeSUT() { _ in throw NSError(domain: "any-error", code: 0) }
         await sut.download()
-        XCTAssertNotNil(binding.wrappedValue?.error)
+        XCTAssertNotNil(state()?.error)
     }
     
     func test_downloadDeliversImageOnLoaderSuccess() async {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.none)
-        let sut = makeSUT(binding: binding) { _ in  Image("") }
+        let (sut, state) = makeSUT() { _ in  Image("") }
         await sut.download()
-        XCTAssertEqual(try? binding.wrappedValue?.get(), Image(""))
+        XCTAssertEqual(try? state()?.get(), Image(""))
     }
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
-        let binding = makeBinding(Optional<AsyncImageLogic.Result>.some(.success(Image(""))))
         var loaderCalled = false
-        let sut = makeSUT(binding: binding) { _ in  loaderCalled = true ; return Image("")}
+        let (sut, _) = makeSUT(.success(Image(""))) { _ in  loaderCalled = true ; return Image("")}
         await sut.download()
         XCTAssertFalse(loaderCalled)
     }
    
-    func makeSUT(url: URL? = anyURL(), binding: Binding<Result<Image, Error>?>, loader: @escaping ImagesLoader = { _ in nil }) -> AsyncImageLogic {
-        AsyncImageLogic(url: url, result: binding, store: { _ in nil }, loader: loader)
+    func makeSUT(url: URL? = anyURL(), _ result: AsyncImageLogic.Result? = nil, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: AsyncImageLogic, state: () -> AsyncImageLogic.Result?) {
+        let binding = makeBinding(result)
+        return (sut: AsyncImageLogic(url: url, result: binding, store: { _ in nil }, loader: loader), state: { binding.wrappedValue })
     }
 }
 
