@@ -15,7 +15,9 @@ var URLCachedSession: @Sendable (URLCache) -> CachedSession {
     
         return (
             download: { try await session.data(from: $0).0 },
-            retrieve: { URLRequest(url: $0) --> cache.cachedResponse(for:) --> { $0?.data }}
+            retrieve: { URLRequest(url: $0) ~> cache.cachedResponse(for:) ~> { $0?.data }}
         )
     }
 }
+
+infix operator ~>: AdditionPrecedence

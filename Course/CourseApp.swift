@@ -32,7 +32,7 @@ fileprivate let imagesCache = {
 @main struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
-            MoviesUIComposer(loader: remoteLoader --> withRetry | 1)
+            MoviesUIComposer(loader: remoteLoader ~> withRetry | 1 )
                 .environment(\.imagesLoader, imagesCache.download)
                 .environment(\.imagesStore, imagesCache.load)
         }
@@ -40,16 +40,16 @@ fileprivate let imagesCache = {
 }
 
 
-infix operator -->: AdditionPrecedence
-nonisolated func --><T, V>(lhs: T, rhs: (T) -> V) -> V { rhs(lhs) }
+infix operator ~>: AdditionPrecedence
+nonisolated func ~><First, Second>(lhs: First, rhs: (First) -> Second) -> Second { rhs(lhs) }
 
 infix operator |: MultiplicationPrecedence
-func | <T, U, V>(lhs: @escaping (T, U) -> V, rhs: U) -> (T) -> V {
-    return { T in lhs(T, rhs) }
+func | <Input, Argument, Output>(lhs: @escaping (Input, Argument) -> Output, rhs: Argument) -> (Input) -> Output {
+    return { input in lhs(input, rhs) }
 }
 
- typealias Loader<T: Sendable> = @Sendable () async throws -> T
-func withRetry<T>(_ load: @escaping Loader<T>, attempts: UInt) ->  Loader<T> {
+typealias Loader<Resource: Sendable> = @Sendable () async throws -> Resource
+func withRetry<Resource>(_ load: @escaping Loader<Resource>, attempts: UInt) ->  Loader<Resource> {
     {
         var lastError: Error?
         for _ in 0...attempts {
