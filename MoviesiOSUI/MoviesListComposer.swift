@@ -11,7 +11,7 @@ public struct MoviesListComposer: View {
     let imagesLoader: ImagesLoader
     let imagesStore: ImagesStore
     
-    var useCase: MoviesLogic {
+    var logic: MoviesLogic {
         .init(state: $state, loader: loader)
     }
     
@@ -24,10 +24,10 @@ public struct MoviesListComposer: View {
     
     public var body: some View {
         MovieList(state: $state)
-            .environment(\.reload, useCase.refresh)
+            .environment(\.reload, logic.refresh)
             .environment(\.imagesLoader, imagesLoader)
             .environment(\.imagesStore, imagesStore)
-            .task(useCase.load)
+            .task(logic.load)
     }
 }
 
