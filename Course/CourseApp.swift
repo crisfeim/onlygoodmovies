@@ -34,7 +34,7 @@ fileprivate let imagesCache = {
         WindowGroup {
             MoviesListComposer(
                 loader: remoteLoader ~> withRetry | 1 ,
-                imagesLoader: imagesCache.download,
+                imagesLoader: imagesCache.download ~> withDelay | 2.5,
                 imagesStore: imagesCache.load
             )
         }
@@ -50,7 +50,7 @@ func | <Input, Argument, Output>(lhs: @escaping (Input, Argument) -> Output, rhs
     return { input in lhs(input, rhs) }
 }
 
-typealias Loader<Resource: Sendable> = @Sendable () async throws -> Resource
+typealias Loader<each Param: Sendable, Resource: Sendable> = @Sendable (repeat each Param) async throws -> Resource
 func withRetry<Resource>(_ load: @escaping Loader<Resource>, attempts: UInt) ->  Loader<Resource> {
     {
         var lastError: Error?
@@ -61,3 +61,15 @@ func withRetry<Resource>(_ load: @escaping Loader<Resource>, attempts: UInt) -> 
         throw lastError!
     }
 }
+
+#if DEBUG
+func withDelay<each Param, Resource>(
+    _ load: @escaping Loader<repeat each Param, Resource>,
+    delay: TimeInterval
+) -> Loader<repeat each Param, Resource> {
+    { @Sendable (params: repeat each Param) in
+        try await Task.sleep(for: .seconds(delay))
+        return try await load(repeat each params)
+    }
+}
+#endif

@@ -26,7 +26,7 @@ fileprivate struct MoviePoster: View {
                 switch phase {
                 case .success(let image): image.resizable()
                 case .failure: Text("Error")
-                default: ProgressView()
+                default: Rectangle().foregroundColor(.gray).modifier(Shimmer())
                 }
             }
             .animation(.linear, value: phase.image)
@@ -39,21 +39,18 @@ fileprivate struct MoviePoster: View {
 
  struct Shimmer: ViewModifier {
     @State private var isInitialState: Bool = true
-    let isActive: Bool
     
     func body(content: Content) -> some View {
         content
             .overlay {
-                if isActive {
-                    LinearGradient(
-                        gradient: .init(colors: [.clear, Color.white.opacity(0.6), .clear]),
-                        startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
-                        endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
-                    )
-                    .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
-                    .onAppear() {
-                        isInitialState = false
-                    }
+                LinearGradient(
+                    gradient: .init(colors: [.clear, Color.white.opacity(0.6), .clear]),
+                    startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
+                    endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
+                )
+                .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
+                .onAppear() {
+                    isInitialState = false
                 }
             }
             .mask(content)
