@@ -32,9 +32,11 @@ fileprivate let imagesCache = {
 @main struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
-            MoviesUIComposer(loader: remoteLoader ~> withRetry | 1 )
-                .environment(\.imagesLoader, imagesCache.download)
-                .environment(\.imagesStore, imagesCache.load)
+            MoviesUIComposer(
+                loader: remoteLoader ~> withRetry | 1 ,
+                imagesLoader: imagesCache.download,
+                imagesStore: imagesCache.load
+            )
         }
     }
 }
