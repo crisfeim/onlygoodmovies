@@ -32,12 +32,39 @@ fileprivate let imagesCache = {
 @main struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
-            MoviesListComposer(
-                loader: remoteLoader ~> withRetry | 1,
-                imagesLoader: imagesCache.download ~> withDelay | 2.5 ~> withRetry | 1,
-                imagesStore: imagesCache.load
-            )
+            #if DEBUG
+               DebugApp()
+            #else
+               ProductionApp()
+            #endif
         }
+    }
+}
+
+#if DEBUG
+struct DebugApp: View {
+    @State var isFirstLoad = true
+    var body: some View {
+        MoviesListComposer(
+            loader: remoteLoader,
+            imagesLoader: imagesCache.download ~> withDelay | 2.5,
+            imagesStore: isFirstLoad ? { @Sendable _ in nil } : imagesCache.load
+        )
+        .task {
+           try? await Task.sleep(for: .seconds(3))
+            isFirstLoad = false
+        }
+    }
+}
+#endif
+
+fileprivate struct ProductionApp: View {
+    var body: some View {
+        MoviesListComposer(
+            loader: remoteLoader ~> withRetry | 1,
+            imagesLoader: imagesCache.download ~> withRetry | 1,
+            imagesStore: imagesCache.load
+        )
     }
 }
 
