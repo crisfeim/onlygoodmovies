@@ -51,6 +51,7 @@ func | <Input, Argument, Output>(lhs: @escaping (Input, Argument) -> Output, rhs
 }
 
 typealias Loader<each Param: Sendable, Resource: Sendable> = @Sendable (repeat each Param) async throws -> Resource
+
 func withRetry<Resource>(_ load: @escaping Loader<Resource>, attempts: UInt) ->  Loader<Resource> {
     {
         var lastError: Error?
@@ -63,13 +64,13 @@ func withRetry<Resource>(_ load: @escaping Loader<Resource>, attempts: UInt) -> 
 }
 
 #if DEBUG
-func withDelay<each Param, Resource>(
-    _ load: @escaping Loader<repeat each Param, Resource>,
+func withDelay<Param, Resource>(
+    _ load: @escaping Loader<Param, Resource>,
     delay: TimeInterval
-) -> Loader<repeat each Param, Resource> {
-    { @Sendable (params: repeat each Param) in
+) -> Loader<Param, Resource> {
+    { param in
         try await Task.sleep(for: .seconds(delay))
-        return try await load(repeat each params)
+        return try await load(param)
     }
 }
 #endif
