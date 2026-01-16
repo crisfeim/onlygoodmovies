@@ -22,11 +22,14 @@ fileprivate struct MoviePoster: View {
     
     var body: some View {
         ResourceImage(url: URL(string: path)) { phase in
-            switch phase {
-            case .success(let image): image.resizable()
-            case .failure: Text("Error")
-            default: ProgressView()
+            ZStack {
+                switch phase {
+                case .success(let image): image.resizable()
+                case .failure: Text("Error")
+                default: ProgressView()
+                }
             }
+            .animation(.linear, value: phase.image)
         }
         .aspectRatio(contentMode: .fill)
         .frame(width: 40, height: 60)
