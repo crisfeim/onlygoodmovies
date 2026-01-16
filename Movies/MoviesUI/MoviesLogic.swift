@@ -2,6 +2,7 @@
 
 import SwiftUI
 
+@MainActor
 public struct MoviesLogic {
    @Binding var state: MoviesState
    private let loader: MoviesLoader

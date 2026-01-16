@@ -27,7 +27,7 @@ public struct MoviesListComposer: View {
             .environment(\.reload, useCase.refresh)
             .environment(\.imagesLoader, imagesLoader)
             .environment(\.imagesStore, imagesStore)
-            .task { await useCase.load() }
+            .task(useCase.load)
     }
 }
 
