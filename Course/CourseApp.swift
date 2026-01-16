@@ -30,6 +30,7 @@ fileprivate let imagesStore: @Sendable (URL) -> Image? = { url in
         WindowGroup {
             MoviesUIComposer(loader: remoteLoader --> withRetry .= 2)
                 .environment(\.imagesLoader, imagesLoader)
+                .environment(\.imagesStore, imagesStore)
         }
     }
 }
