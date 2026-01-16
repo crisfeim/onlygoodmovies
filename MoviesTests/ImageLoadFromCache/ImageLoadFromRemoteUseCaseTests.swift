@@ -31,7 +31,7 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
    
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {
         let binding = makeBinding(phase)
-        return (sut: ResourceImageLogic(url: url, phase: binding, store: { _ in nil }, loader: loader), state: { binding.wrappedValue })
+        return (sut: ResourceImageLogic(binding, url: url, store: { _ in nil }, loader: loader), state: { binding.wrappedValue })
     }
 }
 

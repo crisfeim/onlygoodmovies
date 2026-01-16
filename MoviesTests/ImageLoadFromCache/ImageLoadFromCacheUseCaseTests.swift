@@ -43,7 +43,7 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {
         let binding = makeBinding(phase)
-        return (sut: ResourceImageLogic(url: url, phase: binding, store: store, loader: { _ in nil }), state: { binding.wrappedValue })
+        return (sut: ResourceImageLogic(binding, url: url, store: store, loader: { _ in nil }), state: { binding.wrappedValue })
     }
 }
 

@@ -12,7 +12,7 @@ public struct MoviesListComposer: View {
     let imagesStore: ImagesStore
     
     var logic: MoviesLogic {
-        .init(state: $state, loader: loader)
+        .init($state, loader: loader)
     }
     
     public init(state: MoviesState = MoviesState(), loader: @escaping MoviesLoader, imagesLoader: @escaping ImagesLoader, imagesStore: @escaping ImagesStore) {

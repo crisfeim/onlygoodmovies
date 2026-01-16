@@ -7,7 +7,7 @@ public struct MoviesLogic {
    @Binding var state: MoviesState
    private let loader: MoviesLoader
     
-    public init(state: Binding<MoviesState>, loader: @escaping MoviesLoader) {
+    public init(_ state: Binding<MoviesState>, loader: @escaping MoviesLoader) {
         self._state = state
         self.loader = loader
     }

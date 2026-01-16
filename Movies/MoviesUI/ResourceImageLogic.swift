@@ -13,9 +13,9 @@ public struct ResourceImageLogic {
     let store: ImagesStore?
     let loader: ImagesLoader?
     
-    public init(url: URL?, phase: Binding<AsyncImagePhase>, store: ImagesStore?, loader: ImagesLoader?) {
-        self.url = url
+    public init(_ phase: Binding<AsyncImagePhase>, url: URL?, store: ImagesStore?, loader: ImagesLoader?) {
         self._phase = phase
+        self.url = url
         self.store = store
         self.loader = loader
     }
@@ -36,7 +36,6 @@ public struct ResourceImageLogic {
         } catch {
             phase = .failure(error)
         }
-      
     }
 }
 

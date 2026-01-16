@@ -14,7 +14,7 @@ public struct ResourceImage<Content: View>: View {
     @State private var phase = AsyncImagePhase.empty
     
     var logic: ResourceImageLogic {
-        .init(url: url, phase: $phase, store: store, loader: loader)
+        .init($phase, url: url, store: store, loader: loader)
     }
     
     public init(url: URL?, @ViewBuilder content: @escaping (AsyncImagePhase) -> Content) {
