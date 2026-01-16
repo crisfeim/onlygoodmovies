@@ -4,7 +4,7 @@ import Movies
 import SwiftUI
 import Movies
 
-public struct MoviesUIComposer: View {
+public struct MoviesListComposer: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
@@ -43,7 +43,7 @@ public struct MoviesUIComposer: View {
         releaseYear: 2004
     )
    
-    MoviesUIComposer(
+    MoviesListComposer(
         loader: {@MainActor in
         try await Task.sleep(for: .seconds(1.5))
         
