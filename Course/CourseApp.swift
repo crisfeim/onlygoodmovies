@@ -8,29 +8,33 @@ import MoviesiOSUI
 fileprivate let httpClient   = URLSessionHTTPClient(URLSession.shared)
 fileprivate let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
 
-nonisolated let imagesCachedSession = URLCachedSession(URLCache(
-    memoryCapacity: 50*1024*1024,
-    diskCapacity: 150*1024*1024,
-    diskPath: "images"
-))
-
-fileprivate let imagesLoader: @Sendable (URL) async throws -> Image? = { url in
-    let d = try await imagesCachedSession.download(url)
-    return UIImage(data: d).map { Image(uiImage: $0) }
-}
-
-fileprivate let imagesStore: @Sendable (URL) -> Image? = { url in
-    imagesCachedSession.retrieve(url).flatMap { data in
-        UIImage(data: data).map { Image(uiImage: $0) }
+fileprivate let imagesCache = {
+    let imagesCachedSession = URLCachedSession(URLCache(
+        memoryCapacity: 50*1024*1024,
+        diskCapacity: 150*1024*1024,
+        diskPath: "images"
+    ))
+    
+    let imagesLoader: @Sendable (URL) async throws -> Image? = { url in
+        let d = try await imagesCachedSession.download(url)
+        return UIImage(data: d).map { Image(uiImage: $0) }
     }
-}
+
+    let imagesStore: @Sendable (URL) -> Image? = { url in
+        imagesCachedSession.retrieve(url).flatMap { data in
+            UIImage(data: data).map { Image(uiImage: $0) }
+        }
+    }
+
+    return (load: imagesStore, download: imagesLoader)
+}()
 
 @main struct CourseApp: App {
     var body: some Scene {
         WindowGroup {
             MoviesUIComposer(loader: remoteLoader --> withRetry | 1)
-                .environment(\.imagesLoader, imagesLoader)
-                .environment(\.imagesStore, imagesStore)
+                .environment(\.imagesLoader, imagesCache.download)
+                .environment(\.imagesStore, imagesCache.load)
         }
     }
 }
