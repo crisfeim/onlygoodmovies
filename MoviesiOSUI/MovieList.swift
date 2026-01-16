@@ -3,15 +3,11 @@
 import SwiftUI
 import Movies
 
-public struct MovieList: View {
+struct MovieList: View {
     @Binding var state: MoviesState
     @Environment(\.reload) var reload
-   
-    public init(state: Binding<MoviesState>) {
-        self._state = state
-    }
-    
-    public var body: some View {
+
+    var body: some View {
         List(state.movies, rowContent: MovieCell.init)
             .refreshable { await reload() }
             .overlay { if state.showLoading { ProgressView() } }
@@ -20,7 +16,7 @@ public struct MovieList: View {
     }
 }
 
-public extension EnvironmentValues {
+extension EnvironmentValues {
     @Entry var reload: () async -> Void = {}
 }
 

@@ -1,7 +1,6 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 13/1/26.
 
 import Movies
-import MoviesiOSUI
 import SwiftUI
 import Movies
 
@@ -14,6 +13,13 @@ public struct MoviesUIComposer: View {
     
     var useCase: MoviesLogic {
         .init(state: $state, loader: loader)
+    }
+    
+    public init(state: MoviesState = MoviesState(), loader: @escaping MoviesLoader, imagesLoader: @escaping ImagesLoader, imagesStore: @escaping ImagesStore) {
+        self.state = state
+        self.loader = loader
+        self.imagesLoader = imagesLoader
+        self.imagesStore = imagesStore
     }
     
     public var body: some View {
