@@ -75,7 +75,7 @@ public extension EnvironmentValues {
 fileprivate extension MoviesState {
     static func loading() -> Self {
         .init(
-            movies: [],
+            movies: [mockMovie(), mockMovie()],
             showLoading: true,
             showError: false,
             showEmpty: false
@@ -122,7 +122,7 @@ fileprivate extension MoviesState {
 
 
 #Preview("Loading") {
-    @Previewable @State var state = MoviesState()
+    @Previewable @State var state = MoviesState.loading()
     MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
