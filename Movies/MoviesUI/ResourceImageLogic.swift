@@ -6,7 +6,6 @@ public typealias ImagesLoader = @Sendable (URL) async throws -> Image?
 
 @MainActor
 public struct ResourceImageLogic {
-    public typealias Result = Swift.Result<Image, Error>
     struct ImageDecodingError: Error {}
     let url: URL?
     @Binding var phase: AsyncImagePhase
