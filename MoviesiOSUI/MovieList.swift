@@ -3,12 +3,18 @@
 import SwiftUI
 import Movies
 
-struct MovieList<Thumbnail: View>: View {
+public struct MovieList<Thumbnail: View>: View {
+    public typealias Cell = (Movie) -> MovieCell<Thumbnail>
     @Binding var state: MoviesState
-    @Environment(\.reload) var reload
-    let cell: (Movie) -> MovieCell<Thumbnail>
+    @Environment(\.reload) private var reload
+    let cell: Cell
 
-    var body: some View {
+    public init(state: Binding<MoviesState>, cell: @escaping Cell) {
+        self._state = state
+        self.cell = cell
+    }
+
+    public var body: some View {
         List(state.movies, rowContent: cell)
         .refreshable { await reload() }
         .overlay { if state.showLoading { ProgressView() } }
@@ -17,7 +23,15 @@ struct MovieList<Thumbnail: View>: View {
     }
 }
 
-extension EnvironmentValues {
+extension MovieList<MovieThumbnail> {
+    static func defaultCell(_ movie: Movie) -> MovieCell<Thumbnail> {
+        MovieCell(movie: movie) { _ in
+            MovieThumbnail(phase: .empty)
+        }
+    }
+}
+
+public extension EnvironmentValues {
     @Entry var reload: () async -> Void = {}
 }
 
@@ -73,26 +87,26 @@ fileprivate extension MoviesState {
 
 #Preview("Loading") {
     @Previewable @State var state = MoviesState()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
+    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Loaded") {
     @Previewable @State var state = MoviesState.loaded()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
+    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Empty") {
     @Previewable @State var state = MoviesState.empty()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
+    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Error") {
     @Previewable @State var state = MoviesState.error()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
+    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Loaded + Error") {
     @Previewable @State var state = MoviesState.loadedWithError()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
+    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
 }
 

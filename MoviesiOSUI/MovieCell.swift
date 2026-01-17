@@ -5,6 +5,12 @@ import Movies
 public struct MovieCell<Thumbnail: View>: View {
     let movie: Movie
     let thumbnailProvider: (URL?) -> Thumbnail
+    
+    public init(movie: Movie, thumbnailProvider: @escaping (URL?) -> Thumbnail) {
+        self.movie = movie
+        self.thumbnailProvider = thumbnailProvider
+    }
+    
     public var body: some View {
         HStack(spacing: 12) {
             thumbnailProvider(URL(string: movie.posterURL))
@@ -18,16 +24,12 @@ public struct MovieCell<Thumbnail: View>: View {
     }
 }
 
-public extension MovieCell<AsyncImage<MovieThumbnail>> {
-    static func make(_ movie: Movie) -> Self {
-        MovieCell(movie: movie) {
-            AsyncImage(url: $0,  content: MovieThumbnail.init)
-        }
-    }
-}
-
 public struct MovieThumbnail: View {
     let phase: AsyncImagePhase
+    
+    public init(phase: AsyncImagePhase) {
+        self.phase = phase
+    }
     
     public var body: some View {
         ZStack {

@@ -2,7 +2,7 @@
 
 import Movies
 import SwiftUI
-import Movies
+import MoviesiOSUI
 
 public struct MoviesListComposer<AsyncThumbnail: View>: View {
     @State var state = MoviesState()
