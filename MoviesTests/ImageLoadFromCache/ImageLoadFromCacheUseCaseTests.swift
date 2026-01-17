@@ -5,7 +5,7 @@ import Movies
 @MainActor
 class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     
-    func test_initDoesntDeliverResult() {
+    func test_initDoesntDeliverResultOnEmptyStore() {
         let (_, state) = makeSUT()
         XCTAssertTrue(isEmpty(state()))
     }
