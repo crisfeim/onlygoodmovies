@@ -22,9 +22,15 @@ struct DebugApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader,
-            thumbnailProvider: ResourceImage<MovieThumbnail>.make
+            thumbnailProvider: { url in
+                ResourceImage(
+                    url: url,
+                    store: nil,
+                    loader: imagesCache.download ~> withDelay | 1.5,
+                    content: MovieThumbnail.init
+                )
+            }
         )
-        .environment(\.imagesLoader, imagesCache.download ~> withDelay | 2)
     }
 }
 #endif
@@ -76,12 +82,6 @@ fileprivate let imagesCache = {
 }()
 
 
-extension ResourceImage<MovieThumbnail> {
-    static func make(_ url: URL?) -> Self {
-        ResourceImage(url: url, content: MovieThumbnail.init)
-    }
-}
-
 extension AsyncImage<MovieThumbnail> {
     static func make(_ url: URL?) -> Self {
         AsyncImage(url: url, content: MovieThumbnail.init)
@@ -117,8 +117,7 @@ private func retryLogic<R>(attempts: UInt, action: () async throws -> R) async t
 }
 
 #if DEBUG
-
-func withDelay<Param, Resource>( _ load: @escaping Loader<Param, Resource>, _ delay: TimeInterval) -> Loader<Param, Resource> {
+nonisolated func withDelay<Param, Resource>( _ load: @escaping Loader<Param, Resource>, _ delay: TimeInterval) -> Loader<Param, Resource> {
     { param in
         try await Task.sleep(for: .seconds(delay))
         return try await load(param)
