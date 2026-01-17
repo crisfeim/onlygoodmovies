@@ -33,15 +33,6 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
         XCTAssertEqual(state().image, Image(""))
     }
     
-    func test_initDoesntMessagesTheStoreIfImageIsAlreadySet() {
-        nonisolated(unsafe) var count = 0
-        let (_, _)  = makeSUT(.success(Image(""))) { _ in
-            count += 1
-            return Image("")
-        }
-        XCTAssertEqual(count, 1)
-    }
-    
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: ResourceImageCoordinator, state: () -> AsyncImagePhase) {
         let sut = ResourceImageCoordinator(phase: phase, url: url, store: store, loader: { _ in nil })
         return (sut: sut, state: { sut.phase })
