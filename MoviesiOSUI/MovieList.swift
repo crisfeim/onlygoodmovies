@@ -15,13 +15,49 @@ public struct MovieList<Thumbnail: View>: View {
     }
 
     public var body: some View {
-        List(state.movies, rowContent: cell)
+        List {
+            if state.showLoading {
+                ForEach(Array(0...10), id: \.self) { _ in
+                    MovieCell(movie: mockMovie()) { url in
+                        Rectangle()
+                            .foregroundColor(.gray).opacity(0.5)
+                            .frame(width: 40, height: 60)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+                .redacted(reason: .placeholder)
+                .modifier(Shimmer())
+            } else {
+                ForEach(state.movies, content: cell)
+            }
+        }
+        .animation(.linear, value: state.showLoading)
+        .disabled(state.showLoading)
         .refreshable { await reload() }
-        .overlay { if state.showLoading { ProgressView() } }
         .overlay { if state.showEmpty { EmptyMoviesView() } }
         .toolbar { if state.showError { ErrorButton { state.showError = false } } }
     }
 }
+
+struct Shimmer: ViewModifier {
+   @State private var isInitialState: Bool = true
+   
+   func body(content: Content) -> some View {
+       content
+           .mask {
+               LinearGradient(
+                gradient: .init(colors: [Color.white.opacity(0.5), Color.white, Color.white.opacity(0.5)]),
+                   startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
+                   endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
+               )
+               .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
+               .onAppear() {
+                   isInitialState = false
+               }
+           }
+   }
+}
+
 
 extension MovieList<MovieThumbnail> {
     static func defaultCell(_ movie: Movie) -> MovieCell<Thumbnail> {
