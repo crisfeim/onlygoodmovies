@@ -3,10 +3,10 @@
 import SwiftUI
 import Movies
 
-struct MovieList<Cell: View>: View {
+struct MovieList<Thumbnail: View>: View {
     @Binding var state: MoviesState
     @Environment(\.reload) var reload
-    let cell: (Movie) -> Cell
+    let cell: (Movie) -> MovieCell<Thumbnail>
 
     var body: some View {
         List(state.movies, rowContent: cell)
@@ -73,26 +73,26 @@ fileprivate extension MoviesState {
 
 #Preview("Loading") {
     @Previewable @State var state = MoviesState()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
 }
 
 #Preview("Loaded") {
     @Previewable @State var state = MoviesState.loaded()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
 }
 
 #Preview("Empty") {
     @Previewable @State var state = MoviesState.empty()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
 }
 
 #Preview("Error") {
     @Previewable @State var state = MoviesState.error()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
 }
 
 #Preview("Loaded + Error") {
     @Previewable @State var state = MoviesState.loadedWithError()
-    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.make)
 }
 

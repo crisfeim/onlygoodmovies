@@ -50,7 +50,7 @@ struct DebugApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader,
-            cellProvider: MovieCell<AsyncImage<MovieThumbnail>>.default,
+            thumbnailProvider: AsyncImage<MovieThumbnail>.make,
             imagesLoader: imagesCache.download,
             imagesStore: imagesCache.load,
         )
@@ -62,7 +62,7 @@ fileprivate struct ProductionApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader ~> withRetry | 1,
-            cellProvider: MovieCell<AsyncImage<MovieThumbnail>>.default,
+            thumbnailProvider: AsyncImage<MovieThumbnail>.make,
             imagesLoader: imagesCache.download ~> withRetry | 1,
             imagesStore: imagesCache.load
         )

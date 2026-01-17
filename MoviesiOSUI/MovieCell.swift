@@ -19,7 +19,7 @@ public struct MovieCell<Thumbnail: View>: View {
 }
 
 public extension MovieCell<AsyncImage<MovieThumbnail>> {
-    static func `default`(_ movie: Movie) -> Self {
+    static func make(_ movie: Movie) -> Self {
         MovieCell(movie: movie) {
             AsyncImage(url: $0,  content: MovieThumbnail.init)
         }
