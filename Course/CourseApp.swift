@@ -31,12 +31,19 @@ struct DebugApp: View {
 #endif
 
 fileprivate struct ProductionApp: View {
+    let imagesLoader: ImagesLoader = { url in
+        let (d, _) = try await URLSession.shared.data(from: url)
+        let scale = UITraitCollection.current.displayScale > 0 ? UITraitCollection.current.displayScale : 2.0
+        let targetSize = CGSize(width: 40 * scale, height: 60 * scale)
+        return UIImage(data: d)?.preparingThumbnail(of: targetSize).map { Image(uiImage: $0) }
+    }
+    
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader ~> withRetry | 1,
             thumbnailProvider: AsyncImage<MovieThumbnail>.make,
-            imagesLoader: imagesCache.download ~> withRetry | 1,
-            imagesStore: imagesCache.load
+            imagesLoader: imagesLoader ~> withRetry | 1,
+            imagesStore: { _ in nil }
         )
     }
 }
