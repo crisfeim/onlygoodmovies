@@ -8,8 +8,6 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
-    let imagesLoader: ImagesLoader
-    let imagesStore: ImagesStore
     let cell: (Movie) -> MovieCell<AsyncThumbnail>
     
     var logic: MoviesLogic {
@@ -20,21 +18,15 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
         state: MoviesState = MoviesState(),
         loader: @escaping MoviesLoader,
         thumbnailProvider: @escaping (URL?) -> AsyncThumbnail,
-        imagesLoader: @escaping ImagesLoader,
-        imagesStore: @escaping ImagesStore
     ) {
         self.state = state
         self.loader = loader
         self.cell =  { MovieCell(movie: $0, thumbnailProvider: thumbnailProvider) }
-        self.imagesLoader = imagesLoader
-        self.imagesStore = imagesStore
     }
     
     var body: some View {
         MovieList(state: $state, cell: cell)
         .environment(\.reload, logic.refresh)
-        .environment(\.imagesLoader, imagesLoader)
-        .environment(\.imagesStore, imagesStore)
         .task(logic.load)
     }
 }
@@ -63,7 +55,6 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
             return [movie, movie]
         }
         },
-        thumbnailProvider: AsyncImage<MovieThumbnail>.make,
-        imagesLoader: {_ in nil },
-        imagesStore: { _ in nil })
+        thumbnailProvider: AsyncImage<MovieThumbnail>.make
+    )
 }

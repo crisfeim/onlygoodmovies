@@ -22,10 +22,9 @@ struct DebugApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader,
-            thumbnailProvider: ResourceImage<MovieThumbnail>.make,
-            imagesLoader: imagesCache.download ~> withDelay | 2,
-            imagesStore: { _ in nil },
+            thumbnailProvider: ResourceImage<MovieThumbnail>.make
         )
+        .environment(\.imagesLoader, imagesCache.download ~> withDelay | 2)
     }
 }
 #endif
@@ -41,9 +40,7 @@ fileprivate struct ProductionApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader ~> withRetry | 1,
-            thumbnailProvider: AsyncImage<MovieThumbnail>.make,
-            imagesLoader: imagesLoader ~> withRetry | 1,
-            imagesStore: { _ in nil }
+            thumbnailProvider: AsyncImage<MovieThumbnail>.make
         )
     }
 }
