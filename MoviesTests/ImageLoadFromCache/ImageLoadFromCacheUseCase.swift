@@ -7,6 +7,6 @@ protocol ImageLoadFromCacheUseCase: XCTestCase  {}
 extension ImageLoadFromCacheUseCase {
     func isEmpty(_ phase: AsyncImagePhase) -> Bool {
         if case .empty = phase { return true }
-        return true
+        return false
     }
 }
