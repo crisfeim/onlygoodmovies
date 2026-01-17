@@ -10,7 +10,7 @@ public struct MoviesListComposer<AsyncThumbnail: View>: View {
     let loader: MoviesLoader
     let imagesLoader: ImagesLoader
     let imagesStore: ImagesStore
-    let thumbnailProvider: (URL?) -> AsyncThumbnail?
+    let cell: (Movie) -> MovieCell<AsyncThumbnail>
     
     var logic: MoviesLogic {
         .init($state, loader: loader)
@@ -25,15 +25,13 @@ public struct MoviesListComposer<AsyncThumbnail: View>: View {
     ) {
         self.state = state
         self.loader = loader
-        self.thumbnailProvider = thumbnailProvider
+        self.cell =  { MovieCell(movie: $0, thumbnailProvider: thumbnailProvider) }
         self.imagesLoader = imagesLoader
         self.imagesStore = imagesStore
     }
     
     public var body: some View {
-        MovieList(state: $state) { movie in
-            MovieCell(movie: movie, thumbnailProvider: thumbnailProvider)
-        }
+        MovieList(state: $state, cell: cell)
         .environment(\.reload, logic.refresh)
         .environment(\.imagesLoader, imagesLoader)
         .environment(\.imagesStore, imagesStore)
