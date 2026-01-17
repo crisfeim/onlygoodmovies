@@ -21,7 +21,7 @@ import MoviesiOSUI
 struct DebugApp: View {
     var body: some View {
         MoviesListComposer(
-            loader: remoteLoader,
+            loader: remoteLoader ~> withDelay | 3.5,
             thumbnailProvider: { url in
                 ResourceImage(
                     url: url,
@@ -121,6 +121,13 @@ nonisolated func withDelay<Param, Resource>( _ load: @escaping Loader<Param, Res
     { param in
         try await Task.sleep(for: .seconds(delay))
         return try await load(param)
+    }
+}
+
+nonisolated func withDelay<Resource>( _ load: @escaping Loader<Resource>, _ delay: TimeInterval) -> Loader<Resource> {
+    { 
+        try await Task.sleep(for: .seconds(delay))
+        return try await load()
     }
 }
 #endif
