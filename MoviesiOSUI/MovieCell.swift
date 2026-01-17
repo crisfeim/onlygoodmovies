@@ -2,11 +2,12 @@
 import SwiftUI
 import Movies
 
-struct MovieCell: View {
+public struct MovieCell<Thumbnail: View>: View {
     let movie: Movie
-    var body: some View {
+    let thumbnailProvider: (URL?) -> Thumbnail
+    public var body: some View {
         HStack(spacing: 12) {
-            MoviePoster(path: movie.posterURL)
+            thumbnailProvider(URL(string: movie.posterURL))
             VStack(alignment: .leading) {
                 Text(movie.title)
                 Text(movie.releaseYear.description)
@@ -17,20 +18,25 @@ struct MovieCell: View {
     }
 }
 
-fileprivate struct MoviePoster: View {
-    let path: String
-    
-    var body: some View {
-        ResourceImage(url: URL(string: path)) { phase in
-            ZStack {
-                switch phase {
-                case .success(let image): image.resizable()
-                case .failure: Text("Error")
-                default: Rectangle().foregroundColor(.gray).modifier(Shimmer())
-                }
-            }
-            .animation(.linear, value: phase.image)
+public extension MovieCell<AsyncImage<MovieThumbnail>> {
+    static func `default`(_ movie: Movie) -> Self {
+        MovieCell(movie: movie) {
+            AsyncImage(url: $0,  content: MovieThumbnail.init)
         }
+    }
+}
+
+public struct MovieThumbnail: View {
+    let phase: AsyncImagePhase
+    
+    public var body: some View {
+        ZStack {
+            switch phase {
+            case .success(let image): image.resizable()
+            default:  Rectangle().foregroundColor(.gray).modifier(Shimmer())
+            }
+        }
+        .animation(.linear, value: phase.image)
         .aspectRatio(contentMode: .fill)
         .frame(width: 40, height: 60)
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -60,6 +66,6 @@ fileprivate struct MoviePoster: View {
 
 
 #Preview(traits: .sizeThatFitsLayout) {
-    MovieCell(movie: mockMovie()).padding()
+    MovieCell(movie: mockMovie()) { _ in MovieThumbnail(phase: .empty) }.padding()
 }
 

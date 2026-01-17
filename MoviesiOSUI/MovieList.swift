@@ -3,16 +3,17 @@
 import SwiftUI
 import Movies
 
-struct MovieList: View {
+struct MovieList<Cell: View>: View {
     @Binding var state: MoviesState
     @Environment(\.reload) var reload
+    let cell: (Movie) -> Cell
 
     var body: some View {
-        List(state.movies, rowContent: MovieCell.init)
-            .refreshable { await reload() }
-            .overlay { if state.showLoading { ProgressView() } }
-            .overlay { if state.showEmpty { EmptyMoviesView() } }
-            .toolbar { if state.showError { ErrorButton { state.showError = false } } }
+        List(state.movies, rowContent: cell)
+        .refreshable { await reload() }
+        .overlay { if state.showLoading { ProgressView() } }
+        .overlay { if state.showEmpty { EmptyMoviesView() } }
+        .toolbar { if state.showError { ErrorButton { state.showError = false } } }
     }
 }
 
@@ -72,26 +73,26 @@ fileprivate extension MoviesState {
 
 #Preview("Loading") {
     @Previewable @State var state = MoviesState()
-    MovieList(state: $state)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
 }
 
 #Preview("Loaded") {
     @Previewable @State var state = MoviesState.loaded()
-    MovieList(state: $state)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
 }
 
 #Preview("Empty") {
     @Previewable @State var state = MoviesState.empty()
-    MovieList(state: $state)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
 }
 
 #Preview("Error") {
     @Previewable @State var state = MoviesState.error()
-    MovieList(state: $state)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
 }
 
 #Preview("Loaded + Error") {
     @Previewable @State var state = MoviesState.loadedWithError()
-    MovieList(state: $state)
+    MovieList(state: $state, cell: MovieCell<AsyncImage<MovieThumbnail>>.default)
 }
 

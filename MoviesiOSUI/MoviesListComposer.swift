@@ -4,30 +4,46 @@ import Movies
 import SwiftUI
 import Movies
 
-public struct MoviesListComposer: View {
+public struct MoviesListComposer<Cell: View>: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
     let imagesLoader: ImagesLoader
     let imagesStore: ImagesStore
+    let cellProvider: (Movie) -> Cell
     
     var logic: MoviesLogic {
         .init($state, loader: loader)
     }
     
-    public init(state: MoviesState = MoviesState(), loader: @escaping MoviesLoader, imagesLoader: @escaping ImagesLoader, imagesStore: @escaping ImagesStore) {
+    public init(
+        state: MoviesState = MoviesState(),
+        loader: @escaping MoviesLoader,
+        cellProvider: @escaping (Movie) -> Cell,
+        imagesLoader: @escaping ImagesLoader,
+        imagesStore: @escaping ImagesStore
+    ) {
         self.state = state
         self.loader = loader
+        self.cellProvider = cellProvider
         self.imagesLoader = imagesLoader
         self.imagesStore = imagesStore
     }
     
     public var body: some View {
-        MovieList(state: $state)
+        MovieList(state: $state, cell: cellProvider)
             .environment(\.reload, logic.refresh)
             .environment(\.imagesLoader, imagesLoader)
             .environment(\.imagesStore, imagesStore)
             .task(logic.load)
+    }
+}
+
+extension MovieCell<ResourceImage<MovieThumbnail>> {
+    static func `default`(_ movie: Movie) -> Self {
+        MovieCell(movie: movie) {
+            ResourceImage(url: $0, content: MovieThumbnail.init)
+        }
     }
 }
 
@@ -54,5 +70,8 @@ public struct MoviesListComposer: View {
             shouldFail = true
             return [movie, movie]
         }
-    }, imagesLoader: {_ in nil }, imagesStore: { _ in nil })
+        },
+        cellProvider: MovieCell<AsyncImage<MovieThumbnail>>.default,
+        imagesLoader: {_ in nil },
+        imagesStore: { _ in nil })
 }
