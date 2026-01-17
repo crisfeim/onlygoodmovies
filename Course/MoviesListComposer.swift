@@ -4,7 +4,7 @@ import Movies
 import SwiftUI
 import MoviesiOSUI
 
-public struct MoviesListComposer<AsyncThumbnail: View>: View {
+struct MoviesListComposer<AsyncThumbnail: View>: View {
     @State var state = MoviesState()
     
     let loader: MoviesLoader
@@ -16,7 +16,7 @@ public struct MoviesListComposer<AsyncThumbnail: View>: View {
         .init($state, loader: loader)
     }
     
-    public init(
+    init(
         state: MoviesState = MoviesState(),
         loader: @escaping MoviesLoader,
         thumbnailProvider: @escaping (URL?) -> AsyncThumbnail,
@@ -30,24 +30,12 @@ public struct MoviesListComposer<AsyncThumbnail: View>: View {
         self.imagesStore = imagesStore
     }
     
-    public var body: some View {
+    var body: some View {
         MovieList(state: $state, cell: cell)
         .environment(\.reload, logic.refresh)
         .environment(\.imagesLoader, imagesLoader)
         .environment(\.imagesStore, imagesStore)
         .task(logic.load)
-    }
-}
-
-extension ResourceImage<MovieThumbnail> {
-    static func make(_ url: URL?) -> Self {
-        ResourceImage(url: url, content: MovieThumbnail.init)
-    }
-}
-
-public extension AsyncImage<MovieThumbnail> {
-    static func make(_ url: URL?) -> Self {
-        AsyncImage(url: url, content: MovieThumbnail.init)
     }
 }
 

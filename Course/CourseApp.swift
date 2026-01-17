@@ -4,6 +4,44 @@ import SwiftUI
 import Movies
 import MoviesiOSUI
 
+@main struct CourseApp: App {
+    var body: some Scene {
+        WindowGroup {
+            #if DEBUG
+               DebugApp()
+            #else
+               ProductionApp()
+            #endif
+        }
+    }
+}
+
+// MARK: - Apps
+#if DEBUG
+struct DebugApp: View {
+    var body: some View {
+        MoviesListComposer(
+            loader: remoteLoader,
+            thumbnailProvider: ResourceImage<MovieThumbnail>.make,
+            imagesLoader: imagesCache.download ~> withDelay | 2,
+            imagesStore: { _ in nil },
+        )
+    }
+}
+#endif
+
+fileprivate struct ProductionApp: View {
+    var body: some View {
+        MoviesListComposer(
+            loader: remoteLoader ~> withRetry | 1,
+            thumbnailProvider: AsyncImage<MovieThumbnail>.make,
+            imagesLoader: imagesCache.download ~> withRetry | 1,
+            imagesStore: imagesCache.load
+        )
+    }
+}
+
+// MARK: - Dependencies
 
 fileprivate let httpClient   = URLSessionHTTPClient(URLSession.shared)
 fileprivate let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
@@ -33,42 +71,20 @@ fileprivate let imagesCache = {
     return (load: imagesStore, download: imagesLoader)
 }()
 
-@main struct CourseApp: App {
-    var body: some Scene {
-        WindowGroup {
-            #if DEBUG
-               DebugApp()
-            #else
-               ProductionApp()
-            #endif
-        }
+
+extension ResourceImage<MovieThumbnail> {
+    static func make(_ url: URL?) -> Self {
+        ResourceImage(url: url, content: MovieThumbnail.init)
     }
 }
 
-#if DEBUG
-struct DebugApp: View {
-    var body: some View {
-        MoviesListComposer(
-            loader: remoteLoader,
-            thumbnailProvider: AsyncImage<MovieThumbnail>.make,
-            imagesLoader: imagesCache.download,
-            imagesStore: imagesCache.load,
-        )
-    }
-}
-#endif
-
-fileprivate struct ProductionApp: View {
-    var body: some View {
-        MoviesListComposer(
-            loader: remoteLoader ~> withRetry | 1,
-            thumbnailProvider: AsyncImage<MovieThumbnail>.make,
-            imagesLoader: imagesCache.download ~> withRetry | 1,
-            imagesStore: imagesCache.load
-        )
+extension AsyncImage<MovieThumbnail> {
+    static func make(_ url: URL?) -> Self {
+        AsyncImage(url: url, content: MovieThumbnail.init)
     }
 }
 
+// MARK: - Functional & Compositional helpers
 infix operator ~>: AdditionPrecedence
 nonisolated func ~><First, Second>(lhs: First, rhs: (First) -> Second) -> Second { rhs(lhs) }
 
