@@ -27,6 +27,7 @@ class MoviesLogicTests: XCTestCase {
         XCTAssertFalse(state().showLoading)
         XCTAssertTrue(state().showError)
         XCTAssertFalse(state().showEmpty)
+        XCTAssertEqual(state().movies, [], "Expected placeholder movies to be cleaned")
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
