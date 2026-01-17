@@ -42,8 +42,8 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
         XCTAssertEqual(count, 1)
     }
     
-    func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {
-        let sut = ResourceImageLogic(phase: phase, url: url, store: store, loader: { _ in nil })
+    func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: ResourceImageCoordinator, state: () -> AsyncImagePhase) {
+        let sut = ResourceImageCoordinator(phase: phase, url: url, store: store, loader: { _ in nil })
         return (sut: sut, state: { sut.phase })
     }
 }

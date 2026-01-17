@@ -24,7 +24,7 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
         nonisolated(unsafe) var loaderCalled = false
-        let sut = ResourceImageLogic(phase: .empty, url: anyURL(), store: { _ in Image("existent image in store") }, loader: {
+        let sut = ResourceImageCoordinator(phase: .empty, url: anyURL(), store: { _ in Image("existent image in store") }, loader: {
             _ in loaderCalled = true
             return nil
         })
@@ -32,8 +32,8 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
         XCTAssertFalse(loaderCalled)
     }
    
-    func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {
-        let sut = ResourceImageLogic(phase: phase, url: url, store: { _ in nil }, loader: loader)
+    func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: ResourceImageCoordinator, state: () -> AsyncImagePhase) {
+        let sut = ResourceImageCoordinator(phase: phase, url: url, store: { _ in nil }, loader: loader)
         return (sut: sut, state: { sut.phase })
     }
 }

@@ -1,11 +1,8 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 15/1/26.
 import SwiftUI
 
-public typealias ImagesStore  = @Sendable (URL) -> Image?
-public typealias ImagesLoader = @Sendable (URL) async throws -> Image?
-
 @MainActor
-@Observable class ResourceImageLogic {
+@Observable class ResourceImageCoordinator {
     struct ImageDecodingError: Error {}
     let url: URL?
     var phase: AsyncImagePhase

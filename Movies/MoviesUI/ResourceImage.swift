@@ -26,21 +26,22 @@ private extension ResourceImage {
         let content: (AsyncImagePhase) -> Content
         let url: URL?
 
-        @State var logic: ResourceImageLogic
+        @State var coordinator: ResourceImageCoordinator
         
         public init(url: URL?, store: ImagesStore?, loader: ImagesLoader?, @ViewBuilder content: @escaping (AsyncImagePhase) -> Content) {
             self.content = content
             self.url = url
-            logic = .init(phase: .empty, url: url, store: store, loader: loader)
+            coordinator = .init(phase: .empty, url: url, store: store, loader: loader)
         }
         
         public var body: some View {
-            content(logic.phase).task(logic.download)
+            content(coordinator.phase).task(coordinator.download)
         }
     }
 }
 
-
+public typealias ImagesStore  = @Sendable (URL) -> Image?
+public typealias ImagesLoader = @Sendable (URL) async throws -> Image?
 
 public extension EnvironmentValues {
     @Entry var imagesStore: ImagesStore?
