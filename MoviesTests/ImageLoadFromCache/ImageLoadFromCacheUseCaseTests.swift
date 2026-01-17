@@ -10,6 +10,11 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
         XCTAssertTrue(isEmpty(state()))
     }
     
+    func test_initDeliversResultOnNonEmptyStore() {
+        let (_, state) = makeSUT() { _ in Image("") }
+        XCTAssertFalse(isEmpty(state()))
+    }
+    
     func test_loadDoesntDeliverImageOnEmptyStore() {
         let (sut, state) =  makeSUT()
         sut.load()
@@ -32,13 +37,13 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     }
     
     func test_loadDoesntMessagesTheStoreIfImageIsAlreadySet() {
-        nonisolated(unsafe) var storeCalled = false
+        nonisolated(unsafe) var count = 0
         let (sut, _)  = makeSUT(.success(Image(""))) { _ in
-            storeCalled = true
+            count += 1
             return Image("")
         }
         sut.load()
-        XCTAssertFalse(storeCalled)
+        XCTAssertEqual(count, 1)
     }
     
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {

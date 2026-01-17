@@ -24,7 +24,11 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
         nonisolated(unsafe) var loaderCalled = false
-        let (sut, _) = makeSUT(.success(Image(""))) { _ in  loaderCalled = true ; return Image("")}
+        let binding = makeBinding(AsyncImagePhase.empty)
+        let sut = ResourceImageLogic(binding, url: anyURL(), store: { _ in Image("existent image in store") }, loader: {
+            _ in loaderCalled = true
+            return nil
+        })
         await sut.download()
         XCTAssertFalse(loaderCalled)
     }

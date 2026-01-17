@@ -5,7 +5,11 @@ import SwiftUI
 @MainActor
 func makeBinding<T>(_ value: T) -> Binding<T> {
    var value = value
-   return Binding(get: { value }, set: { value = $0 })
+    return Binding(get: {
+        value
+    }, set: {
+        value = $0
+    })
 }
 
 

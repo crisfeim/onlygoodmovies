@@ -17,6 +17,10 @@ public struct ResourceImageLogic {
         self.url = url
         self.store = store
         self.loader = loader
+        
+        let image =  url.flatMap { store?($0) }
+        let p = image.flatMap { AsyncImagePhase.success($0) }
+        self.phase = p ?? .empty
     }
     
     public func load() {
