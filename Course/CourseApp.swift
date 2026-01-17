@@ -15,15 +15,19 @@ fileprivate let imagesCache = {
         diskPath: "images"
     ))
     
+    let downSampledImage: @Sendable (Data) -> Image? = { d in
+        let scale = UITraitCollection.current.displayScale > 0 ? UITraitCollection.current.displayScale : 2.0
+        let targetSize = CGSize(width: 40 * scale, height: 60 * scale)
+        return UIImage(data: d)?.preparingThumbnail(of: targetSize).map { Image(uiImage: $0) }
+    }
+    
     let imagesLoader: @Sendable (URL) async throws -> Image? = { url in
         let d = try await imagesCachedSession.download(url)
-        return UIImage(data: d).map { Image(uiImage: $0) }
+        return downSampledImage(d)
     }
 
     let imagesStore: @Sendable (URL) -> Image? = { url in
-        imagesCachedSession.retrieve(url).flatMap { data in
-            UIImage(data: data).map { Image(uiImage: $0) }
-        }
+        imagesCachedSession.retrieve(url).flatMap(downSampledImage)
     }
 
     return (load: imagesStore, download: imagesLoader)
