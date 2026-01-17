@@ -4,19 +4,11 @@ import SwiftUI
 
 @MainActor
 public struct ResourceImage<Content: View>: View {
-    
     @Environment(\.imagesStore) var store
     @Environment(\.imagesLoader) var loader
     
     let content: (AsyncImagePhase) -> Content
     let url: URL?
-    
-    
-    @State private var phase = AsyncImagePhase.empty
-    
-    var logic: ResourceImageLogic {
-        .init(phase: phase, url: url, store: store, loader: loader)
-    }
     
     public init(url: URL?, @ViewBuilder content: @escaping (AsyncImagePhase) -> Content) {
         self.content = content
@@ -24,9 +16,30 @@ public struct ResourceImage<Content: View>: View {
     }
     
     public var body: some View {
-        content(phase).task(logic.download)
+        Root(url: url, store: store, loader: loader, content: content)
     }
 }
+
+private extension ResourceImage {
+    @MainActor
+    struct Root: View {
+        let content: (AsyncImagePhase) -> Content
+        let url: URL?
+
+        @State var logic: ResourceImageLogic
+        
+        public init(url: URL?, store: ImagesStore?, loader: ImagesLoader?, @ViewBuilder content: @escaping (AsyncImagePhase) -> Content) {
+            self.content = content
+            self.url = url
+            logic = .init(phase: .empty, url: url, store: store, loader: loader)
+        }
+        
+        public var body: some View {
+            content(logic.phase).task(logic.download)
+        }
+    }
+}
+
 
 
 public extension EnvironmentValues {

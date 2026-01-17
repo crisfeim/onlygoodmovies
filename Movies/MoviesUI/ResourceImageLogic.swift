@@ -5,7 +5,7 @@ public typealias ImagesStore  = @Sendable (URL) -> Image?
 public typealias ImagesLoader = @Sendable (URL) async throws -> Image?
 
 @MainActor
-class ResourceImageLogic {
+@Observable class ResourceImageLogic {
     struct ImageDecodingError: Error {}
     let url: URL?
     var phase: AsyncImagePhase

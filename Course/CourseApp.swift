@@ -43,17 +43,12 @@ fileprivate let imagesCache = {
 
 #if DEBUG
 struct DebugApp: View {
-    @State var isFirstLoad = true
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader,
-            imagesLoader: imagesCache.download ~> withDelay | 2.5,
-            imagesStore: isFirstLoad ? { @Sendable _ in nil } : imagesCache.load
+            imagesLoader: imagesCache.download,
+            imagesStore: imagesCache.load
         )
-        .task {
-           try? await Task.sleep(for: .seconds(3))
-            isFirstLoad = false
-        }
     }
 }
 #endif
