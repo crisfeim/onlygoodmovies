@@ -11,10 +11,11 @@ public struct ResourceImage<Content: View>: View {
     let content: (AsyncImagePhase) -> Content
     let url: URL?
     
+    
     @State private var phase = AsyncImagePhase.empty
     
     var logic: ResourceImageLogic {
-        .init($phase, url: url, store: store, loader: loader)
+        .init(phase: phase, url: url, store: store, loader: loader)
     }
     
     public init(url: URL?, @ViewBuilder content: @escaping (AsyncImagePhase) -> Content) {
@@ -23,9 +24,7 @@ public struct ResourceImage<Content: View>: View {
     }
     
     public var body: some View {
-        content(phase)
-            .task(logic.download)
-            .onAppear(perform: logic.load)
+        content(phase).task(logic.download)
     }
 }
 

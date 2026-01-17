@@ -1,7 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 15/1/26.
 import XCTest
 import SwiftUI
-import Movies
+@testable import Movies
 
 @MainActor
 class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
@@ -24,8 +24,7 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     
     func test_downloadDoesntLoadDataWhenExistentImage() async {
         nonisolated(unsafe) var loaderCalled = false
-        let binding = makeBinding(AsyncImagePhase.empty)
-        let sut = ResourceImageLogic(binding, url: anyURL(), store: { _ in Image("existent image in store") }, loader: {
+        let sut = ResourceImageLogic(phase: .empty, url: anyURL(), store: { _ in Image("existent image in store") }, loader: {
             _ in loaderCalled = true
             return nil
         })
@@ -34,8 +33,8 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     }
    
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {
-        let binding = makeBinding(phase)
-        return (sut: ResourceImageLogic(binding, url: url, store: { _ in nil }, loader: loader), state: { binding.wrappedValue })
+        let sut = ResourceImageLogic(phase: phase, url: url, store: { _ in nil }, loader: loader)
+        return (sut: sut, state: { sut.phase })
     }
 }
 

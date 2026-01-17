@@ -1,6 +1,6 @@
 import XCTest
 import SwiftUI
-import Movies
+@testable import Movies
 
 @MainActor
 class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
@@ -15,40 +15,36 @@ class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
         XCTAssertFalse(isEmpty(state()))
     }
     
-    func test_loadDoesntDeliverImageOnEmptyStore() {
-        let (sut, state) =  makeSUT()
-        sut.load()
+    func test_initDoesntDeliverImageOnEmptyStore() {
+        let (_, state) = makeSUT()
         XCTAssertTrue(isEmpty(state()))
     }
     
-    func test_loadDoesntDeliverImageIfURLDoesntMatchWhenNonEmptyStore() {
-        let (sut, state) = makeSUT() { url in
+    func test_initDoesntDeliverImageIfURLDoesntMatchWhenNonEmptyStore() {
+        let (_, state) = makeSUT() { url in
             if url != URL(string: "https://stored.com") { return nil }
             return Image("")
         }
-        sut.load()
         XCTAssertTrue(isEmpty(state()))
     }
     
     func test_loadDeliversImageIfURLMatchesWithStoredImage() {
-        let (sut, state) = makeSUT() { url in url == anyURL()! ? Image("") : nil }
-        sut.load()
+        let (_, state) = makeSUT() { url in url == anyURL()! ? Image("") : nil }
         XCTAssertEqual(state().image, Image(""))
     }
     
-    func test_loadDoesntMessagesTheStoreIfImageIsAlreadySet() {
+    func test_initDoesntMessagesTheStoreIfImageIsAlreadySet() {
         nonisolated(unsafe) var count = 0
-        let (sut, _)  = makeSUT(.success(Image(""))) { _ in
+        let (_, _)  = makeSUT(.success(Image(""))) { _ in
             count += 1
             return Image("")
         }
-        sut.load()
         XCTAssertEqual(count, 1)
     }
     
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, store: @escaping ImagesStore = { _ in nil }) -> (sut: ResourceImageLogic, state: () -> AsyncImagePhase) {
-        let binding = makeBinding(phase)
-        return (sut: ResourceImageLogic(binding, url: url, store: store, loader: { _ in nil }), state: { binding.wrappedValue })
+        let sut = ResourceImageLogic(phase: phase, url: url, store: store, loader: { _ in nil })
+        return (sut: sut, state: { sut.phase })
     }
 }
 

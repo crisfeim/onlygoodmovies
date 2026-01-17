@@ -5,30 +5,24 @@ public typealias ImagesStore  = @Sendable (URL) -> Image?
 public typealias ImagesLoader = @Sendable (URL) async throws -> Image?
 
 @MainActor
-public struct ResourceImageLogic {
+class ResourceImageLogic {
     struct ImageDecodingError: Error {}
     let url: URL?
-    @Binding var phase: AsyncImagePhase
+    var phase: AsyncImagePhase
     let store: ImagesStore?
     let loader: ImagesLoader?
     
-    public init(_ phase: Binding<AsyncImagePhase>, url: URL?, store: ImagesStore?, loader: ImagesLoader?) {
-        self._phase = phase
+    init(phase: AsyncImagePhase, url: URL?, store: ImagesStore?, loader: ImagesLoader?) {
         self.url = url
         self.store = store
         self.loader = loader
         
         let image =  url.flatMap { store?($0) }
         let p = image.flatMap { AsyncImagePhase.success($0) }
-        self.phase = p ?? .empty
+        self.phase = p ?? phase
     }
     
-    public func load() {
-        guard phase.image == nil, let url, let image = store?(url) else { return }
-        phase = .success(image)
-    }
-    
-    public func download() async {
+    func download() async {
         guard let url, phase.image == nil else { return }
         do {
             guard let image = try await loader?(url) else {
