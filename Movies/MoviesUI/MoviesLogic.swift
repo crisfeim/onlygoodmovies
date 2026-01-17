@@ -14,10 +14,12 @@ public struct MoviesLogic {
    
    public func load() async {
        defer { state.showLoading = false }
+       state.movies = .placeholders
        do {
            state.movies = try await loader()
            state.showEmpty = state.movies.isEmpty
        } catch {
+           state.movies = []
            state.showError = true
        }
    }
@@ -27,4 +29,12 @@ public struct MoviesLogic {
        state.showError = false
        await load()
    }
+}
+
+public extension [Movie] {
+    static var placeholders: Self {
+        (0...10).map { index in
+            Movie(id: String(index), title: "Some Movie Long Title", posterURL: "", releaseYear: 2000)
+        }
+    }
 }

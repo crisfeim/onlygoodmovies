@@ -30,6 +30,13 @@ class MoviesLogicTests: XCTestCase {
         XCTAssertEqual(state().movies, [], "Expected placeholder movies to be cleaned")
     }
     
+    func test_loadSetsMoviesToPlaceholdersWhileLoading() async {
+        let spy = BindingSpy()
+        let sut = MoviesLogic(spy.binding, loader: anyLoader())
+        await sut.load()
+        XCTAssertEqual(spy.capturedStates.first?.movies, .placeholders)
+    }
+    
     func test_loadDeliversMoviesOnLoaderSuccess() async {
         let (sut, state) = makeSUT() { [mockMovie()] }
         await sut.load()
