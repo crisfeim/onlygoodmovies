@@ -38,107 +38,20 @@ extension Modifier: @retroactive ViewModifier {
     }
 }
 
-struct Shimmer: ViewModifier {
-   @State private var isInitialState: Bool = true
-   
-   func body(content: Content) -> some View {
-       content
-           .mask {
-               LinearGradient(
-                gradient: .init(colors: [Color.white.opacity(0.5), Color.white, Color.white.opacity(0.5)]),
-                   startPoint: (isInitialState ? .init(x: -1, y: -1) : .init(x: 1, y: 1)),
-                   endPoint: (isInitialState ? .init(x: 0, y: 0) : .init(x: 2, y: 2))
-               )
-               .animation(.linear(duration: 1.5).delay(0.25).repeatForever(autoreverses: false), value: isInitialState)
-               .onAppear() {
-                   isInitialState = false
-               }
-           }
-   }
+public extension EnvironmentValues {
+    @Entry var reload: () async -> Void = {}
 }
 
-
 extension MovieList<MovieThumbnail> {
-    static func defaultCell(_ movie: Movie) -> MovieCell<Thumbnail> {
+    init(state: Binding<MoviesState>, config: Binding<MoviesConfig>) {
+        self._state = state
+        self._config = config
+        self.cell = Self.cell(_:)
+    }
+    
+    static func cell(_ movie: Movie) -> MovieCell<Thumbnail> {
         MovieCell(movie: movie) { _ in
             MovieThumbnail(phase: .empty)
         }
     }
 }
-
-public extension EnvironmentValues {
-    @Entry var reload: () async -> Void = {}
-}
-
-#if DEBUG
-fileprivate extension MoviesState {
-    static var loading: Self {
-        .init(
-            movies: [mockMovie(), mockMovie()],
-            showLoading: true,
-            showError: false,
-            showEmpty: false
-        )
-    }
-    
-    static var loaded: Self {
-        .init(
-            movies: [mockMovie(), mockMovie()],
-            showLoading: false,
-            showError: false,
-            showEmpty: false
-        )
-    }
-    
-    static var loadedWithError: Self {
-        .init(
-            movies: [mockMovie(), mockMovie()],
-            showLoading: false,
-            showError: true,
-            showEmpty: false
-        )
-    }
-    
-    static var error: Self {
-        .init(
-            movies: [],
-            showLoading: false,
-            showError: true,
-            showEmpty: false
-        )
-    }
-    
-    static var empty: Self {
-        .init(
-            movies: [],
-            showLoading: false,
-            showError: false,
-            showEmpty: true
-        )
-    }
-}
-#endif
-
-
-#Preview("Loading") {
-    MovieList(state: .constant(.loading), config: .constant(.loading), cell: MovieList<MovieThumbnail>.defaultCell)
-}
-
-#Preview("Loaded") {
-    MovieList(state: .constant(.loaded), config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
-}
-
-#Preview("Empty") {
-    MovieList(state: .constant(.empty), config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
-}
-
-#Preview("Error") {
-    @Previewable @State var state = MoviesState.error
-    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
-}
-
-#Preview("Loaded + Error") {
-    @Previewable @State var state = MoviesState.loadedWithError
-    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
-}
-
