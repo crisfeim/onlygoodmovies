@@ -1,7 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 15/1/26.
-import XCTest
-import SwiftUI
 @testable import Movies
+import SwiftUI
+import XCTest
 
 @MainActor
 class ImageLoadFromRemoteTestCase: XCTestCase, ImageLoadTestCase {

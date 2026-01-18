@@ -1,7 +1,9 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 3/1/26.
-import Movies
 
 #if DEBUG
+import Foundation
+import Movies
+
 func mockMovie() -> Movie {
     Movie(
         id: "17",
@@ -10,8 +12,6 @@ func mockMovie() -> Movie {
         releaseYear: 2004
     )
 }
-
-import Foundation
 
 func anyError() -> Error {
     NSError(domain: "any-error", code: 0)

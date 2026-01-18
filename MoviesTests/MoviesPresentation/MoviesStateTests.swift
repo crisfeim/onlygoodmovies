@@ -1,7 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 18/1/26.
 
-import XCTest
 import Movies
+import XCTest
 
 class MoviesStateTests: XCTestCase {
     func test_assertInitialState() {

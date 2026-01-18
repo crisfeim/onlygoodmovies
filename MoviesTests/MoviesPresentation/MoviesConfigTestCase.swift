@@ -1,6 +1,6 @@
+import Movies
 import SwiftUI
 import XCTest
-import Movies
 
 @MainActor
 class MoviesConfigTestCase: XCTestCase {

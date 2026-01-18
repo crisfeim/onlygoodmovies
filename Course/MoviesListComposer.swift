@@ -1,8 +1,8 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 13/1/26.
 
 import Movies
-import SwiftUI
 import MoviesiOSUI
+import SwiftUI
 
 struct MoviesListComposer<AsyncThumbnail: View>: View {
     @State var state  = MoviesState()

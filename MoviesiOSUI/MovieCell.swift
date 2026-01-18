@@ -1,6 +1,7 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 12/1/26.
-import SwiftUI
+
 import Movies
+import SwiftUI
 
 public struct MovieCell<Thumbnail: View>: View {
     let movie: Movie

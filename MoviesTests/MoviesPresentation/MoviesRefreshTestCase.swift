@@ -1,8 +1,8 @@
 // © 2026  Cristian Felipe Patiño Rojas. Created on 18/1/26.
 
+import Movies
 import SwiftUI
 import XCTest
-import Movies
 
 @MainActor
 class MoviesRefreshTestCase: XCTestCase {
