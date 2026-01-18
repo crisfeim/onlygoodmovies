@@ -6,13 +6,13 @@ import SwiftUI
 public struct MovieList<Thumbnail: View>: View {
     public typealias Cell = (Movie) -> MovieCell<Thumbnail>
     @Binding var state: MoviesState
-    @Binding var config: MoviesConfig
+    let config: MoviesConfig
     @Environment(\.reload) private var reload
     let cell: Cell
 
-    public init(state: Binding<MoviesState>, config: Binding<MoviesConfig>, cell: @escaping Cell) {
+    public init(state: Binding<MoviesState>, config: MoviesConfig, cell: @escaping Cell) {
         self._state = state
-        self._config = config
+        self.config = config
         self.cell = cell
     }
 
@@ -43,9 +43,9 @@ public extension EnvironmentValues {
 }
 
 extension MovieList<MovieThumbnail> {
-    init(state: Binding<MoviesState>, config: Binding<MoviesConfig>) {
+    init(state: Binding<MoviesState>, config: MoviesConfig) {
         self._state = state
-        self._config = config
+        self.config = config
         self.cell = Self.cell(_:)
     }
     

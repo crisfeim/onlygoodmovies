@@ -4,25 +4,25 @@ import Movies
 import SwiftUI
 
 #Preview("Loading") {
-    MovieList<MovieThumbnail>(state: .constant(.loading), config: .constant(.loading))
+    MovieList<MovieThumbnail>(state: .constant(.loading), config: .loading)
 }
 
 #Preview("Loaded") {
-    MovieList<MovieThumbnail>(state: .constant(.loaded), config: .constant(.idle))
+    MovieList<MovieThumbnail>(state: .constant(.loaded), config: .idle)
 }
 
 #Preview("Empty") {
-    MovieList<MovieThumbnail>(state: .constant(.empty), config: .constant(.idle))
+    MovieList<MovieThumbnail>(state: .constant(.empty), config: .idle)
 }
 
 #Preview("Error") {
     @Previewable @State var state = MoviesState.error
-    MovieList<MovieThumbnail>(state: $state, config: .constant(.idle))
+    MovieList<MovieThumbnail>(state: $state, config: .idle)
 }
 
 #Preview("Loaded + Error") {
     @Previewable @State var state = MoviesState.loadedWithError
-    MovieList<MovieThumbnail>(state: $state, config: .constant(.idle))
+    MovieList<MovieThumbnail>(state: $state, config: .idle)
 }
 
 
