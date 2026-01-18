@@ -37,7 +37,7 @@ public struct MovieThumbnail: View {
             case .success(let image): image.resizable()
             default: Rectangle()
                     .foregroundColor(.gray)
-                    .opacity(0.5)
+                    .opacity(0.3)
                     .modifier(Shimmer())
             }
         }
