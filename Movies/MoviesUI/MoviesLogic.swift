@@ -17,14 +17,14 @@ public struct MoviesLogic {
    public func load() async {
        defer { state.showLoading = false }
        state.movies = .placeholders
-       config.reason = .placeholder
+       config = .loading
        do {
            state.movies = try await loader()
            state.showEmpty = state.movies.isEmpty
-           config.reason = []
+           config = .idle
        } catch {
            state.movies = []
-           config.reason = []
+           config = .idle
            state.showError = true
        }
    }

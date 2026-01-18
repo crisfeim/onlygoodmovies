@@ -2,24 +2,16 @@ import SwiftUI
 import XCTest
 import Movies
 
-extension MoviesConfig {
-    @MainActor
-    static var loading = MoviesConfig(reason: .placeholder)
-    
-    @MainActor
-    static var loaded = MoviesConfig(reason: [])
-}
-
 @MainActor
 class MoviesConfigTestCase: XCTestCase {
     
-    func test_loadHidesPlaceholderOnLoaderFailure() async {
+    func test_loadResetsConfigOnLoadingFailure() async {
         let (sut, config) = makeSUT() { throw anyError() }
         await sut.load()
-        XCTAssertEqual(config(), .loaded)
+        XCTAssertEqual(config(), .idle)
     }
     
-    func test_loadDisplayPlaceholdersWhileLoading() async {
+    func test_loadSetsConfigLoadingWhileLoading() async {
         let config = BindingConfigSpy(MoviesConfig())
         let anyState = makeBinding(MoviesState())
         let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
@@ -27,12 +19,12 @@ class MoviesConfigTestCase: XCTestCase {
         XCTAssertEqual(config.capturedConfig.first, .loading)
     }
     
-    func test_loadHidesPlaceholderAfterLoad() async {
+    func test_loadResetsConfigOnLoadingSuccess() async {
         let config = BindingConfigSpy(MoviesConfig())
         let anyState = makeBinding(MoviesState())
         let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
         await sut.load()
-        XCTAssertEqual(config.capturedConfig.last, .loaded)
+        XCTAssertEqual(config.capturedConfig.last, .idle)
     }
     
     func makeSUT(_ state: MoviesConfig = MoviesConfig(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesConfig) {
