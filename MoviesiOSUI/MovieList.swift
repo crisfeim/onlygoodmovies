@@ -22,8 +22,8 @@ public struct MovieList<Thumbnail: View>: View {
                 .redacted(reason: config.reason)
                 .modifier(config.modifier)
         }
-        .animation(.linear, value: state.showLoading)
-        .disabled(state.showLoading)
+        .animation(.linear, value: state.movies)
+        .disabled(config.listDisabled)
         .refreshable { await reload() }
         .overlay { if state.showEmpty {EmptyMoviesView()} }
         .toolbar { if state.showError {ErrorButton{ state.showError = false}} }
