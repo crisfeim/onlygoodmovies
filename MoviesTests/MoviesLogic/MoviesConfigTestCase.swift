@@ -6,10 +6,10 @@ import Movies
 @MainActor
 class MoviesConfigTestCase: XCTestCase {
     
-    func test_loadResetsConfigOnLoaderFailure() async {
+    func test_loadHidesPlaceholderOnLoaderFailure() async {
         let (sut, config) = makeSUT() { throw anyError() }
         await sut.load()
-        XCTAssertEqual(config(), .init())
+        XCTAssertEqual(config().reason, [])
     }
     
     func test_loadDisplayPlaceholdersWhileLoading() async {
@@ -18,6 +18,14 @@ class MoviesConfigTestCase: XCTestCase {
         let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
         await sut.load()
         XCTAssertEqual(config.capturedConfig.first?.reason, .placeholder)
+    }
+    
+    func test_loadHidesPlaceholderAfterLoad() async {
+        let config = BindingConfigSpy(MoviesConfig())
+        let anyState = makeBinding(MoviesState())
+        let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
+        await sut.load()
+        XCTAssertEqual(config.capturedConfig.last?.reason, [])
     }
     
     func makeSUT(_ state: MoviesConfig = MoviesConfig(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesConfig) {

@@ -21,6 +21,7 @@ public struct MoviesLogic {
        do {
            state.movies = try await loader()
            state.showEmpty = state.movies.isEmpty
+           config.reason = []
        } catch {
            state.movies = []
            config.reason = []
