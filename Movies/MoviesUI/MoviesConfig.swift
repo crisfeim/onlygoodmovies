@@ -4,5 +4,7 @@ import SwiftUI
 public struct MoviesConfig: Equatable {
     public var reason: RedactionReasons = []
     
-    public init() {}
+    public init(reason: RedactionReasons = []) {
+        self.reason = reason
+    }
 }
