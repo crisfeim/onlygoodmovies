@@ -5,9 +5,11 @@ import SwiftUI
 
 public struct MovieList<Thumbnail: View>: View {
     public typealias Cell = (Movie) -> MovieCell<Thumbnail>
+    
     @Binding var state: MoviesState
-    let config: MoviesConfig
     @Environment(\.reload) private var reload
+    
+    let config: MoviesConfig
     let cell: Cell
 
     public init(state: Binding<MoviesState>, config: MoviesConfig, cell: @escaping Cell) {
