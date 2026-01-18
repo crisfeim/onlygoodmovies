@@ -72,7 +72,7 @@ public extension EnvironmentValues {
 
 #if DEBUG
 fileprivate extension MoviesState {
-    static func loading() -> Self {
+    static var loading: Self {
         .init(
             movies: [mockMovie(), mockMovie()],
             showLoading: true,
@@ -81,7 +81,7 @@ fileprivate extension MoviesState {
         )
     }
     
-    static func loaded() -> Self {
+    static var loaded: Self {
         .init(
             movies: [mockMovie(), mockMovie()],
             showLoading: false,
@@ -90,7 +90,7 @@ fileprivate extension MoviesState {
         )
     }
     
-    static func loadedWithError() -> Self {
+    static var loadedWithError: Self {
         .init(
             movies: [mockMovie(), mockMovie()],
             showLoading: false,
@@ -99,7 +99,7 @@ fileprivate extension MoviesState {
         )
     }
     
-    static func error() -> Self {
+    static var error: Self {
         .init(
             movies: [],
             showLoading: false,
@@ -108,7 +108,7 @@ fileprivate extension MoviesState {
         )
     }
     
-    static func empty() -> Self {
+    static var empty: Self {
         .init(
             movies: [],
             showLoading: false,
@@ -121,27 +121,24 @@ fileprivate extension MoviesState {
 
 
 #Preview("Loading") {
-    @Previewable @State var state = MoviesState.loading()
-    MovieList(state: $state, config: .constant(.loading), cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: .constant(.loading), config: .constant(.loading), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Loaded") {
-    @Previewable @State var state = MoviesState.loaded()
-    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: .constant(.loaded), config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Empty") {
-    @Previewable @State var state = MoviesState.empty()
-    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: .constant(.empty), config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Error") {
-    @Previewable @State var state = MoviesState.error()
+    @Previewable @State var state = MoviesState.error
     MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Loaded + Error") {
-    @Previewable @State var state = MoviesState.loadedWithError()
+    @Previewable @State var state = MoviesState.loadedWithError
     MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
