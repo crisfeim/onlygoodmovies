@@ -1,47 +1,15 @@
+// © 2026  Cristian Felipe Patiño Rojas. Created on 18/1/26.
+
 import SwiftUI
 import XCTest
 import Movies
 
 @MainActor
-class MoviesLogicTests: XCTestCase {
+class MoviesRefreshUseCaseTest: XCTestCase {
     
     func test_initDoesntMutatesState() {
         let (_, state) = makeSUT()
         XCTAssertEqual(state(), MoviesState())
-    }
-    
-    func test_loadDeliversErrorOnLoaderFailure() async {
-        let (sut, state) = makeSUT() { throw anyError() }
-        await sut.load()
-        XCTAssertFalse(state().showLoading)
-        XCTAssertTrue(state().showError)
-        XCTAssertFalse(state().showEmpty)
-        XCTAssertEqual(state().movies, [], "Expected placeholder movies to be cleaned")
-    }
-    
-    func test_loadSetsMoviesToPlaceholdersWhileLoading() async {
-        let spy = BindingSpy()
-        let sut = MoviesLogic(spy.binding, loader: anyLoader())
-        await sut.load()
-        XCTAssertEqual(spy.capturedStates.first?.movies, .placeholders)
-    }
-    
-    func test_loadDeliversMoviesOnLoaderSuccess() async {
-        let (sut, state) = makeSUT() { [mockMovie()] }
-        await sut.load()
-        XCTAssertEqual(state().movies, [mockMovie()])
-        XCTAssertFalse(state().showLoading)
-        XCTAssertFalse(state().showEmpty)
-        XCTAssertFalse(state().showError)
-    }
-    
-    func test_loadShowsEmptyOnLoaderSuccessWithEmptyData() async {
-        let (sut, state) = makeSUT() { [] }
-        await sut.load()
-        XCTAssertEqual(state().movies, [])
-        XCTAssertFalse(state().showLoading)
-        XCTAssertTrue(state().showEmpty)
-        XCTAssertFalse(state().showError)
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
@@ -91,18 +59,6 @@ class MoviesLogicTests: XCTestCase {
             .init(get: { self.initState }, set: { self.capturedStates.append($0) })
         }
     }
-}
-
-
-fileprivate func anyLoader() -> MoviesLoader {{[]}}
-
-
-fileprivate func mockMovie() -> Movie {
-    Movie(id: "id", title: "title", posterURL: "potter_url", releaseYear: 2020)
-}
-
-fileprivate func anyError() -> Error {
-    NSError(domain: "any-error", code: 0)
 }
 
 fileprivate extension MoviesState {

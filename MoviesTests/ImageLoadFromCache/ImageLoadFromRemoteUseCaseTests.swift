@@ -11,7 +11,7 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     }
     
     func test_downloadDeliversErrorOnLoadingFailure() async {
-        let (sut, state) = makeSUT() { _ in throw NSError(domain: "any-error", code: 0) }
+        let (sut, state) = makeSUT() { _ in throw anyError() }
         await sut.download()
         XCTAssertNotNil(state().error)
     }
@@ -35,14 +35,5 @@ class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
     func makeSUT(url: URL? = anyURL(), _ phase: AsyncImagePhase = .empty, loader: @escaping ImagesLoader = { _ in nil }) -> (sut: ResourceImageCoordinator, state: () -> AsyncImagePhase) {
         let sut = ResourceImageCoordinator(phase: phase, url: url, store: { _ in nil }, loader: loader)
         return (sut: sut, state: { sut.phase })
-    }
-}
-
-fileprivate extension Result {
-    var error: Error? {
-        switch self {
-        case .failure(let e): return e
-        default: return nil
-        }
     }
 }
