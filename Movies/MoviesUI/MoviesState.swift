@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-public struct MoviesState {
+public struct MoviesState: Equatable {
     public var movies: [Movie]
     public var showError: Bool
     public var showLoading: Bool

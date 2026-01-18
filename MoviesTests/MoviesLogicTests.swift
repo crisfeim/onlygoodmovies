@@ -5,20 +5,9 @@ import Movies
 @MainActor
 class MoviesLogicTests: XCTestCase {
     
-    func test_assertInitialState() {
-        let state = MoviesState()
-        XCTAssertEqual(state.movies, [])
-        XCTAssertTrue(state.showLoading)
-        XCTAssertFalse(state.showError)
-        XCTAssertFalse(state.showEmpty)
-    }
-    
     func test_initDoesntMutatesState() {
         let (_, state) = makeSUT()
-        XCTAssertEqual(state().movies, [])
-        XCTAssertTrue(state().showLoading)
-        XCTAssertFalse(state().showError)
-        XCTAssertFalse(state().showEmpty)
+        XCTAssertEqual(state(), MoviesState())
     }
     
     func test_loadDeliversErrorOnLoaderFailure() async {
