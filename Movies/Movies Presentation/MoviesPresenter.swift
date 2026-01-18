@@ -3,7 +3,7 @@
 import SwiftUI
 
 @MainActor
-public struct MoviesLogic {
+public struct MoviesPresenter {
    @Binding var state: MoviesState
    @Binding var config: MoviesConfig
    private let loader: MoviesLoader

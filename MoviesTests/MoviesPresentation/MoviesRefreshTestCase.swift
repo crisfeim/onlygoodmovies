@@ -36,7 +36,7 @@ class MoviesRefreshTestCase: XCTestCase {
     func test_refreshHidesError() async {
         let spy = BindingSpy(initState: .loadedWithError())
         let anyConfig = makeBinding(MoviesConfig())
-        let sut = MoviesLogic(spy.binding, anyConfig, loader: anyLoader())
+        let sut = MoviesPresenter(spy.binding, anyConfig, loader: anyLoader())
         await sut.refresh()
         XCTAssertFalse(spy.capturedStates[0].showError)
     }
@@ -44,15 +44,15 @@ class MoviesRefreshTestCase: XCTestCase {
     func test_refreshIsNotTriggeredWhileLoading() async {
         let spy = BindingSpy()
         let anyConfig = makeBinding(MoviesConfig())
-        let sut = MoviesLogic(spy.binding, anyConfig, loader: anyLoader())
+        let sut = MoviesPresenter(spy.binding, anyConfig, loader: anyLoader())
         await sut.refresh()
         XCTAssertEqual(spy.capturedStates.count, 0)
     }
     
-    func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesState) {
+    func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesPresenter, () -> MoviesState) {
         let state = makeBinding(state)
         let config = makeBinding(MoviesConfig())
-        return (MoviesLogic(state, config, loader: loader), { state.wrappedValue })
+        return (MoviesPresenter(state, config, loader: loader), { state.wrappedValue })
     }
     
     

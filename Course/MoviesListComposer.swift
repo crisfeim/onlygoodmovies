@@ -11,7 +11,7 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
     let loader: MoviesLoader
     let cell: (Movie) -> MovieCell<AsyncThumbnail>
     
-    var logic: MoviesLogic {
+    var presenter: MoviesPresenter {
         .init($state, $config, loader: loader)
     }
     
@@ -27,7 +27,7 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
     
     var body: some View {
         MovieList(state: $state, config: config, cell: cell)
-        .environment(\.reload, logic.refresh)
-        .task(logic.firstLoad)
+        .environment(\.reload, presenter.refresh)
+        .task(presenter.firstLoad)
     }
 }

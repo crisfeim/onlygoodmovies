@@ -14,7 +14,7 @@ class MoviesConfigTestCase: XCTestCase {
     func test_loadSetsConfigLoadingWhileLoading() async {
         let config = BindingConfigSpy(MoviesConfig())
         let anyState = makeBinding(MoviesState())
-        let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
+        let sut = MoviesPresenter(anyState, config.binding, loader: anyLoader())
         await sut.firstLoad()
         XCTAssertEqual(config.capturedConfig.first, .loading)
     }
@@ -22,15 +22,15 @@ class MoviesConfigTestCase: XCTestCase {
     func test_loadResetsConfigOnLoadingSuccess() async {
         let config = BindingConfigSpy(MoviesConfig())
         let anyState = makeBinding(MoviesState())
-        let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
+        let sut = MoviesPresenter(anyState, config.binding, loader: anyLoader())
         await sut.firstLoad()
         XCTAssertEqual(config.capturedConfig.last, .idle)
     }
     
-    func makeSUT(_ state: MoviesConfig = MoviesConfig(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesConfig) {
+    func makeSUT(_ state: MoviesConfig = MoviesConfig(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesPresenter, () -> MoviesConfig) {
         let config = makeBinding(state)
         let anyState = makeBinding(MoviesState())
-        return (MoviesLogic(anyState, config, loader: loader), { config.wrappedValue })
+        return (MoviesPresenter(anyState, config, loader: loader), { config.wrappedValue })
     }
 }
 
