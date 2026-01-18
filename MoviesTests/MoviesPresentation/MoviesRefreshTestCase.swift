@@ -26,6 +26,13 @@ class MoviesRefreshTestCase: XCTestCase {
         XCTAssertEqual(state().showLoading, false)
     }
     
+    func test_refreshDoesntDestroysMoviesOnFailure() async {
+        let (sut, state) = makeSUT(.previouslyLoaded(movies: [mockMovie(), mockMovie()])) {  throw anyError() }
+        await sut.refresh()
+        XCTAssertEqual(state().movies, [mockMovie(), mockMovie()])
+        XCTAssertEqual(state().showLoading, false)
+    }
+    
     func test_refreshHidesError() async {
         let spy = BindingSpy(initState: .loadedWithError())
         let anyConfig = makeBinding(MoviesConfig())
@@ -69,7 +76,7 @@ fileprivate extension MoviesState {
         previouslyLoaded(hasError: true)
     }
     
-    static func previouslyLoaded(hasError: Bool = false) -> Self {
-        .init(movies: [], showLoading: false, showError: hasError, showEmpty: true)
+    static func previouslyLoaded(movies: [Movie] = [], hasError: Bool = false) -> Self {
+        .init(movies: movies, showLoading: false, showError: hasError, showEmpty: true)
     }
 }

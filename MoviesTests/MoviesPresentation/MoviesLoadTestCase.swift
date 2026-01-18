@@ -11,7 +11,7 @@ class MoviesLoadTestCase: XCTestCase {
     
     func test_loadDeliversErrorOnLoaderFailure() async {
         let (sut, state) = makeSUT() { throw anyError() }
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertFalse(state().showLoading)
         XCTAssertTrue(state().showError)
         XCTAssertFalse(state().showEmpty)
@@ -22,13 +22,13 @@ class MoviesLoadTestCase: XCTestCase {
         let spy = BindingSpy()
         let anyConfig = makeBinding(MoviesConfig())
         let sut = MoviesLogic(spy.binding, anyConfig, loader: anyLoader())
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertEqual(spy.capturedStates.first?.movies, .placeholders)
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
         let (sut, state) = makeSUT() { [mockMovie()] }
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertEqual(state().movies, [mockMovie()])
         XCTAssertFalse(state().showLoading)
         XCTAssertFalse(state().showEmpty)
@@ -37,7 +37,7 @@ class MoviesLoadTestCase: XCTestCase {
     
     func test_loadShowsEmptyOnLoaderSuccessWithEmptyData() async {
         let (sut, state) = makeSUT() { [] }
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertEqual(state().movies, [])
         XCTAssertFalse(state().showLoading)
         XCTAssertTrue(state().showEmpty)

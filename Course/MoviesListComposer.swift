@@ -28,6 +28,6 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
     var body: some View {
         MovieList(state: $state, config: $config, cell: cell)
         .environment(\.reload, logic.refresh)
-        .task(logic.load)
+        .task(logic.firstLoad)
     }
 }

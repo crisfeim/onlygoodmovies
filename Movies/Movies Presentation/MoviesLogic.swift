@@ -14,20 +14,10 @@ public struct MoviesLogic {
         self.loader = loader
     }
    
-   public func load() async {
-       defer { state.showLoading = false }
-       state.movies = .placeholders
-       config = .loading
-       do {
-           let movies = try await loader()
-           setMovies(movies)
-           state.showEmpty = state.movies.isEmpty
-           config = .idle
-       } catch {
-           setMovies([])
-           config = .idle
-           state.showError = true
-       }
+   public func firstLoad() async {
+       defer { didStopLoading() }
+       didStartLoading()
+       await load(onError: removeMoviePlaceholders)
    }
 
    public func refresh() async {
@@ -36,8 +26,33 @@ public struct MoviesLogic {
        await load()
    }
     
+    private func load(onError: (() -> Void)? = nil) async {
+        do {
+            setMovies(try await loader())
+            state.showEmpty = state.movies.isEmpty
+        } catch {
+            state.showError = true
+            onError?()
+        }
+    }
+    
+    private func didStartLoading() {
+        state.movies = .placeholders
+        state.showLoading = true
+        config = .loading
+    }
+    
+    private func didStopLoading() {
+        state.showLoading = false
+        config = .idle
+    }
+    
     private func setMovies(_ movies: [Movie]) {
         withAnimation { state.movies = movies }
+    }
+    
+    private func removeMoviePlaceholders() {
+        setMovies([])
     }
 }
 

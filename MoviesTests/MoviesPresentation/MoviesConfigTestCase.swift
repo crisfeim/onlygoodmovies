@@ -7,7 +7,7 @@ class MoviesConfigTestCase: XCTestCase {
     
     func test_loadResetsConfigOnLoadingFailure() async {
         let (sut, config) = makeSUT() { throw anyError() }
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertEqual(config(), .idle)
     }
     
@@ -15,7 +15,7 @@ class MoviesConfigTestCase: XCTestCase {
         let config = BindingConfigSpy(MoviesConfig())
         let anyState = makeBinding(MoviesState())
         let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertEqual(config.capturedConfig.first, .loading)
     }
     
@@ -23,7 +23,7 @@ class MoviesConfigTestCase: XCTestCase {
         let config = BindingConfigSpy(MoviesConfig())
         let anyState = makeBinding(MoviesState())
         let sut = MoviesLogic(anyState, config.binding, loader: anyLoader())
-        await sut.load()
+        await sut.firstLoad()
         XCTAssertEqual(config.capturedConfig.last, .idle)
     }
     
