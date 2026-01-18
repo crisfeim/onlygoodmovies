@@ -5,13 +5,14 @@ import SwiftUI
 import MoviesiOSUI
 
 struct MoviesListComposer<AsyncThumbnail: View>: View {
-    @State var state = MoviesState()
+    @State var state  = MoviesState()
+    @State var config = MoviesConfig()
     
     let loader: MoviesLoader
     let cell: (Movie) -> MovieCell<AsyncThumbnail>
     
     var logic: MoviesLogic {
-        .init($state, loader: loader)
+        .init($state, $config, loader: loader)
     }
     
     init(
@@ -25,7 +26,7 @@ struct MoviesListComposer<AsyncThumbnail: View>: View {
     }
     
     var body: some View {
-        MovieList(state: $state, cell: cell)
+        MovieList(state: $state, config: $config, cell: cell)
         .environment(\.reload, logic.refresh)
         .task(logic.load)
     }

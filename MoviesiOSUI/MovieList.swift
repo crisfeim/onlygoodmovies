@@ -6,36 +6,36 @@ import Movies
 public struct MovieList<Thumbnail: View>: View {
     public typealias Cell = (Movie) -> MovieCell<Thumbnail>
     @Binding var state: MoviesState
+    @Binding var config: MoviesConfig
     @Environment(\.reload) private var reload
     let cell: Cell
 
-    public init(state: Binding<MoviesState>, cell: @escaping Cell) {
+    public init(state: Binding<MoviesState>, config: Binding<MoviesConfig>, cell: @escaping Cell) {
         self._state = state
+        self._config = config
         self.cell = cell
     }
 
     public var body: some View {
-        List {
-            if state.showLoading {
-                ForEach(Array(0...10), id: \.self) { _ in
-                    MovieCell(movie: mockMovie()) { url in
-                        Rectangle()
-                            .foregroundColor(.gray).opacity(0.5)
-                            .frame(width: 40, height: 60)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-                .redacted(reason: .placeholder)
-                .modifier(Shimmer())
-            } else {
-                ForEach(state.movies, content: cell)
-            }
+        List(state.movies) { movie in
+            cell(movie)
+                .redacted(reason: config.reason)
+                .modifier(config.modifier)
         }
         .animation(.linear, value: state.showLoading)
         .disabled(state.showLoading)
         .refreshable { await reload() }
-        .overlay { if state.showEmpty { EmptyMoviesView() } }
-        .toolbar { if state.showError { ErrorButton { state.showError = false } } }
+        .overlay { if state.showEmpty {EmptyMoviesView()} }
+        .toolbar { if state.showError {ErrorButton{ state.showError = false}} }
+    }
+}
+
+extension Modifier: @retroactive ViewModifier {
+    public func body(content: Content) -> some View {
+        switch self {
+        case .shimmer: content.modifier(Shimmer())
+        default: content
+        }
     }
 }
 
@@ -123,26 +123,26 @@ fileprivate extension MoviesState {
 
 #Preview("Loading") {
     @Previewable @State var state = MoviesState.loading()
-    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: $state, config: .constant(.loading), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Loaded") {
     @Previewable @State var state = MoviesState.loaded()
-    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Empty") {
     @Previewable @State var state = MoviesState.empty()
-    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Error") {
     @Previewable @State var state = MoviesState.error()
-    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
 #Preview("Loaded + Error") {
     @Previewable @State var state = MoviesState.loadedWithError()
-    MovieList(state: $state, cell: MovieList<MovieThumbnail>.defaultCell)
+    MovieList(state: $state, config: .constant(.idle), cell: MovieList<MovieThumbnail>.defaultCell)
 }
 
