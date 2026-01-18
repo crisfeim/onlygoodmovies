@@ -5,7 +5,7 @@ import XCTest
 import Movies
 
 @MainActor
-class MoviesRefreshUseCaseTest: XCTestCase {
+class MoviesRefreshTestCase: XCTestCase {
     
     func test_initDoesntMutatesState() {
         let (_, state) = makeSUT()

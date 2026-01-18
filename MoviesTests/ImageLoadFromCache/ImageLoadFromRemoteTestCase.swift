@@ -4,7 +4,7 @@ import SwiftUI
 @testable import Movies
 
 @MainActor
-class ImageLoadFromRemoteUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
+class ImageLoadFromRemoteTestCase: XCTestCase, ImageLoadTestCase {
     func test_initDoesntDeliverImage() {
         let (_, state) = makeSUT()
         XCTAssertTrue(isEmpty(state()))

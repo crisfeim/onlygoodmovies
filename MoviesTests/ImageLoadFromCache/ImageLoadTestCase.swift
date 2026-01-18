@@ -3,8 +3,8 @@
 import SwiftUI
 import XCTest
 
-protocol ImageLoadFromCacheUseCase: XCTestCase  {}
-extension ImageLoadFromCacheUseCase {
+protocol ImageLoadTestCase: XCTestCase  {}
+extension ImageLoadTestCase {
     func isEmpty(_ phase: AsyncImagePhase) -> Bool {
         if case .empty = phase { return true }
         return false

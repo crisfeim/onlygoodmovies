@@ -3,7 +3,7 @@ import SwiftUI
 @testable import Movies
 
 @MainActor
-class ImageLoadFromCacheUseCaseTests: XCTestCase, ImageLoadFromCacheUseCase {
+class ImageLoadFromCacheTestCase: XCTestCase, ImageLoadTestCase {
     
     func test_initDoesntDeliverResultOnEmptyStore() {
         let (_, state) = makeSUT()

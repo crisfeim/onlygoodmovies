@@ -3,7 +3,7 @@ import XCTest
 import Movies
 
 @MainActor
-class MoviesLoadUseCaseTest: XCTestCase {
+class MoviesLoadTestCase: XCTestCase {
     func test_initDoesntMutatesState() {
         let (_, state) = makeSUT()
         XCTAssertEqual(state(), MoviesState())
