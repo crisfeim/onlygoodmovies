@@ -3,7 +3,7 @@
 import Movies
 import SwiftUI
 
-public struct MovieCell<Thumbnail: View>: View {
+public struct MovieRow<Thumbnail: View>: View {
     let movie: Movie
     let thumbnail: (URL?) -> Thumbnail
     
@@ -52,6 +52,6 @@ public struct MovieThumbnail: View {
 
 
 #Preview(traits: .sizeThatFitsLayout) {
-    MovieCell(movie: mockMovie()) { _ in MovieThumbnail(phase: .empty) }.padding()
+    MovieRow(movie: mockMovie()) { _ in MovieThumbnail(phase: .empty) }.padding()
 }
 

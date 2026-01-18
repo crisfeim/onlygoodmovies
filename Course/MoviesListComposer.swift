@@ -9,7 +9,7 @@ struct MoviesListComposer<Thumbnail: View>: View {
     @State var config = MoviesConfig()
     
     let loader: MoviesLoader
-    let cell: (Movie) -> MovieCell<Thumbnail>
+    let row: (Movie) -> MovieRow<Thumbnail>
     
     var presenter: MoviesPresenter {
         .init($state, $config, loader: loader)
@@ -20,11 +20,11 @@ struct MoviesListComposer<Thumbnail: View>: View {
         thumbnail: @escaping (URL?) -> Thumbnail,
     ) {
         self.loader = loader
-        self.cell =  { MovieCell(movie: $0, thumbnail: thumbnail) }
+        self.row =  { MovieRow(movie: $0, thumbnail: thumbnail) }
     }
     
     var body: some View {
-        MovieList(state: $state, config: config, cell: cell)
+        MovieList(state: $state, config: config, row: row)
         .environment(\.reload, presenter.refresh)
         .task(presenter.firstLoad)
     }

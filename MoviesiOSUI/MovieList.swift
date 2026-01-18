@@ -4,23 +4,23 @@ import Movies
 import SwiftUI
 
 public struct MovieList<Thumbnail: View>: View {
-    public typealias Cell = (Movie) -> MovieCell<Thumbnail>
+    public typealias Row = (Movie) -> MovieRow<Thumbnail>
     
     @Binding var state: MoviesState
     @Environment(\.reload) private var reload
     
     let config: MoviesConfig
-    let cell: Cell
+    let row: Row
 
-    public init(state: Binding<MoviesState>, config: MoviesConfig, cell: @escaping Cell) {
+    public init(state: Binding<MoviesState>, config: MoviesConfig, row: @escaping Row) {
         self._state = state
         self.config = config
-        self.cell = cell
+        self.row = row
     }
 
     public var body: some View {
         List(state.movies) { movie in
-            cell(movie)
+            row(movie)
                 .redacted(reason: config.reason)
                 .modifier(config.modifier)
         }
@@ -48,11 +48,11 @@ extension MovieList<MovieThumbnail> {
     init(state: Binding<MoviesState>, config: MoviesConfig) {
         self._state = state
         self.config = config
-        self.cell = Self.cell(_:)
+        self.row = Self.row(_:)
     }
     
-    static func cell(_ movie: Movie) -> MovieCell<Thumbnail> {
-        MovieCell(movie: movie) { _ in
+    static func row(_ movie: Movie) -> MovieRow<Thumbnail> {
+        MovieRow(movie: movie) { _ in
             MovieThumbnail(phase: .empty)
         }
     }

@@ -25,8 +25,8 @@ struct DebugApp: View {
             thumbnail: { url in
                 ResourceImage(
                     url: url,
-                    store: nil,
-                    loader: imagesCache.download ~> withDelay | 1.5,
+                    store: imagesCache.load,
+                    loader: imagesCache.download,
                     content: MovieThumbnail.init
                 )
             }
