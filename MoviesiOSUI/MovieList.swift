@@ -25,7 +25,7 @@ public struct MovieList<Thumbnail: View>: View {
         .disabled(config.listDisabled)
         .refreshable { await reload() }
         .overlay { if state.showEmpty {EmptyMoviesView()} }
-        .toolbar { if state.showError {ErrorButton{ state.showError = false}} }
+        .toolbar { if state.showError {ErrorButton{state.showError = false}} }
     }
 }
 

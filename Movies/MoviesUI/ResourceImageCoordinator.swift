@@ -15,8 +15,7 @@ import SwiftUI
         self.loader = loader
         
         let image =  url.flatMap { store?($0) }
-        let p = image.flatMap { AsyncImagePhase.success($0) }
-        self.phase = p ?? phase
+        self.phase = image.flatMap { AsyncImagePhase.success($0) } ?? phase
     }
     
     func download() async {
