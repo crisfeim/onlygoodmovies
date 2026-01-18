@@ -16,7 +16,7 @@ import SwiftUI
         releaseYear: 2004
     )
   
-    MoviesListComposer(
+    MovieListComposer(
         loader: {@MainActor in
         try await Task.sleep(for: .seconds(2))
         

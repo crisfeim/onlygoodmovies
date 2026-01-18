@@ -4,7 +4,7 @@ import Movies
 import MoviesiOSUI
 import SwiftUI
 
-struct MoviesListComposer<Thumbnail: View>: View {
+struct MovieListComposer<Thumbnail: View>: View {
     @State var state  = MoviesState()
     @State var config = MoviesConfig()
     

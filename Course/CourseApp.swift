@@ -20,7 +20,7 @@ import SwiftUI
 #if DEBUG
 struct DebugApp: View {
     var body: some View {
-        MoviesListComposer(
+        MovieListComposer(
             loader: remoteLoader ~> withDelay | 3.5,
             thumbnail: { url in
                 ResourceImage(
@@ -44,7 +44,7 @@ fileprivate struct ProductionApp: View {
     }
     
     var body: some View {
-        MoviesListComposer(
+        MovieListComposer(
             loader: remoteLoader ~> withRetry | 1,
             thumbnail: AsyncImage<MovieThumbnail>.init
         )
