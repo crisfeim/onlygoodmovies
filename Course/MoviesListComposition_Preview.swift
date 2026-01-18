@@ -28,7 +28,7 @@ import SwiftUI
             return Array(0...10).map {_ in movie }
         }
         },
-        thumbnailProvider: AsyncImage<MovieThumbnail>.make
+        thumbnail: AsyncImage<MovieThumbnail>.init
     )
     .id(id)
     .toolbar {

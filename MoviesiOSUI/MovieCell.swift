@@ -5,16 +5,16 @@ import SwiftUI
 
 public struct MovieCell<Thumbnail: View>: View {
     let movie: Movie
-    let thumbnailProvider: (URL?) -> Thumbnail
+    let thumbnail: (URL?) -> Thumbnail
     
-    public init(movie: Movie, thumbnailProvider: @escaping (URL?) -> Thumbnail) {
+    public init(movie: Movie, thumbnail: @escaping (URL?) -> Thumbnail) {
         self.movie = movie
-        self.thumbnailProvider = thumbnailProvider
+        self.thumbnail = thumbnail
     }
     
     public var body: some View {
         HStack(spacing: 12) {
-            thumbnailProvider(URL(string: movie.posterURL))
+            thumbnail(URL(string: movie.posterURL))
             VStack(alignment: .leading) {
                 Text(movie.title)
                 Text(movie.releaseYear.description)

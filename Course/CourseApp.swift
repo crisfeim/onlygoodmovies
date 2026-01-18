@@ -22,7 +22,7 @@ struct DebugApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader ~> withDelay | 3.5,
-            thumbnailProvider: { url in
+            thumbnail: { url in
                 ResourceImage(
                     url: url,
                     store: nil,
@@ -46,7 +46,7 @@ fileprivate struct ProductionApp: View {
     var body: some View {
         MoviesListComposer(
             loader: remoteLoader ~> withRetry | 1,
-            thumbnailProvider: AsyncImage<MovieThumbnail>.make
+            thumbnail: AsyncImage<MovieThumbnail>.init
         )
     }
 }
@@ -83,8 +83,8 @@ fileprivate let imagesCache = {
 
 
 extension AsyncImage<MovieThumbnail> {
-    static func make(_ url: URL?) -> Self {
-        AsyncImage(url: url, content: MovieThumbnail.init)
+    init(_ url: URL?) {
+        self.init(url: nil, content: MovieThumbnail.init)
     }
 }
 

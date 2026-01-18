@@ -17,10 +17,10 @@ struct MoviesListComposer<Thumbnail: View>: View {
     
     init(
         loader: @escaping MoviesLoader,
-        thumbnailProvider: @escaping (URL?) -> Thumbnail,
+        thumbnail: @escaping (URL?) -> Thumbnail,
     ) {
         self.loader = loader
-        self.cell =  { MovieCell(movie: $0, thumbnailProvider: thumbnailProvider) }
+        self.cell =  { MovieCell(movie: $0, thumbnail: thumbnail) }
     }
     
     var body: some View {
