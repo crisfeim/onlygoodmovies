@@ -20,7 +20,8 @@ class MoviesLoadTestCase: XCTestCase {
     
     func test_loadSetsMoviesToPlaceholdersWhileLoading() async {
         let spy = BindingSpy()
-        let sut = MoviesLogic(spy.binding, loader: anyLoader())
+        let anyConfig = makeBinding(MoviesConfig())
+        let sut = MoviesLogic(spy.binding, anyConfig, loader: anyLoader())
         await sut.load()
         XCTAssertEqual(spy.capturedStates.first?.movies, .placeholders)
     }
@@ -44,7 +45,8 @@ class MoviesLoadTestCase: XCTestCase {
     }
     
     func makeSUT(_ state: MoviesState = MoviesState(), loader: @escaping MoviesLoader = anyLoader()) -> (MoviesLogic, () -> MoviesState) {
-        let binding = makeBinding(state)
-        return (MoviesLogic(binding, loader: loader), { binding.wrappedValue })
+        let state = makeBinding(state)
+        let config = makeBinding(MoviesConfig())
+        return (MoviesLogic(state, config, loader: loader), { state.wrappedValue })
     }
 }

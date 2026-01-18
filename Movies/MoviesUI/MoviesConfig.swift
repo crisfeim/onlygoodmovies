@@ -2,7 +2,7 @@
 import SwiftUI
 
 public struct MoviesConfig: Equatable {
-    var reason: RedactionReasons = []
+    public var reason: RedactionReasons = []
     
     public init() {}
 }
