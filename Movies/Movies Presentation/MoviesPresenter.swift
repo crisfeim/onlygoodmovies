@@ -15,9 +15,9 @@ public struct MoviesPresenter {
     }
    
    public func firstLoad() async {
-       defer { didStopLoading() }
        didStartLoading()
        await load(onError: removeMoviePlaceholders)
+       didStopLoading()
    }
 
    public func refresh() async {
