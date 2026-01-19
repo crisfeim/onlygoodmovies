@@ -19,19 +19,59 @@ import SwiftUI
 // MARK: - Apps
 #if DEBUG
 struct DebugApp: View {
+    @State var showConfiguration = false
+    @State var loaderDelay = 3.5
+    @State var imagesDelay = 3.5
+    @State var cacheImages = false
+    @State var id = UUID()
     var body: some View {
         MovieListComposer(
-            loader: remoteLoader ~> withDelay | 3.5,
+            loader: remoteLoader ~> withDelay | loaderDelay,
             thumbnail: { url in
                 ResourceImage(
                     url: url,
-                    store: imagesCache.load,
-                    loader: imagesCache.download,
+                    store: cacheImages ? imagesCache.load : { _ in nil },
+                    loader: imagesCache.download ~> withDelay | imagesDelay,
                     content: MovieThumbnail.init
                 )
             }
         )
+        .sheet(isPresented: $showConfiguration) {
+            List {
+                HStack {
+                    Text("Loader Delay")
+                    Slider(value: $loaderDelay)
+                }
+                
+                HStack {
+                    Text("Images Delay")
+                    Slider(value: $imagesDelay)
+                }
+                .disabled(cacheImages)
+                
+                Toggle(isOn: $cacheImages) {
+                    Text("Cache images")
+                }
+            }
+        }
+        .id(id)
+        .toolbar {
+            ToolbarItem(placement: .bottomBar) {
+                Button(action: redraw) {
+                    Image(systemName: "arrow.clockwise")
+                }
+            }
+            
+            ToolbarItem(placement: .bottomBar) {
+                Button("Configuration") {
+                    showConfiguration = true
+                }
+            }
+        }
     }
+    
+    func redraw() { id = UUID() }
+    
 }
 #endif
 
