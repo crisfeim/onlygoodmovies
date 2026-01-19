@@ -26,7 +26,7 @@ struct DebugApp: View {
     @State var id = UUID()
     var body: some View {
         MovieListComposer(
-            loader: remoteLoader ~> withDelay | loaderDelay,
+            loader: remoteMoviesStream ~> withDelay | loaderDelay,
             thumbnail: { url in
                 ResourceImage(
                     url: url,
@@ -85,7 +85,7 @@ fileprivate struct ProductionApp: View {
     
     var body: some View {
         MovieListComposer(
-            loader: remoteLoader ~> withRetry | 1,
+            loader: remoteMoviesStream,
             thumbnail: AsyncImage<MovieThumbnail>.init
         )
     }
@@ -94,7 +94,6 @@ fileprivate struct ProductionApp: View {
 // MARK: - Dependencies
 
 fileprivate let httpClient   = URLSessionHTTPClient(URLSession.shared)
-fileprivate let remoteLoader = RemoteMoviesLoader(OnlyGoodMoviesApi.movies, httpClient)
 
 fileprivate let imagesCache = {
     let imagesCachedSession = URLCachedSession(URLCache(
@@ -161,6 +160,27 @@ nonisolated func withDelay<Param, Resource>( _ load: @escaping Loader<Param, Res
     { param in
         try await Task.sleep(for: .seconds(delay))
         return try await load(param)
+    }
+}
+
+nonisolated func withDelay(_ stream: @escaping @Sendable () -> AsyncThrowingStream<Movie, Error>, _ delay: TimeInterval) -> @Sendable () -> AsyncThrowingStream<Movie, Error> {
+    return {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    for try await movie in stream() {
+                        try await Task.sleep(for: .seconds(delay))
+                        continuation.yield(movie)
+                    }
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
+            }
+        }
     }
 }
 

@@ -10,7 +10,7 @@ class MoviesLoadTestCase: XCTestCase {
     }
     
     func test_loadDeliversErrorOnLoaderFailure() async {
-        let (sut, state) = makeSUT() { throw anyError() }
+        let (sut, state) = makeSUT() { AsyncThrowingStream { $0.finish(throwing: anyError()) } }
         await sut.firstLoad()
         XCTAssertFalse(state().showLoading)
         XCTAssertTrue(state().showError)
@@ -27,7 +27,7 @@ class MoviesLoadTestCase: XCTestCase {
     }
     
     func test_loadDeliversMoviesOnLoaderSuccess() async {
-        let (sut, state) = makeSUT() { [mockMovie()] }
+        let (sut, state) = makeSUT() { AsyncThrowingStream { $0.yield(mockMovie()) ; $0.finish() } }
         await sut.firstLoad()
         XCTAssertEqual(state().movies, [mockMovie()])
         XCTAssertFalse(state().showLoading)
@@ -36,7 +36,7 @@ class MoviesLoadTestCase: XCTestCase {
     }
     
     func test_loadShowsEmptyOnLoaderSuccessWithEmptyData() async {
-        let (sut, state) = makeSUT() { [] }
+        let (sut, state) = makeSUT()
         await sut.firstLoad()
         XCTAssertEqual(state().movies, [])
         XCTAssertFalse(state().showLoading)

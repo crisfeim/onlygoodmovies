@@ -13,21 +13,21 @@ class MoviesRefreshTestCase: XCTestCase {
     }
     
     func test_refreshShowsErrorOnLoaderFailure() async {
-        let (sut, state) = makeSUT(.previouslyLoaded()) { throw anyError() }
+        let (sut, state) = makeSUT(.previouslyLoaded()) { AsyncThrowingStream { $0.finish(throwing: anyError()) } }
         await sut.refresh()
         XCTAssertFalse(state().showLoading)
         XCTAssertTrue(state().showError)
     }
     
     func test_refreshDeliversMoviesOnLoaderSuccess() async {
-        let (sut, state) = makeSUT(.previouslyLoaded()) { [mockMovie()] }
+        let (sut, state) = makeSUT(.previouslyLoaded()) { AsyncThrowingStream { $0.yield(mockMovie()) ; $0.finish() } }
         await sut.refresh()
         XCTAssertEqual(state().movies, [mockMovie()])
         XCTAssertEqual(state().showLoading, false)
     }
     
     func test_refreshDoesntDestroysMoviesOnFailure() async {
-        let (sut, state) = makeSUT(.previouslyLoaded(movies: [mockMovie(), mockMovie()])) {  throw anyError() }
+        let (sut, state) = makeSUT(.previouslyLoaded(movies: [mockMovie(), mockMovie()])) { AsyncThrowingStream { $0.finish(throwing: anyError()) } }
         await sut.refresh()
         XCTAssertEqual(state().movies, [mockMovie(), mockMovie()])
         XCTAssertEqual(state().showLoading, false)

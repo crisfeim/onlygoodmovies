@@ -8,25 +8,34 @@ import SwiftUI
 #Preview("App") {
     @Previewable @State var id = UUID()
     
-    var shouldFail = false
-    let movie = Movie(
-        id: "17",
-        title: "The Passion of the Christ",
-        posterURL: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
-        releaseYear: 2004
-    )
-  
-    MovieListComposer(
-        loader: {@MainActor in
-        try await Task.sleep(for: .seconds(2))
-        
-        if shouldFail {
-            shouldFail = false
-            throw NSError(domain: "any-error", code: 0)
-        } else {
-            shouldFail = true
-            return Array(0...10).map {_ in movie }
-        }
+    let mockMovie = { @Sendable in
+        Movie(
+            id: "17",
+            title: "The Passion of the Christ",
+            posterURL: "https://crisfe.im/apis/only-good-movies/passionofchrist.png",
+            releaseYear: 2004
+        )
+    }
+    class PreviewHelper {
+        nonisolated(unsafe) var shouldSucceed = false
+    }
+   
+   return MovieListComposer(
+        loader: {
+           let helper = PreviewHelper()
+           return  AsyncThrowingStream { continuation in
+                Task {
+                    guard helper.shouldSucceed else {
+                        helper.shouldSucceed = true
+                        return continuation.finish(throwing: NSError(domain: "any-error", code:0))
+                    }
+                    Array(0...10).map{_ in mockMovie() }.forEach { movie in
+                        continuation.yield(movie)
+                    }
+                    helper.shouldSucceed = false
+                    continuation.finish()
+                }
+            }
         },
         thumbnail: AsyncImage<MovieThumbnail>.init
     )

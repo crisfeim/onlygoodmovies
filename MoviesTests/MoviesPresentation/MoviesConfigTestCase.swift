@@ -6,7 +6,7 @@ import XCTest
 class MoviesConfigTestCase: XCTestCase {
     
     func test_loadResetsConfigOnLoadingFailure() async {
-        let (sut, config) = makeSUT() { throw anyError() }
+        let (sut, config) = makeSUT() { AsyncThrowingStream { $0.finish(throwing: anyError()) } }
         await sut.firstLoad()
         XCTAssertEqual(config.currentValue, .idle)
     }

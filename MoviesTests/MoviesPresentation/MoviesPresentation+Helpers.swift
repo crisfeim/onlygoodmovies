@@ -3,7 +3,9 @@
 import Movies
 import XCTest
 
-func anyLoader() -> MoviesLoader {{[]}}
+func anyLoader() -> MoviesLoader {
+    { AsyncThrowingStream {$0.finish()} }
+}
 
 func mockMovie() -> Movie {
     Movie(id: "id", title: "title", posterURL: "potter_url", releaseYear: 2020)

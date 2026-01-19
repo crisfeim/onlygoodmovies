@@ -2,4 +2,4 @@
 
 import SwiftUI
 
-public typealias MoviesLoader = @Sendable () async throws -> [Movie]
+public typealias MoviesLoader = @Sendable () -> AsyncThrowingStream<Movie, Error>

@@ -12,11 +12,8 @@ enum MoviesMapper {
         let poster_url: String
         let release_year: Int
         
-        init(id: String, title: String, poster_url: String, release_year: Int) {
-            self.id = id
-            self.title = title
-            self.poster_url = poster_url
-            self.release_year = release_year
+        var movie: Movie {
+            Movie(id: id, title: title, posterURL: poster_url, releaseYear: release_year)
         }
     }
 
@@ -28,5 +25,9 @@ enum MoviesMapper {
                 Movie(id: $0.id, title: $0.title, posterURL: $0.poster_url, releaseYear: $0.release_year)
             }
         }
+    }
+    
+    static var decode: (Data) throws -> Movie {
+        { try JSONDecoder().decode(DTO.self, from: $0).movie }
     }
 }

@@ -16,6 +16,7 @@ public struct MoviesPresenter {
    
    public func firstLoad() async {
        didStartLoading()
+       state.movies = []
        await load(onError: removeMoviePlaceholders)
        didStopLoading()
    }
@@ -28,7 +29,9 @@ public struct MoviesPresenter {
     
     private func load(onError: (() -> Void)? = nil) async {
         do {
-            setMovies(try await loader())
+            for try await movie in loader() {
+                state.movies.append(movie)
+            }
             state.showEmpty = state.movies.isEmpty
         } catch {
             state.showError = true
