@@ -84,7 +84,7 @@ fileprivate let imagesCache = {
 
 extension AsyncImage<MovieThumbnail> {
     init(_ url: URL?) {
-        self.init(url: nil, content: MovieThumbnail.init)
+        self.init(url: url, content: MovieThumbnail.init)
     }
 }
 
