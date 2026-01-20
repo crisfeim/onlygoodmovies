@@ -20,18 +20,18 @@ import SwiftUI
 #if DEBUG
 struct DebugApp: View {
     @State var showConfiguration = false
-    @State var loaderDelay = 3.5
-    @State var imagesDelay = 3.5
+    @State var network = NetworkScenario.wifi6
+    @State var imagesDelay = 1.5
     @State var cacheImages = false
     @State var id = UUID()
     var body: some View {
         MovieListComposer(
-            loader: remoteMoviesStream ~> withDelay | loaderDelay,
+            loader: remoteMoviesStream ~> withNetwork | network,
             thumbnail: { url in
                 ResourceImage(
                     url: url,
                     store: cacheImages ? imagesCache.load : { _ in nil },
-                    loader: imagesCache.download ~> withDelay | imagesDelay,
+                    loader: imagesCache.download ~> withNetwork | network,
                     content: MovieThumbnail.init
                 )
             }
@@ -39,15 +39,16 @@ struct DebugApp: View {
         .sheet(isPresented: $showConfiguration) {
             List {
                 HStack {
-                    Text("Loader Delay")
-                    Slider(value: $loaderDelay)
+                   
+                    Picker("Select network conditions", selection: $network) {
+                        
+                        ForEach(NetworkScenario.allCases) { network in
+                            Text(network.rawValue)
+                        }
+                        
+                    }
+
                 }
-                
-                HStack {
-                    Text("Images Delay")
-                    Slider(value: $imagesDelay)
-                }
-                .disabled(cacheImages)
                 
                 Toggle(isOn: $cacheImages) {
                     Text("Cache images")
@@ -172,6 +173,7 @@ nonisolated func withDelay(_ stream: @escaping @Sendable () -> AsyncThrowingStre
                         try await Task.sleep(for: .seconds(delay))
                         continuation.yield(movie)
                     }
+                    continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
                 }
@@ -190,4 +192,94 @@ nonisolated func withDelay<Resource>( _ load: @escaping Loader<Resource>, _ dela
         return try await load()
     }
 }
+
+
+nonisolated enum NetworkScenario: String, Sendable, CaseIterable, Identifiable {
+    var id: Self { self }
+    case edge
+    case g3
+    case g4
+    case wifi6
+    case tunnel
+    
+    var bandwidth: Double {
+        switch self {
+        case .edge:  return 20_000    // ~20 KB/s
+        case .g3:    return 250_000   // ~250 KB/s
+        case .g4:    return 5_000_000 // ~5 MB/s
+        case .wifi6: return 50_000_000// ~50 MB/s
+        case .tunnel: return 1_000    // Casi nada
+        }
+    }
+    
+    var latencyRange: ClosedRange<Double> {
+        switch self {
+        case .edge:  return 1.5...3.0
+        case .g3:    return 0.3...0.8
+        case .g4:    return 0.05...0.15
+        default:     return 0.01...0.03
+        }
+    }
+}
+
+nonisolated func withNetwork(
+    _ load: @escaping Loader<URL, Image?>,
+    _ scenario: NetworkScenario
+) -> Loader<URL, Image?> {
+    { url in
+        let latency = Double.random(in: scenario.latencyRange)
+        try await Task.sleep(for: .seconds(latency))
+        
+        let image = try await load(url)
+        let estimatedSize: Double = 120 * 180 * 0.5 // ~10.8 KB
+        let transmissionTime = estimatedSize / scenario.bandwidth
+        try await Task.sleep(for: .seconds(transmissionTime))
+        
+        return image
+    }
+}
+
+func withNetwork(_ loader: @escaping @Sendable () -> AsyncThrowingStream<Movie, Error>, _ scenario: NetworkScenario) -> @Sendable () -> AsyncThrowingStream<Movie, Error> {
+    
+    nonisolated struct DTO: Encodable {
+        let id: String
+        let title: String
+        let posterURL: String
+        let releaseYear: Int
+        
+        init(movie: Movie) {
+            self.id = movie.id
+            self.title = movie.title
+            self.posterURL = movie.posterURL
+            self.releaseYear = movie.releaseYear
+        }
+    }
+    return {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    let initialLatency = Double.random(in: scenario.latencyRange)
+                    try await Task.sleep(for: .seconds(initialLatency))
+                    
+                    for try await item in loader() {
+                        let data = try JSONEncoder().encode(DTO(movie: item))
+                        let sizeInBytes = Double(data.count)
+                        
+                        let transmissionTime = sizeInBytes / scenario.bandwidth
+                        let jitter = Double.random(in: 0...0.02)
+                        
+                        try await Task.sleep(for: .seconds(transmissionTime + jitter))
+                        
+                        continuation.yield(item)
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+}
+
 #endif

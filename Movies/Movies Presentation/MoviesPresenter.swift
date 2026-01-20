@@ -16,7 +16,6 @@ public struct MoviesPresenter {
    
    public func firstLoad() async {
        didStartLoading()
-       state.movies = []
        await load(onError: removeMoviePlaceholders)
        didStopLoading()
    }
@@ -30,6 +29,10 @@ public struct MoviesPresenter {
     private func load(onError: (() -> Void)? = nil) async {
         do {
             for try await movie in loader() {
+                if state.movies.contains(.placeholder) {
+                    state.movies.removeFirst()
+                }
+                if config == .loading { config = .idle }
                 state.movies.append(movie)
             }
             state.showEmpty = state.movies.isEmpty
@@ -40,7 +43,7 @@ public struct MoviesPresenter {
     }
     
     private func didStartLoading() {
-        state.movies = .placeholders
+        state.movies = [.placeholder]
         state.showLoading = true
         config = .loading
     }
@@ -59,10 +62,8 @@ public struct MoviesPresenter {
     }
 }
 
-public extension [Movie] {
-    static var placeholders: Self {
-        (0...10).map { index in
-            Movie(id: "placeholder_" + String(index), title: "Some Movie Long Title", posterURL: "", releaseYear: 2000)
-        }
+public extension Movie {
+    static var placeholder: Self {
+        Movie(id: "placeholder_1", title: "Some Movie Long Title", posterURL: "", releaseYear: 2000)
     }
 }

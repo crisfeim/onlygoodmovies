@@ -24,6 +24,7 @@ public struct MovieList<Thumbnail: View>: View {
                 .redacted(reason: config.reason)
                 .modifier(config.modifier)
         }
+        .animation(.linear, value: state.movies)
         .scrollIndicators(.hidden)
         .disabled(config.listDisabled)
         .refreshable { await reload() }
