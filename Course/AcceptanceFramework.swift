@@ -19,8 +19,10 @@ extension View {
     }
     
     var bodyAssertion: Bool {
+        #if DEBUG
         Self._printChanges()
         NotificationCenter.default.post(name: Self.bodyEvaluationNotification, object: self)
+        #endif
         return true
     }
     
