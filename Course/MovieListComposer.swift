@@ -25,6 +25,7 @@ struct MovieListComposer<Thumbnail: View>: View {
     
     var body: some View {
         let _ = assert(bodyAssertion)
+        let _ = assert(historyAssertion)
         MovieList(state: $state, config: config, row: row)
         .environment(\.reload, presenter.refresh)
         .task(presenter.firstLoad)
