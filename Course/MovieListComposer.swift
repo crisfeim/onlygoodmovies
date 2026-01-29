@@ -24,6 +24,7 @@ struct MovieListComposer<Thumbnail: View>: View {
     }
     
     var body: some View {
+        let _ = assert(bodyAssertion)
         MovieList(state: $state, config: config, row: row)
         .environment(\.reload, presenter.refresh)
         .task(presenter.firstLoad)
