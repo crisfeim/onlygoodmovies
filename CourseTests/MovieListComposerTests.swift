@@ -9,8 +9,7 @@ import Movies
 final class MovieListComposerTests: XCTestCase {
     func test_moviesAreLoadedAfterRendered() async throws {
         let expectedMovies = [anyMovie()]
-        let composer = makeSUT(loader: expectedMovies.stream)
-        TestApp.shared.setView(composer)
+        renderSUT(loader: expectedMovies.stream)
         
         for await (index, view) in SUT.bodyEvaluations().prefix(2).timeout(1) {
             switch index {
@@ -26,9 +25,7 @@ final class MovieListComposerTests: XCTestCase {
         let item2 = anyMovie(id: 2)
         let item3 = anyMovie(id: 3)
         let expectedMovies = [item1, item2, item3]
-        let composer = makeSUT(loader: expectedMovies.stream)
-        ViewStorage.shared.reset()
-        TestApp.shared.setView(composer)
+        renderSUT(loader: expectedMovies.stream)
         
         for (index, view) in ViewStorage.shared.getHistory(for: MovieListComposer<Text>.self).enumerated() {
             switch index {
@@ -41,8 +38,12 @@ final class MovieListComposerTests: XCTestCase {
     }
     
     typealias SUT = MovieListComposer<Text>
-    func makeSUT(loader: @escaping MoviesLoader) -> SUT {
-        MovieListComposer<Text>(loader: loader) { _ in Text("any thumbnail") }
+    @discardableResult
+    func renderSUT(loader: @escaping MoviesLoader) -> SUT {
+        let sut = MovieListComposer<Text>(loader: loader) { _ in Text("any thumbnail") }
+        ViewStorage.shared.reset()
+        TestApp.shared.setView(sut)
+        return sut
     }
 }
 
