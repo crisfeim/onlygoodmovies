@@ -9,16 +9,21 @@ import Movies
 final class MovieListComposerTests: XCTestCase {
     func test_moviesAreLoadedAfterRendered() async throws {
         let expectedMovies = [anyMovie()]
-        let composer = MovieListComposer<Text>(loader: expectedMovies.stream) { _ in Text("any thumbnail") }
+        let composer = makeSUT(loader: expectedMovies.stream)
         TestApp.shared.setView(composer)
         
-        for await (index, view) in MovieListComposer<Text>.bodyEvaluations().prefix(2).timeout(1) {
+        for await (index, view) in SUT.bodyEvaluations().prefix(2).timeout(1) {
             switch index {
             case 0: XCTAssertEqual(view.state.movies, [])
             case 1: XCTAssertEqual(view.state.movies, expectedMovies)
             default: break
             }
         }
+    }
+    
+    typealias SUT = MovieListComposer<Text>
+    func makeSUT(loader: @escaping MoviesLoader) -> SUT {
+        MovieListComposer<Text>(loader: loader) { _ in Text("any thumbnail") }
     }
 }
 
