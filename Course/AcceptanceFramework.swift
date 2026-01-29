@@ -13,7 +13,9 @@ extension Publisher {
     }
 }
 
-
+protocol StateRegistrator {
+    var registeredState: Any {get}
+}
 
 
 extension View {
@@ -24,11 +26,16 @@ extension View {
     var bodyAssertion: Bool {
         #if DEBUG
         if NSClassFromString("XCTestCase") != nil {
+            ensureStateDependencyRegistration()
             Self._printChanges()
             NotificationCenter.default.post(name: Self.bodyEvaluationNotification, object: self)
         }
         #endif
         return true
+    }
+    
+    private func ensureStateDependencyRegistration() {
+        _ = (self as? StateRegistrator)?.registeredState
     }
     
     static func bodyEvaluations() -> AsyncPublisher<AnyPublisher<(Int, Self), Never>> {

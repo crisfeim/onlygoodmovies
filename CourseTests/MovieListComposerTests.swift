@@ -6,7 +6,6 @@ import SwiftUI
 import Movies
 
 
-
 @MainActor
 final class MovieListComposerTests: XCTestCase {
     func test_moviesAreStreamedAfterRendered() async throws {
@@ -33,6 +32,10 @@ final class MovieListComposerTests: XCTestCase {
         TestApp.shared.setView(sut)
         return sut
     }
+}
+
+extension MovieListComposerTests.SUT: @retroactive StateRegistrator {
+    public var registeredState: Any { state }
 }
 
 fileprivate extension Array where Element: Sendable {

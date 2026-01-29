@@ -29,15 +29,4 @@ struct MovieListComposer<Thumbnail: View>: View {
             .environment(\.reload, presenter.refresh)
             .task(presenter.firstLoad)
     }
-    
-    var bodyAssertion: Bool {
-        #if DEBUG
-        if NSClassFromString("XCTestCase") != nil {
-            _ = state
-            Self._printChanges()
-            NotificationCenter.default.post(name: Self.bodyEvaluationNotification, object: self)
-        }
-        return true
-        #endif
-    }
 }
