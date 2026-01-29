@@ -5,33 +5,22 @@ import XCTest
 import SwiftUI
 import Movies
 
+
+
 @MainActor
 final class MovieListComposerTests: XCTestCase {
-    func test_moviesAreLoadedAfterRendered() async throws {
-        let expectedMovies = [anyMovie()]
-        renderSUT(loader: expectedMovies.stream)
-        
-        for await (index, view) in SUT.bodyEvaluations().prefix(2).timeout(1) {
-            switch index {
-            case 0: XCTAssertEqual(view.state.movies, [])
-            case 1: XCTAssertEqual(view.state.movies, expectedMovies)
-            default: break
-            }
-        }
-    }
-    
     func test_moviesAreStreamedAfterRendered() async throws {
         let item1 = anyMovie(id: 1)
         let item2 = anyMovie(id: 2)
         let item3 = anyMovie(id: 3)
-        let expectedMovies = [item1, item2, item3]
-        renderSUT(loader: expectedMovies.stream)
+        renderSUT(loader: [item1, item2, item3].stream)
         
-        for (index, view) in ViewStorage.shared.getHistory(for: MovieListComposer<Text>.self).enumerated() {
+        for await (index, view) in SUT.bodyEvaluations().prefix(4).timeout(1) {
             switch index {
-            case 0: XCTAssertEqual(view.state.movies, [item1])
-            case 1: XCTAssertEqual(view.state.movies, [item1, item2])
-            case 2: XCTAssertEqual(view.state.movies, [item1, item2, item3])
+            case 0: XCTAssertEqual(view.state.movies, [])
+            case 1: XCTAssertEqual(view.state.movies, [item1])
+            case 2: XCTAssertEqual(view.state.movies, [item1, item2])
+            case 3: XCTAssertEqual(view.state.movies, [item1, item2, item3])
             default: break
             }
         }
@@ -41,7 +30,6 @@ final class MovieListComposerTests: XCTestCase {
     @discardableResult
     func renderSUT(loader: @escaping MoviesLoader) -> SUT {
         let sut = MovieListComposer<Text>(loader: loader) { _ in Text("any thumbnail") }
-        ViewStorage.shared.reset()
         TestApp.shared.setView(sut)
         return sut
     }

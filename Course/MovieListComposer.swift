@@ -25,9 +25,19 @@ struct MovieListComposer<Thumbnail: View>: View {
     
     var body: some View {
         let _ = assert(bodyAssertion)
-        let _ = assert(historyAssertion)
         MovieList(state: $state, config: config, row: row)
-        .environment(\.reload, presenter.refresh)
-        .task(presenter.firstLoad)
+            .environment(\.reload, presenter.refresh)
+            .task(presenter.firstLoad)
+    }
+    
+    var bodyAssertion: Bool {
+        #if DEBUG
+        if NSClassFromString("XCTestCase") != nil {
+            _ = state
+            Self._printChanges()
+            NotificationCenter.default.post(name: Self.bodyEvaluationNotification, object: self)
+        }
+        return true
+        #endif
     }
 }
