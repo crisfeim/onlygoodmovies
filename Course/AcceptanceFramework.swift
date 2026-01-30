@@ -34,7 +34,7 @@ struct TestApp: SwiftUI.App {
 
 
 extension View {
-    static var bodyEvaluationNotification: Notification.Name {
+    nonisolated(unsafe) static var bodyEvaluationNotification: Notification.Name {
         Notification.Name("bodyEvaluationNotification_\(String(describing: Self.self))")
     }
     
@@ -51,6 +51,20 @@ extension View {
     
     private func ensureStateDependencyRegistration() {
         _ = (self as? StateRegistrator)?.registeredState
+    }
+    
+    @MainActor
+    static func next() async -> Self? {
+        let notifications = NotificationCenter.default
+            .publisher(for: bodyEvaluationNotification)
+            .values
+        
+        for await notification in notifications {
+            if let view = notification.object as? Self {
+                return view
+            }
+        }
+        return nil
     }
     
     static func bodyEvaluations() -> AsyncPublisher<AnyPublisher<(Int, Self), Never>> {

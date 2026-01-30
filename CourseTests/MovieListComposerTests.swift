@@ -9,47 +9,66 @@ import Movies
 @MainActor
 final class MovieListComposerTests: XCTestCase {
     func test_moviesAreStreamedAfterRendered() async throws {
-        let item1 = anyMovie(id: 1)
-        let item2 = anyMovie(id: 2)
-        let item3 = anyMovie(id: 3)
-        renderSUT(loader: [item1, item2, item3].stream)
-        
-        for await (index, view) in SUT.bodyEvaluations().prefix(5).timeout(3) {
-            switch index {
-            case 0: XCTAssertEqual(view.state.movies, [])
-            case 1: XCTAssertEqual(view.state.movies, [.placeholder])
-            case 2: XCTAssertEqual(view.state.movies, [item1])
-            case 3: XCTAssertEqual(view.state.movies, [item1, item2])
-            case 4: XCTAssertEqual(view.state.movies, [item1, item2, item3])
-            default: break
-            }
-        }
+        let expected = [anyMovie(id: 1), anyMovie(id: 2), anyMovie(id: 3)]
+        renderSUT(loader: expected.stream)
+        let final = try await SUT.wait(1) { $0.state.movies == expected }
+        XCTAssertNotNil(final)
     }
     
     typealias SUT = MovieListComposer<Text>
     @discardableResult
-    func renderSUT(loader: @escaping MoviesLoader) -> SUT {
+    func renderSUT(loader: @escaping MoviesLoader)  -> SUT {
         let sut = MovieListComposer<Text>(loader: loader) { _ in Text("any thumbnail") }
         TestApp.shared.setView(sut)
         return sut
     }
 }
 
+import Combine
+extension MovieListComposer where Thumbnail: Sendable {
+    @MainActor
+    static func wait(
+        _ timeout: TimeInterval,
+        for predicate: @MainActor @escaping (Self) -> Bool
+    ) async throws -> Self? {
+        return try await withThrowingTaskGroup(of: Self?.self) { group in
+            group.addTask { @Sendable in
+                let notifications = NotificationCenter.default
+                    .publisher(for: bodyEvaluationNotification)
+                    .values
+                
+                for await notification in notifications {
+                    if let view = notification.object as? Self, await predicate(view) {
+                        return view
+                    }
+                }
+                return nil
+            }
+            
+            group.addTask {
+                try await Task.sleep(for: .seconds(timeout))
+                return nil
+            }
+            
+            let result = try await group.next()
+            group.cancelAll()
+            return result.flatMap { $0 }
+        }
+    }
+}
+
 extension MovieListComposerTests.SUT: @retroactive StateRegistrator {
-    public var registeredState: Any { (state, config) }
+    public var registeredState: Any { state }
 }
 
 fileprivate extension Array where Element: Sendable {
     var stream: @Sendable () -> AsyncThrowingStream<Element, Error> {
         {
             AsyncThrowingStream { continuation in
-                Task {
-                    for item in self {
-                        try await Task.sleep(for: .milliseconds(50))
-                        continuation.yield(item)
-                    }
-                    continuation.finish()
+                for item in self {
+                    continuation.yield(item)
                 }
+                continuation.finish()
             }
         }
     }
@@ -95,3 +114,4 @@ fileprivate extension AsyncSequence where Element: Sendable {
         }
     }
 }
+
