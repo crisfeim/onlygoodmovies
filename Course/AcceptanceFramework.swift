@@ -17,6 +17,21 @@ protocol StateRegistrator {
     var registeredState: Any {get}
 }
 
+struct TestApp: SwiftUI.App {
+    static var shared: Self!
+    @State private var view: any View = EmptyView()
+   
+    func setView(_ newView : any View) {
+        view = AnyView(newView.id(UUID()))
+    }
+    
+    var body: some Scene {
+        let _ = Self.shared = self
+        WindowGroup { AnyView(view.id(UUID())) }
+    }
+}
+
+
 
 extension View {
     static var bodyEvaluationNotification: Notification.Name {
