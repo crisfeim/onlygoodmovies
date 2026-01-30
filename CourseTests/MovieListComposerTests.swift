@@ -14,12 +14,13 @@ final class MovieListComposerTests: XCTestCase {
         let item3 = anyMovie(id: 3)
         renderSUT(loader: [item1, item2, item3].stream)
         
-        for await (index, view) in SUT.bodyEvaluations().prefix(4).timeout(1) {
+        for await (index, view) in SUT.bodyEvaluations().prefix(5).timeout(3) {
             switch index {
             case 0: XCTAssertEqual(view.state.movies, [])
-            case 1: XCTAssertEqual(view.state.movies, [item1])
-            case 2: XCTAssertEqual(view.state.movies, [item1, item2])
-            case 3: XCTAssertEqual(view.state.movies, [item1, item2, item3])
+            case 1: XCTAssertEqual(view.state.movies, [.placeholder])
+            case 2: XCTAssertEqual(view.state.movies, [item1])
+            case 3: XCTAssertEqual(view.state.movies, [item1, item2])
+            case 4: XCTAssertEqual(view.state.movies, [item1, item2, item3])
             default: break
             }
         }
@@ -35,17 +36,20 @@ final class MovieListComposerTests: XCTestCase {
 }
 
 extension MovieListComposerTests.SUT: @retroactive StateRegistrator {
-    public var registeredState: Any { state }
+    public var registeredState: Any { (state, config) }
 }
 
 fileprivate extension Array where Element: Sendable {
     var stream: @Sendable () -> AsyncThrowingStream<Element, Error> {
         {
             AsyncThrowingStream { continuation in
-                for item in self {
-                    continuation.yield(item)
+                Task {
+                    for item in self {
+                        try await Task.sleep(for: .milliseconds(50))
+                        continuation.yield(item)
+                    }
+                    continuation.finish()
                 }
-                continuation.finish()
             }
         }
     }
