@@ -11,6 +11,13 @@ final class MovieListComposerTests: XCTestCase {
     func test_moviesAreStreamedAfterRendered() async throws {
         let expected = [anyMovie(id: 1), anyMovie(id: 2), anyMovie(id: 3)]
         renderSUT(loader: expected.stream)
+        
+        let placeholder = try await SUT.wait(1) { $0.state.movies.contains(.placeholder) }
+        XCTAssertNotNil(placeholder)
+        
+        let oneitem = try await SUT.wait(1) { $0.state.movies.count == 2 }
+        XCTAssertNotNil(oneitem)
+        
         let final = try await SUT.wait(1) { $0.state.movies == expected }
         XCTAssertNotNil(final)
     }
@@ -25,7 +32,7 @@ final class MovieListComposerTests: XCTestCase {
 }
 
 import Combine
-extension MovieListComposer where Thumbnail: Sendable {
+extension MovieListComposerTests.SUT {
     @MainActor
     static func wait(
         _ timeout: TimeInterval,
@@ -65,10 +72,13 @@ fileprivate extension Array where Element: Sendable {
     var stream: @Sendable () -> AsyncThrowingStream<Element, Error> {
         {
             AsyncThrowingStream { continuation in
-                for item in self {
-                    continuation.yield(item)
+                Task {
+                    for item in self {
+                        try await Task.sleep(for: .milliseconds(50))
+                        continuation.yield(item)
+                    }
+                    continuation.finish()
                 }
-                continuation.finish()
             }
         }
     }
