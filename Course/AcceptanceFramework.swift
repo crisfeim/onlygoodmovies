@@ -3,6 +3,12 @@
 import Combine
 import SwiftUI
 import Movies
+
+/*
+ From "Testable SwiftUI Views with async/await" by Lazar Ostatevic.
+ https://medium.com/@redhotbits/testable-swiftui-views-dd268d15a10e
+*/
+
 extension Publisher {
     func enumerated() -> AnyPublisher<(Int, Output), Failure> {
         scan(nil) { acc, next in
