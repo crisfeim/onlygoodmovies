@@ -1,5 +1,7 @@
 # OnlyGoodMovies
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/crisfeim/onlygoodmovies)
+
 Reference implementation for the architecture described in the [On Architecture in SwiftUI series](https://crisfe.im/writing/on-architecture-in-swiftui).
 
 Still work in progress!
