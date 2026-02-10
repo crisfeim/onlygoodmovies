@@ -5,6 +5,10 @@ import XCTest
 import SwiftUI
 import Movies
 
+/*
+ See "Testable SwiftUI Views with async/await" by Lazar Ostatevic.
+ https://medium.com/@redhotbits/testable-swiftui-views-dd268d15a10e
+*/
 
 @MainActor
 final class MovieListComposerTests: XCTestCase {
