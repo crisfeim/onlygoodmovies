@@ -15,7 +15,7 @@ public var remoteMoviesStream: @Sendable () -> AsyncThrowingStream<Movie, Error>
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    let url = URL(string: "https://crisfe.im/apis/only-good-movies/v2/")!
+                    let url = URL(string: "https://crisfeim.github.io/readonly-apis/only-good-movies/v2")!
                     let stream = try await URLSession.shared.bytes(from: url).0.lines
                         .map { Data($0.utf8) }
                         .map { try? MoviesMapper.decode(Data($0)) }
