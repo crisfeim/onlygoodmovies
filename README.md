@@ -2,9 +2,9 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/crisfeim/onlygoodmovies)
 
-Reference implementation for the architecture described in the [On Architecture in SwiftUI series](https://crisfe.im/writing/on-architecture-in-swiftui).
+Explorations on a test-driven, value type architecture in SwiftUI
 
-Still work in progress!
+This is a git mirror from a fossil repo, this project lives in [chisel](https://chiselapp.com/user/crisfeim/repository/onlygoodmovies/timeline).
 
 ### Features/Explorations
 
@@ -13,5 +13,3 @@ Still work in progress!
 - **Network simulator** on `debug` app.
 - **Value types** used as much as possible for state management.
 - **Fully tested** presenter logic and state transitions.
-
-![](network-simulator.gif)
